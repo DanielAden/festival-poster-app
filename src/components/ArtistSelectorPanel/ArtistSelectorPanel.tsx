@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import List, {ListItem,  getDefaultListHandlers as attachHandlers, ListHandler, createNewListItem, ListHandlerMiddleware} from '../List/List'
+import { Container, Row, Col } from 'reactstrap'
 
 
 interface Props {
@@ -67,12 +68,16 @@ const ArtistSelectorPanel: React.FC<Props> = () => {
   }) 
   return (
     <div className="artist-selector-panel" style={getStyle()}>
-      <div style={getListStyle()}>
-        <List name={"Artists"} items={sourceList} {...sourceHandlers} canSelect  />
-      </div>
-      <div style={getListStyle()}>
-        <List name={"Artists"} items={targetList} {...targetHandlers} canRemove canEditGlobal canAddRow />
-      </div>
+      <Container>
+        <Row>
+          <Col>
+            <List name={"Spotify Artists"} items={sourceList} {...sourceHandlers} canSelect />
+          </Col>
+          <Col>
+            <List name={"My Artists"} items={targetList} {...targetHandlers} canRemove canEditGlobal canAddRow />
+          </Col>
+        </Row>
+      </Container>
     </div>
   )
 }
@@ -80,18 +85,10 @@ const ArtistSelectorPanel: React.FC<Props> = () => {
 
 function getStyle(): React.CSSProperties {
   return {
-    display: 'flex',
-    justifyContent: 'space-between',
-    width: '40%',
+    width: '50%',
+    display: 'inline-block'
   } 
 }
 
-function getListStyle() {
-  return {
-    flexGrow: 1,
-    flexBasis: 'auto',
-    margin: '.5rem',
-  }
-}
 
 export default ArtistSelectorPanel;

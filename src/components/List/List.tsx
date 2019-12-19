@@ -1,7 +1,12 @@
 import React, { useState } from 'react'
 import ListRow from './ListRow'
 import AppButton from '../AppButton'
-import { InputGroup, Input, ListGroup, ListGroupItem } from 'reactstrap';
+import { ButtonGroup, InputGroup, Input, ListGroup, ListGroupItem } from 'reactstrap';
+
+
+const SELECTALL = 'Select All';
+const CLEAR = 'Unselect All'
+
 export interface ListItem {
   id: number;
   text: string;
@@ -118,6 +123,7 @@ export interface ListProps extends ListHandlers {
 const List: React.FC<ListProps> = (props) => {
   const [isAddingRow, setisAddingRow] = useState(false);
   const [addRowText, setAddRowText] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
   const { items } = props;
   const canSelectAll = props.canSelect && props.handleSelectAll;
   const canClear = props.canSelect && props.handleClear;
@@ -132,20 +138,23 @@ const List: React.FC<ListProps> = (props) => {
             <Input value={addRowText} onChange={
               (e) => setAddRowText(e.target.value)
             } />
-            <AppButton onClick={() => {
-              const newItem = createNewListItem({
-                text: addRowText,
-                userAdded: true,
-                isSelected: false,
-              }, {})
-              setisAddingRow(false);
-              handleAddRow(newItem);
-              setAddRowText('');
-            }}>Save</AppButton>
-            <AppButton onClick={() => {
-              setisAddingRow(false);
-              setAddRowText('');
-            }}>X</AppButton>
+            <ButtonGroup>
+              <AppButton onClick={() => {
+                const newItem = createNewListItem({
+                  text: addRowText,
+                  userAdded: true,
+                  isSelected: false,
+                }, {})
+                setisAddingRow(false);
+                handleAddRow(newItem);
+                setAddRowText('');
+              }}>Save</AppButton>
+              <AppButton color="danger"
+                onClick={() => {
+                  setisAddingRow(false);
+                  setAddRowText('');
+                }}>X</AppButton>
+              </ButtonGroup>
           </InputGroup>
         </ListGroupItem>
       </div>
@@ -153,7 +162,7 @@ const List: React.FC<ListProps> = (props) => {
     
     return (
       <ListGroupItem>
-        <AppButton block color="primary" onClick={() => setisAddingRow(true)}>Add Row</AppButton>
+        <AppButton block disabled={isEditing} onClick={() => setisAddingRow(true)}>Add Row</AppButton>
       </ListGroupItem>
     )
   }
@@ -165,20 +174,22 @@ const List: React.FC<ListProps> = (props) => {
       selectAll = (
         <AppButton onClick={(e) => {
           props.handleSelectAll?.(); 
-        }}>Select All</AppButton>
+        }}>{SELECTALL}</AppButton>
       )
     } 
     if (canClear) {
       clear = (
         <AppButton color="primary" onClick={(e) => {
           props.handleClear?.(); 
-        }}>Clear</AppButton>
+        }}>{CLEAR}</AppButton>
       )
     } 
     return (
       <div className="list__actions">
-        {selectAll}
-        {clear}
+        <ButtonGroup>
+          {selectAll}
+          {clear}
+        </ButtonGroup>
       </div>
     )
   }
@@ -197,7 +208,12 @@ const List: React.FC<ListProps> = (props) => {
 
   function renderList() {
     const rows = items.map((item) => {
-      return <ListRow key={item.id} item={item} {...props} />
+      return <ListRow key={item.id} 
+                      item={item} 
+                      setIsEditing={setIsEditing}
+                      isEditing={isEditing}
+                      disableActions={isAddingRow}
+                      {...props} />
     })
     return (
       <div className="list">

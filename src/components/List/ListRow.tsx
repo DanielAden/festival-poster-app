@@ -11,10 +11,12 @@ export function handleActionClick(e: any, item: ListItem, handler: ListHandler) 
 
 
 interface Props extends ListProps {
-  item: ListItem, 
+  item: ListItem;
+  isEditing: boolean;
+  setIsEditing: React.Dispatch<any>;
+  disableActions: boolean;
 }
-const ListRow: React.FC<Props> = ({ item, ...listProps }) => {
-  const [isEditing, setIsEditing] = useState(false);
+const ListRow: React.FC<Props> = ({ disableActions, item, isEditing, setIsEditing, ...listProps }) => {
   const [editText, setEditText] = useState(item.text);
 
   const { handleRemove, handleEdit, handleSelectionChange: handleSelect } = listProps;
@@ -41,10 +43,11 @@ const ListRow: React.FC<Props> = ({ item, ...listProps }) => {
             }}>Save</AppButton>
           </InputGroupAddon>
           <InputGroupAddon addonType="append">
-            <AppButton onClick={(e) => {
-              setEditText('');
-              setIsEditing(false);
-            }}>X</AppButton>
+            <AppButton color="danger"
+              onClick={(e) => {
+                setEditText('');
+                setIsEditing(false);
+              }}>X</AppButton>
           </InputGroupAddon>
         </InputGroup>
       </ListGroupItem>
@@ -55,30 +58,29 @@ const ListRow: React.FC<Props> = ({ item, ...listProps }) => {
     return (
       <ButtonGroup>
         {canEdit && handleEdit && 
-          <AppButton onClick={(e) => setIsEditing(true)}>Edit</AppButton>}
-
+          <AppButton disabled={disableActions} onClick={(e) => setIsEditing(true)}>Edit</AppButton>}
         {canRemove && handleRemove &&
-          <AppButton onClick={(e) => {handleActionClick(e, item, handleRemove)}}>Remove</AppButton>}
+          <AppButton disabled={disableActions} onClick={(e) => {handleActionClick(e, item, handleRemove)}}>Remove</AppButton>}
       </ButtonGroup>
     )
   }
 
-  if (isEditing) return renderIsEditing();
-  return (
-    <ListGroupItem key={item.text} action={canSelect} active={canSelect && isSelected} 
-                   onClick={ (e) => listProps.handleSelectionChange?.(item) }>
-      <Container>
-        <Row>
-          <Col>
-            {item.text}
-          </Col>
-          <Col>
-            {renderActionButtons()}
-          </Col>
-        </Row>
-      </Container>
-    </ListGroupItem>
-  )
+  const renderRow = () => {
+    return (
+      <ListGroupItem key={item.text} action={canSelect} active={canSelect && isSelected} 
+                     className="d-flex justify-content-between align-items-center"
+                     onClick={ (e) => listProps.handleSelectionChange?.(item) } >
+              {item.text}
+              {renderActionButtons()}
+      </ListGroupItem>
+    )
+  }
+
+  if (isEditing) {
+    return renderIsEditing();
+  } else {
+    return renderRow();
+  }
 }
 
 export default ListRow;
