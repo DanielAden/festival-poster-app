@@ -1,0 +1,22 @@
+
+
+.artists {
+  display: inline-block;
+  border: solid 3px tomato;
+  width: 40%;
+  text-align: center;
+  padding: 0;
+}
+
+.artist {
+  display: inline-block;
+}
+
+.artist-seperator {
+  display: inline-block;
+  width: .5rem;
+  height: .5rem;
+  background: black;
+  border-radius: 50%;
+  vertical-align: middle;
+}
