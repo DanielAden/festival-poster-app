@@ -1,6 +1,3 @@
-import React, { useEffect, useState } from 'react';
-import { spotifyMe, spotifyFetch, apiurl} from './APIRequest';
-
 const client_id = 'f775b626d4784dfba4491742d5453d55'; // Your client id
 const redirect_uri = 'http://localhost:3000/authenticate'; // Your redirect uri
 const scope = 'playlist-read-collaborative'
@@ -8,7 +5,6 @@ const SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize'
 const SPOTIFY_ACCESS_TOKEN_FIELD = 'access_token';
 const SPOTIFY_TOKEN_TYPE_FIELD = 'token_type';
 const SPOTIFY_EXPIRES_IN_FIELD = 'expires_in';
-
 
 const authParams = {
   client_id,

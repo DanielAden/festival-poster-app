@@ -1,4 +1,4 @@
-import {SPOTIFY_API_HOST, apiurl} from './APIRequest'
+import {SPOTIFY_API_HOST, apiurl} from './SpotifyAPI'
 
 test('spotify api url', () => {
   let res = apiurl('test1', 'test2', 'test3');

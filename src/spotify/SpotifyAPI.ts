@@ -1,8 +1,90 @@
-import { getSpotifyAuth } from './Auth';
 import { AuthExpiredError } from '../errors';
 
-export const SPOTIFY_API_HOST = 'https://api.spotify.com'
-export const SPOTIFY_VERSION = 'v1'
+export const SPOTIFY_API_HOST = 'https://api.spotify.com';
+export const SPOTIFY_VERSION = 'v1';
+
+export abstract class SpotifyAPI {
+  constructor(protected apiKey: string) {}
+
+  public abstract async getPlaylists(): Promise<SpotifyPlaylistObject[]>;
+  public abstract async getPlaylistTracks(playlistId: string): Promise<SpotifyTrackObject[]> ;
+  public abstract async me(): Promise<SpotifyUserObject>;
+
+  public async getPlaylistArtists(playlistId: string): Promise<string[]> {
+    const trackData = await this.getPlaylistTracks(playlistId);
+    return extractArtistsFromTracks(trackData)
+  }
+
+  public async noAuthAPICall(url: string) {
+    const res = await fetch(url);
+    const json = await unpackResponse(res, url); 
+    return json;
+  }
+}
+
+export class SpotifyAuthTokenAPI extends SpotifyAPI {
+  public getPlaylists() {
+    return spotifyPlaylistsFromToken(this.apiKey)
+  }
+
+  public getPlaylistTracks(playlistId: string) {
+    return spotifyTracksFromPlaylist(this.apiKey, playlistId)
+  }
+
+  public async me() {
+    return spotifyMe(this.apiKey);
+  }
+}
+
+export class SpotifyUserIdAPI extends SpotifyAPI {
+
+  public async getPlaylists() {
+    const url = apiurl('users', this.apiKey, 'playlists')
+    return await this.noAuthAPICall(url);
+  }
+
+  public async getPlaylistTracks(playlistId: string) {
+    const url = apiurl('playlists', this.apiKey, 'tracks')
+    return await this.noAuthAPICall(url);
+  }
+
+  public async me() {
+    const url = apiurl('users', this.apiKey);
+    return await this.noAuthAPICall(url);
+  }
+}
+
+interface SpotifyAuth {
+  authToken: string,
+  userId: string,
+}
+
+enum SpotifyAPICalls {
+  playlists, 
+  getPlaylistTracks,
+  me,
+} 
+export type SpotifyAPICallStrings = keyof typeof SpotifyAPICalls;
+interface SpotifyAPIData {
+  api: SpotifyAPI,
+  calls: typeof SpotifyAPICalls 
+}
+export function spotifyAPIFactory(spotifyAuthObj: Partial<SpotifyAuth>): SpotifyAPIData | undefined {
+  const { authToken, userId } = spotifyAuthObj; 
+  if (authToken && authToken !== '') {
+    return {
+      api: new SpotifyAuthTokenAPI(authToken), 
+      calls: SpotifyAPICalls,
+    }
+  } else if (userId && userId !== '') {
+    return {
+      api: new SpotifyUserIdAPI(userId),
+      calls: SpotifyAPICalls,
+    }
+  } else {
+    throw new Error('Must use provide access token or user id to access spotify')
+  }  
+}
 
 export function apiurl(...endpoints: string[]): string {
   let epList = [SPOTIFY_VERSION, ...endpoints]
@@ -14,22 +96,28 @@ function handleError(e: any): never {
   throw e;
 }
 
+export async function unpackResponse(res: Response, url: string) {
+  if (!res.ok) {
+    if (res.status === 401) throw new AuthExpiredError(`Fetch for URL ${url} returned not ok status.  Status: ${res.status}`);
+    throw new Error(`Fetch for URL ${url} returned not ok status.  Status: ${res.status}`)
+  }
+  if (res.status !== 200) {
+    throw new Error(`Fetch for URL ${url} returned a status of ${res.status}`)
+  }
+  let json = await res.json().catch(handleError)
+  return json;
+}
+
 export async function spotifyFetch(access_token: string, url: string) {
-  let req = await fetch(url, {
+  let res = await fetch(url, {
     headers: {
       Authorization: `Bearer ${access_token}`
     }
   }).catch(handleError);
-  if (!req.ok) {
-    if (req.status === 401) throw new AuthExpiredError(`Fetch for URL ${url} returned not ok status.  Status: ${req.status}`);
-    throw new Error(`Fetch for URL ${url} returned not ok status.  Status: ${req.status}`)
-  }
-  if (req.status !== 200) {
-    throw new Error(`Fetch for URL ${url} returned a status of ${req.status}`)
-  }
-  let json = await req.json().catch(handleError)
-  return json;
+  return unpackResponse(res, url);
 }
+
+
 
 async function spotifyGETHelper<T>(accessToken: string, ...urlParams: string[]): Promise<T> {
   const url = apiurl(...urlParams);
@@ -74,7 +162,7 @@ export interface SpotifyPagingObject<T> {
   previous: string;
   total: number;
 }
-export async function spotifyPlaylists(accessToken: string): Promise<SpotifyPlaylistObject[]> {
+export async function spotifyPlaylistsFromToken(accessToken: string): Promise<SpotifyPlaylistObject[]> {
   return spotifyGETHelper(accessToken, 'me', 'playlists');
 }
 
