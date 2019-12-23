@@ -1,7 +1,18 @@
 import React, { useState } from 'react'
 import List, {ListItem,  getDefaultListHandlers as attachHandlers, ListHandler, createNewListItem, ListHandlerMiddleware} from '../List/List'
 import { Container, Row, Col } from 'reactstrap'
+import { useSelector } from 'react-redux'
+import { SystemState } from '../../store/system/types'
+import SpotifyInfoCapturePanel from '../SpotifyInfoCapturePanel'
 
+const spotifyIsAuthorized = (token: string, userId: string) => {
+  return token === '' && userId === '';
+}
+
+interface SysRootState {
+  system: SystemState;
+}
+const authSelector = (state: SysRootState) => ({ token: state.system.spotifyAccessToken, userId: state.system.spotifyUserId})  
 
 interface Props {
   
@@ -10,6 +21,8 @@ const test: ListItem[] = ['artist 1', 'artist 2', 'artist 3', 'artist 4', 'artis
 const ArtistSelectorPanel: React.FC<Props> = () => {
   const [sourceList, setSourceList] = useState<ListItem[]>(test);
   const [targetList, setTargetList] = useState<ListItem[]>([]);
+  const {token, userId} = useSelector(authSelector);
+  const canUseSpotify = spotifyIsAuthorized(token, userId) 
 
   const sourceHandleSelectionChange: ListHandler = (item) => {
     if (item.isSelected) {
@@ -66,12 +79,21 @@ const ArtistSelectorPanel: React.FC<Props> = () => {
   }, {
     addRow: targetAddRowMW, 
   }) 
+
+  const renderSpotifyList = () => {
+    if (!canUseSpotify) {
+      return <SpotifyInfoCapturePanel />
+    } else {
+      return <List name={"Spotify Artists"} items={sourceList} {...sourceHandlers} canSelect />
+    }
+  }
+
   return (
     <div className="artist-selector-panel" style={getStyle()}>
       <Container>
         <Row>
           <Col>
-            <List name={"Spotify Artists"} items={sourceList} {...sourceHandlers} canSelect />
+            {renderSpotifyList()}
           </Col>
           <Col>
             <List name={"My Artists"} items={targetList} {...targetHandlers} canRemove canEditGlobal canAddRow />

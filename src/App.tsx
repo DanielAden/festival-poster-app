@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { useSelector } from 'react-redux'
 import { SystemState } from './store/system/types';
-import SpotifyAuth from './components/SpotifyAuth';
+import SpotifyAuthPanel from './components/SpotifyInfoCapturePanel';
 import Home from './components/Home'
 import {
   Switch,
@@ -47,7 +47,7 @@ const App: React.FC = () => {
           <Home />
         </PrivateRoute>
         <Route exact path="/authenticate">
-          <SpotifyAuth />
+          <SpotifyAuthPanel />
         </Route>
       </Switch>
     </div>
