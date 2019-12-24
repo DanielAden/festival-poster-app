@@ -4,7 +4,7 @@ export const SPOTIFY_API_HOST = 'https://api.spotify.com';
 export const SPOTIFY_VERSION = 'v1';
 
 export abstract class SpotifyAPI {
-  constructor(protected apiKey: string) {}
+  constructor(public apiKey: string) {}
 
   public abstract async getPlaylists(): Promise<SpotifyPlaylistObject[]>;
   public abstract async getPlaylistTracks(playlistId: string): Promise<SpotifyTrackObject[]> ;
@@ -69,7 +69,7 @@ interface SpotifyAPIData {
   api: SpotifyAPI,
   calls: typeof SpotifyAPICalls 
 }
-export function spotifyAPIFactory(spotifyAuthObj: Partial<SpotifyAuth>): SpotifyAPIData | undefined {
+export function spotifyAPIFactory(spotifyAuthObj: Partial<SpotifyAuth>): SpotifyAPIData {
   const { authToken, userId } = spotifyAuthObj; 
   if (authToken && authToken !== '') {
     return {
@@ -117,8 +117,6 @@ export async function spotifyFetch(access_token: string, url: string) {
   return unpackResponse(res, url);
 }
 
-
-
 async function spotifyGETHelper<T>(accessToken: string, ...urlParams: string[]): Promise<T> {
   const url = apiurl(...urlParams);
   const data = await spotifyFetch(accessToken, url).catch(handleError);
@@ -128,7 +126,7 @@ async function spotifyGETHelper<T>(accessToken: string, ...urlParams: string[]):
   return data.items; 
 }
 
-interface SpotifyUserObject {
+export interface SpotifyUserObject {
   country: string;
   display_name: string;
   email: string;

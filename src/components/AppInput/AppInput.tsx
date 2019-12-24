@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { InputGroupAddon, InputGroup, Input, InputProps, Form, FormGroup, FormFeedback } from 'reactstrap'
+import { InputGroupAddon, InputGroup, Input, InputProps, FormGroup, FormFeedback } from 'reactstrap'
 import { debounce, isUndefined } from 'lodash'
 import AppButton from '../AppButton';
 
@@ -9,6 +9,7 @@ export interface ValidationObject {
   isValid: boolean;
   errorMsg?: string;
 }
+
 export type InputValidator = (input: string) => ValidationObject; 
 export type InputHook = (text: string) => void;
 export type SubmitHook = (text: string) => ValidationObject;
@@ -19,7 +20,6 @@ export interface AppInputProps extends InputProps {
   onResultHook?: InputHook;
   submitHook?: SubmitHook;
 }
-
 
 const AppInput: React.FC<AppInputProps> = ({ validations, changeHook, onResultHook, submittable, submitHook, ...inputProps}) => {
   const [inputText, setinputText] = useState('');
