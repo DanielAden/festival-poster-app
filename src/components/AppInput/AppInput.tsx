@@ -22,7 +22,7 @@ export interface AppInputProps extends InputProps {
 }
 
 const AppInput: React.FC<AppInputProps> = ({ validations, changeHook, onResultHook, submittable, submitHook, ...inputProps}) => {
-  const [inputText, setinputText] = useState('');
+  const [inputValue, setInputValue] = useState('');
   const [inError, setinError] = useState(false);
   const [errorText, seterrorText] = useState('');
 
@@ -63,7 +63,7 @@ const AppInput: React.FC<AppInputProps> = ({ validations, changeHook, onResultHo
   const dvHook = useCallback(getValidatedResultHook(), [...vFNs, onResultHook]);
 
   const handleChange = (newText: string) => {
-    setinputText(newText);
+    setInputValue(newText);
     changeHook?.(newText);
     dvHook?.(newText);
   }
@@ -71,7 +71,7 @@ const AppInput: React.FC<AppInputProps> = ({ validations, changeHook, onResultHo
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (inError) return;
     if (!submitHook) return;
-    const vobj = submitHook(inputText);
+    const vobj = submitHook(inputValue);
     if (vobj.isValid) return;
     setinError(true); 
     seterrorText(vobj.errorMsg || '');
@@ -80,7 +80,8 @@ const AppInput: React.FC<AppInputProps> = ({ validations, changeHook, onResultHo
   const renderSubmit = () => {
     return (
       <InputGroupAddon addonType="append">
-        <AppButton onClick={handleSubmit}>Submit</AppButton>
+        <AppButton disabled={inError || inputValue === ''} 
+                   onClick={handleSubmit}>Submit</AppButton>
       </InputGroupAddon>
     )
   }
@@ -90,7 +91,7 @@ const AppInput: React.FC<AppInputProps> = ({ validations, changeHook, onResultHo
       <FormGroup>
         <InputGroup>
           <Input className="app-input" 
-                value={inputText}
+                value={inputValue}
                 {...inputProps}
                 invalid={inError}
                 onChange={(e) => handleChange(e.target.value)} />

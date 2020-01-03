@@ -32,7 +32,7 @@ interface SpotifyAuthData {
 let MEMOED_AUTH_DATA: SpotifyAuthData | undefined; 
 
 type AuthDataStatus = 'AUTHORIZED' | 'NOT_AUTHORIZED' | 'ACCESS_DENIED' | 'ERROR';
-export function getSpotifyAuth(): { status: AuthDataStatus, data?: SpotifyAuthData, error?: string}  {
+export function spotifyAuthFromWindow(): { status: AuthDataStatus, data?: SpotifyAuthData, error?: string}  {
   if (MEMOED_AUTH_DATA) {
     return {
       status: 'AUTHORIZED',

@@ -69,6 +69,7 @@ interface SpotifyAPIData {
   api: SpotifyAPI,
   calls: typeof SpotifyAPICalls 
 }
+
 export function spotifyAPIFactory(spotifyAuthObj: Partial<SpotifyAuth>): SpotifyAPIData {
   const { authToken, userId } = spotifyAuthObj; 
   if (authToken && authToken !== '') {
