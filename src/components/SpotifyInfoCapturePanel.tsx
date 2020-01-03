@@ -1,10 +1,11 @@
-import React from 'react'
-import { getSpotifyAuth, constructSpotifyAuthURL } from '../spotify/SpotifyAuth';
+import React, { useState } from 'react'
+import { constructSpotifyAuthURL } from '../spotify/SpotifyAuth';
 import { useDispatch } from 'react-redux';
-import { setSystemSpotifyAccessToken } from '../store/system/actions';
-import { Redirect } from 'react-router-dom';
+import { setSystemSpotifyUserId } from '../store/system/actions';
 import { Container, Row, } from 'reactstrap'
 import AppInput, { InputValidator } from './AppInput/AppInput';
+import { useMe } from '../spotify/SpotifyAPIHooks';
+import AppButton from './AppButton'
 
 const centerContent = 'justify-content-md-center';
 const uriFormText = `Enter a Spotify User URI`;
@@ -25,17 +26,35 @@ interface Props {
   
 }
 const SpotifyInfoCapturePanel: React.FC<Props> = () => {
-  const dispatch = useDispatch()
-  const authData = getSpotifyAuth()
+  const dispatch = useDispatch();
+  const [userId, setuserId] = useState('');
+  const meData = useMe()
 
-  if (authData.status === 'AUTHORIZED' && authData.data) {
-    const data = authData.data;
-    dispatch(setSystemSpotifyAccessToken(data.access_token));
+  const userIdIsInvalid = () => {
+    if (userId === '') return false;
+    if (meData === null) return false;
+    if (!('error' in meData)) return false;
+    if (meData.errorType === 'ResourceNotFound') return true;
+    return false;
+  }
+
+  const renderUserIdTryAgain = () => {
     return (
-      <Redirect to={{
-        pathname: '/',
-      }} />
+      <Container>
+        <Row>
+          <h3>{`Could Not Connect to Spotify With Provided User Id`}</h3>
+        </Row>
+        <Row>
+          <AppButton>Try Again</AppButton>
+        </Row>
+      </Container>
     )
+  }
+
+  if (userIdIsInvalid()) {
+    setuserId('');
+    dispatch(setSystemSpotifyUserId(''));
+    return renderUserIdTryAgain();
   }
 
   const uriFormatValidator: InputValidator = (input: string) => {
@@ -45,7 +64,7 @@ const SpotifyInfoCapturePanel: React.FC<Props> = () => {
   }
 
   const handleSubmit = (text: string) => {
-    console.log('submitted')
+    setuserId(text);
     return { isValid: true };
   }
 
