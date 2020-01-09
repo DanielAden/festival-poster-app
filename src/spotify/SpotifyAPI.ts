@@ -3,12 +3,74 @@ import { AuthExpiredError } from '../errors';
 export const SPOTIFY_API_HOST = 'https://api.spotify.com';
 export const SPOTIFY_VERSION = 'v1';
 
+export interface SpotifyUserObject {
+  country: string;
+  display_name: string;
+  email: string;
+  href: string;
+  id: string;
+  product: string;
+  type: string;
+  uri: string;
+}
+
+export interface SpotifyPlaylistObject {
+  description: string;
+  href: string;
+  id: string;
+  name: string;
+  tracks: string;
+  type: string;
+  uri: string;
+}
+export interface SpotifyPagingObject<T> {
+  href: string;
+  items: T[];
+  limit: number;
+  next: string;
+  offset: string;
+  previous: string;
+  total: number;
+}
+
+export interface SpotifyAlbumObjectSimple {
+  album_type: 'album' | 'single' | 'compilation';
+  artists: SpotifyArtistObjectSimple[];
+  href: string; // A link to the Web API endpoint providing full details of the album.
+  name: string;
+  release_date: string;
+  type: 'album';
+  uri: string;
+}
+
+export interface SpotifyArtistObjectSimple {
+  href: string; // A link to the Web API endpoint providing full details of the artist.
+  id: string;
+  name: string;
+  type: 'artist';
+  uri: string;
+}
+
+export interface SpotifyTrackObject {
+  album: SpotifyAlbumObjectSimple; 
+  artists: SpotifyArtistObjectSimple[];
+  duration_ms: number;
+  href: string; // A link to the Web API endpoint providing full details of the track.
+  id: string;  
+  name: string;  
+  popularity: number;
+  track_number: number;
+  type: 'track';
+  uri: string;
+}
+
 export abstract class SpotifyAPI {
   constructor(public apiKey: string) {}
 
   public abstract async getPlaylists(): Promise<SpotifyPlaylistObject[]>;
   public abstract async getPlaylistTracks(playlistId: string): Promise<SpotifyTrackObject[]> ;
   public abstract async me(): Promise<SpotifyUserObject>;
+  public async topTracks?(): Promise<SpotifyTrackObject[]>;
 
   public async getPlaylistArtists(playlistId: string): Promise<string[]> {
     const trackData = await this.getPlaylistTracks(playlistId);
@@ -34,6 +96,11 @@ export class SpotifyAuthTokenAPI extends SpotifyAPI {
   public async me() {
     return spotifyMe(this.apiKey);
   }
+
+  public async topTracks() {
+    throw new Error('unimplemented')
+    return [];
+  }
 }
 
 export class SpotifyUserIdAPI extends SpotifyAPI {
@@ -58,30 +125,12 @@ interface SpotifyAuth {
   authToken: string,
   userId: string,
 }
-
-enum SpotifyAPICalls {
-  playlists, 
-  getPlaylistTracks,
-  me,
-} 
-export type SpotifyAPICallStrings = keyof typeof SpotifyAPICalls;
-interface SpotifyAPIData {
-  api: SpotifyAPI,
-  calls: typeof SpotifyAPICalls 
-}
-
-export function spotifyAPIFactory(spotifyAuthObj: Partial<SpotifyAuth>): SpotifyAPIData {
+export function spotifyAPIFactory(spotifyAuthObj: Partial<SpotifyAuth>): SpotifyAPI {
   const { authToken, userId } = spotifyAuthObj; 
   if (authToken && authToken !== '') {
-    return {
-      api: new SpotifyAuthTokenAPI(authToken), 
-      calls: SpotifyAPICalls,
-    }
+      return new SpotifyAuthTokenAPI(authToken)
   } else if (userId && userId !== '') {
-    return {
-      api: new SpotifyUserIdAPI(userId),
-      calls: SpotifyAPICalls,
-    }
+      return new SpotifyUserIdAPI(userId)
   } else {
     throw new Error('Must use provide access token or user id to access spotify')
   }  
@@ -127,40 +176,12 @@ async function spotifyGETHelper<T>(accessToken: string, ...urlParams: string[]):
   return data.items; 
 }
 
-export interface SpotifyUserObject {
-  country: string;
-  display_name: string;
-  email: string;
-  href: string;
-  id: string;
-  product: string;
-  type: string;
-  uri: string;
-}
 export async function spotifyMe(accessToken: string): Promise<SpotifyUserObject> {
   const url = apiurl('me');
   const data = await spotifyFetch(accessToken, url);
   return data;
 }
 
-export interface SpotifyPlaylistObject {
-  description: string;
-  href: string;
-  id: string;
-  name: string;
-  tracks: string;
-  type: string;
-  uri: string;
-}
-export interface SpotifyPagingObject<T> {
-  href: string;
-  items: T[];
-  limit: number;
-  next: string;
-  offset: string;
-  previous: string;
-  total: number;
-}
 export async function spotifyPlaylistsFromToken(accessToken: string): Promise<SpotifyPlaylistObject[]> {
   return spotifyGETHelper(accessToken, 'me', 'playlists');
 }
@@ -180,36 +201,4 @@ export function extractArtistsFromTracks(tracks: SpotifyTrackObject[]): string[]
     artistsSet.add(track.artists[0].name)
   });
   return [...artistsSet];
-}
-
-
-export interface SpotifyAlbumObjectSimple {
-  album_type: 'album' | 'single' | 'compilation';
-  artists: SpotifyArtistObjectSimple[];
-  href: string; // A link to the Web API endpoint providing full details of the album.
-  name: string;
-  release_date: string;
-  type: 'album';
-  uri: string;
-}
-
-export interface SpotifyArtistObjectSimple {
-  href: string; // A link to the Web API endpoint providing full details of the artist.
-  id: string;
-  name: string;
-  type: 'artist';
-  uri: string;
-}
-
-export interface SpotifyTrackObject {
-  album: SpotifyAlbumObjectSimple; 
-  artists: SpotifyArtistObjectSimple[];
-  duration_ms: number;
-  href: string; // A link to the Web API endpoint providing full details of the track.
-  id: string;  
-  name: string;  
-  popularity: number;
-  track_number: number;
-  type: 'track';
-  uri: string;
 }
