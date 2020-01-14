@@ -72,13 +72,15 @@ export interface SpotifyTrackObject {
   uri: string;
 }
 
+type TimeRange = 'long_term' | 'medium_term' | 'short_term';
+
 export abstract class SpotifyAPI {
   constructor(public apiKey: string) {}
 
   public abstract async getPlaylists(): Promise<SpotifyPlaylistObject[]>;
   public abstract async getPlaylistTracks(playlistId: string): Promise<SpotifyTrackObject[]> ;
   public abstract async me(): Promise<SpotifyUserObject>;
-  public async topArtists?(): Promise<SpotifyTrackObject[]>;
+  public async topArtists?(limit?: string, offset?: string, time_range?: TimeRange): Promise<SpotifyTrackObject[]>;
 
   public async getPlaylistArtists(playlistId: string): Promise<string[]> {
     const trackData = await this.getPlaylistTracks(playlistId);
@@ -105,8 +107,8 @@ export class SpotifyAuthTokenAPI extends SpotifyAPI {
     return spotifyMe(this.apiKey);
   }
 
-  public async topArtists() {
-    const data = await spotifyGETHelper<SpotifyTrackObject[]>(this.apiKey, 'me', 'top', 'artists');
+  public async topArtists(limit: string = '30', offset: string = '0', time_range: TimeRange = 'long_term') {
+    const data = await spotifyGETHelper<SpotifyTrackObject[]>(this.apiKey, ['me', 'top', 'artists'], {limit, offset, time_range});
     return data;
   }
 }
@@ -175,8 +177,19 @@ export async function spotifyFetch(access_token: string, url: string) {
   return unpackResponse(res, url);
 }
 
-async function spotifyGETHelper<T>(accessToken: string, ...urlParams: string[]): Promise<T> {
-  const url = apiurl(...urlParams);
+type QueryParamsObject = {[k: string]: string}
+function objectToQueryParams(queryObject?: QueryParamsObject): string {
+  if (!queryObject) return '';
+  const USP = new URLSearchParams();
+  for (const k in queryObject) {
+    USP.append(k, queryObject[k]);
+  }
+  return USP.toString();
+}
+
+async function spotifyGETHelper<T>(accessToken: string, urlParams: string[], queryParams?: QueryParamsObject): Promise<T> {
+  const queryStr = objectToQueryParams(queryParams);
+  const url = apiurl(...urlParams, `?${queryStr}`);
   const data = await spotifyFetch(accessToken, url).catch(handleError);
   if (!data.hasOwnProperty('items')) {
     throw new Error(`Returned paging object does not contain items field.  Url: ${url}`)
@@ -191,14 +204,14 @@ export async function spotifyMe(accessToken: string): Promise<SpotifyUserObject>
 }
 
 export async function spotifyPlaylistsFromToken(accessToken: string): Promise<SpotifyPlaylistObject[]> {
-  return spotifyGETHelper(accessToken, 'me', 'playlists');
+  return spotifyGETHelper(accessToken, ['me', 'playlists']);
 }
 
 export interface SpotifyPlaylistTrackObject {
   track: SpotifyTrackObject;
 }
 export async function spotifyTracksFromPlaylist(accessToken: string, playlist_id: string): Promise<SpotifyTrackObject[]> {
-  const res = await spotifyGETHelper<SpotifyPlaylistTrackObject[]>(accessToken, 'playlists', playlist_id, 'tracks');
+  const res = await spotifyGETHelper<SpotifyPlaylistTrackObject[]>(accessToken, ['playlists', playlist_id, 'tracks']);
   // Strip off the PlaylistTrackObject information
   return res.map(playlistTrackObject => playlistTrackObject.track)
 }

@@ -66,7 +66,6 @@ export const useLocalStorage = <T>(key: string, initialValue: T): UseLocalStorag
 
 export const useSpotifyAPI = (): SpotifyAPI | null => {
   const { accessToken } = useSpotifyAccessToken();
-  console.log(accessToken);
   const memoedAPI = useMemo(
     () => spotifyAPIFactory( { authToken: accessToken} ), 
     [accessToken],
@@ -83,7 +82,6 @@ export const useTopArtists = () => {
       if (!api) return;
       if (!api.topArtists) throw new Error('Expected topArtists method to exist on spotify api object');
       const data = await api.topArtists();
-      console.log('recalled');
       setTopTracks(data);
     }
     fetchData();
