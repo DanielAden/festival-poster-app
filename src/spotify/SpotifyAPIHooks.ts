@@ -3,6 +3,9 @@ import { spotifyAPIFactory, SpotifyAPI, SpotifyTrackObject } from "./SpotifyAPI"
 
 const accessTokenKey = '__SPOTIFY_ACCESS_TOKEN_KEY__'
 const expireTimeKey = '__SPOTIFY_ACCESS_TOKEN_EXPIRE_TIME_KEY__'
+const artistsLongTermKey = '__SPOTIFY_ARTISTS_LONG_TERM_KEY__';
+const artistsShortTermKey = '__SPOTIFY_ARTISTS_SHORT_TERM_KEY__';
+const artistsMediumTermKey = '__SPOTIFY_ARTISTS_MEDIUM_TERM_KEY__';
 
 const nowSeconds = () => {
   return Math.floor(Date.now() / 1000)
@@ -49,18 +52,16 @@ export const useLocalStorage = <T>(key: string, initialValue: T): UseLocalStorag
     }
   });
 
-  const setValue = (value: T): void => {
+  const setValue = useCallback((value: T): void => {
     try {
-      console.log(value);
-      const toStore = value instanceof Function ? value(storedValue) : value;
+      const toStore = value; // value instanceof Function ? value(storedValue) : value; //TODO implement ability to pass function to setValue
       setStoredValue(toStore);
       window.localStorage.setItem(key, JSON.stringify(toStore));
-      console.log('after: ' + window.localStorage.getItem(key));
     } catch (e) {
       throw e;
     }
-  };
-
+  }, [key]);
+  
   return [storedValue, setValue];
 }
 
@@ -74,17 +75,19 @@ export const useSpotifyAPI = (): SpotifyAPI | null => {
 }
 
 export const useTopArtists = () => {
-  const [topTracks, setTopTracks] = useState<SpotifyTrackObject[]>([]);
+  const [topTracks, setTopTracks] = useLocalStorage<SpotifyTrackObject[]>(artistsLongTermKey, []);
   const api = useSpotifyAPI(); 
 
   useEffect(() => {
     const fetchData = async () => {
+      if (topTracks.length > 0) return; // TODO 
+      console.log('Using api to retreive top Artists')
       if (!api) return;
       if (!api.topArtists) throw new Error('Expected topArtists method to exist on spotify api object');
-      const data = await api.topArtists();
-      setTopTracks(data);
+      const topTracksData = await api.topArtists();
+      setTopTracks(topTracksData);
     }
     fetchData();
-  }, [api])
+  }, [api, topTracks, setTopTracks])
   return topTracks;
 }
