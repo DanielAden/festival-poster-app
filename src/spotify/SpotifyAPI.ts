@@ -51,6 +51,14 @@ export interface SpotifyArtistObjectSimple {
   uri: string;
 }
 
+export interface SpotifyArtistObject {
+  name: string;
+  id: string;
+  href: string; // A link to the Web API endpoint providing full details of the artist.
+  type: 'artist';
+  uri: string;
+}
+
 export interface SpotifyTrackObject {
   album: SpotifyAlbumObjectSimple; 
   artists: SpotifyArtistObjectSimple[];
@@ -70,7 +78,7 @@ export abstract class SpotifyAPI {
   public abstract async getPlaylists(): Promise<SpotifyPlaylistObject[]>;
   public abstract async getPlaylistTracks(playlistId: string): Promise<SpotifyTrackObject[]> ;
   public abstract async me(): Promise<SpotifyUserObject>;
-  public async topTracks?(): Promise<SpotifyTrackObject[]>;
+  public async topArtists?(): Promise<SpotifyTrackObject[]>;
 
   public async getPlaylistArtists(playlistId: string): Promise<string[]> {
     const trackData = await this.getPlaylistTracks(playlistId);
@@ -97,9 +105,9 @@ export class SpotifyAuthTokenAPI extends SpotifyAPI {
     return spotifyMe(this.apiKey);
   }
 
-  public async topTracks() {
-    throw new Error('unimplemented')
-    return [];
+  public async topArtists() {
+    const data = await spotifyGETHelper<SpotifyTrackObject[]>(this.apiKey, 'me', 'top', 'artists');
+    return data;
   }
 }
 
@@ -125,14 +133,14 @@ interface SpotifyAuth {
   authToken: string,
   userId: string,
 }
-export function spotifyAPIFactory(spotifyAuthObj: Partial<SpotifyAuth>): SpotifyAPI {
+export function spotifyAPIFactory(spotifyAuthObj: Partial<SpotifyAuth>): SpotifyAPI | null {
   const { authToken, userId } = spotifyAuthObj; 
   if (authToken && authToken !== '') {
       return new SpotifyAuthTokenAPI(authToken)
   } else if (userId && userId !== '') {
       return new SpotifyUserIdAPI(userId)
   } else {
-    throw new Error('Must use provide access token or user id to access spotify')
+    return null;
   }  
 }
 
