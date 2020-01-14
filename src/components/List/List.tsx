@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import ListRow from './ListRow'
 import AppButton from '../AppButton'
 import { ButtonGroup, InputGroup, Input, ListGroup, ListGroupItem } from 'reactstrap';
@@ -25,6 +25,29 @@ export function createNewListItem(oldItem: Omit<ListItem, 'id'>, newItem?: Omit<
     ...oldItem,
     ...newItem,
   }
+}
+
+type UseList = [ListItem[], Required<ListHandlers>]
+export const useList = (baseValues: string[], isLoading: boolean,  handlerCallbacks?: ListHandlers, handlerMiddleware?: ListHandlerMiddleware): UseList => {
+  const listItemsMap = (values: string[]) => values.map(v => {
+    return createNewListItem({
+      text: v,
+      isSelected: true,
+      canEdit: false,
+      userAdded: false,
+    })
+  })
+  const [list, setList] = useState<ListItem[]>(() => isLoading ?  [] :listItemsMap(baseValues))
+  const [isSet, setIsSet] = useState(false);
+  const handlers = attachHandlers(setList, handlerCallbacks, handlerMiddleware);
+  useEffect(() => {
+    if (isLoading) return;
+    if (isSet) return;
+    setList(listItemsMap(baseValues));
+    setIsSet(true);
+  }, [isSet, isLoading, baseValues])
+
+  return [list, handlers];
 }
 
 type ListSetter = (fn: (oldList: ListItem[]) => ListItem[]) => void;
