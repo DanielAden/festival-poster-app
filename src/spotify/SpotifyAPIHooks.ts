@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
+import { spotifyAPIFactory, SpotifyAPI, SpotifyTrackObject } from "./SpotifyAPI"
 
 const accessTokenKey = '__SPOTIFY_ACCESS_TOKEN_KEY__'
 const expireTimeKey = '__SPOTIFY_ACCESS_TOKEN_EXPIRE_TIME_KEY__'
@@ -61,4 +62,31 @@ export const useLocalStorage = <T>(key: string, initialValue: T): UseLocalStorag
   };
 
   return [storedValue, setValue];
+}
+
+export const useSpotifyAPI = (): SpotifyAPI | null => {
+  const { accessToken } = useSpotifyAccessToken();
+  console.log(accessToken);
+  const memoedAPI = useMemo(
+    () => spotifyAPIFactory( { authToken: accessToken} ), 
+    [accessToken],
+  )
+  return memoedAPI;  
+}
+
+export const useTopArtists = () => {
+  const [topTracks, setTopTracks] = useState<SpotifyTrackObject[]>([]);
+  const api = useSpotifyAPI(); 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!api) return;
+      if (!api.topArtists) throw new Error('Expected topArtists method to exist on spotify api object');
+      const data = await api.topArtists();
+      console.log('recalled');
+      setTopTracks(data);
+    }
+    fetchData();
+  }, [api])
+  return topTracks;
 }
