@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import List, {ListItem,  getDefaultListHandlers as attachHandlers, ListHandler, createNewListItem, ListHandlerMiddleware} from '../List/List'
+import List, {ListItem, attachHandlers, ListHandler, createNewListItem, ListHandlerMiddleware} from '../List/List'
 import { Container, Row, Col } from 'reactstrap'
 import { useSelector } from 'react-redux'
 import { SystemState } from '../../store/system/types'

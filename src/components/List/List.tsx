@@ -28,7 +28,7 @@ export function createNewListItem(oldItem: Omit<ListItem, 'id'>, newItem?: Omit<
 }
 
 type ListSetter = (fn: (oldList: ListItem[]) => ListItem[]) => void;
-export function getDefaultListHandlers(
+export function attachHandlers(
   setter: ListSetter, 
   handlerCallbacks?: ListHandlers,
   handlerMiddleware?: ListHandlerMiddleware, 
