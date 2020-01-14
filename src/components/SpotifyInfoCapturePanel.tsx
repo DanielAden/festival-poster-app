@@ -26,11 +26,7 @@ interface Props {
 }
 const SpotifyInfoCapturePanel: React.FC<Props> = () => {
   return (
-    <Container>
-      <Row>
         <a href={constructSpotifyAuthURL()}>Authorize Spotify</a>
-      </Row>
-    </Container>
   )
 }
 
