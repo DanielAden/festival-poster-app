@@ -23,7 +23,7 @@ const posterStyle = (image: string): React.CSSProperties => {
 
 const Poster: React.FC<Props> = ({ backgoundImage = 'fireworks' }) => {
   return (
-    <div className="poster" style={posterStyle(backgoundImage)}>
+    <div id="poster" style={posterStyle(backgoundImage)}>
       Poster 
     </div>
   )
