@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { spotifyAPIFactory, SpotifyAPI, SpotifyTrackObject } from './SpotifyAPI';
+import { useGlobalErrorDispatch } from '../store/system/useGlobalError';
 
 const accessTokenKey = '__SPOTIFY_ACCESS_TOKEN_KEY__';
 const expireTimeKey = '__SPOTIFY_ACCESS_TOKEN_EXPIRE_TIME_KEY__';
@@ -83,16 +84,22 @@ export const useSpotifyAPI = (): SpotifyAPI | null => {
 export const useTopArtists = (time_range: string = 'medium_term') => {
   const [topTracks, setTopTracks] = useLocalStorage<SpotifyTrackObject[]>(topArtistsKey, []);
   const api = useSpotifyAPI(); 
+  const [errorDispatch, ] = useGlobalErrorDispatch();
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log('Using api to retreive top Artists for range ' + time_range)
       if (!api) return;
       if (!api.topArtists) throw new Error('Expected topArtists method to exist on spotify api object');
-      const topTracksData = await api.topArtists({ time_range });
-      setTopTracks(topTracksData);
+      console.log('Using api to retreive top Artists for range ' + time_range)
+      try {
+        const topTracksData = await api.topArtists({ time_range });
+        setTopTracks(topTracksData);
+      } catch(e) {
+        console.log('Caught Error ' + e.message + e.type)
+        errorDispatch(e.message, e.type);
+      }
     }
     fetchData();
-  }, [api, setTopTracks, time_range])
+  }, [api, setTopTracks, time_range, errorDispatch])
   return topTracks;
 }

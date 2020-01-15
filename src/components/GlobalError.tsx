@@ -9,7 +9,7 @@ interface Props {
 const GlobalError: React.FC<Props> = ( { children }) => {
   const { errorMsg, errorType, isError } = useGlobalError();
   const [, clearError] = useGlobalErrorDispatch();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   let errorBanner = null;
   if (!isError) {
     errorBanner = null;
@@ -33,4 +33,4 @@ const GlobalError: React.FC<Props> = ( { children }) => {
   )
 }
 
-export default GlobalError
+export default GlobalError;

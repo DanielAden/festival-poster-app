@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { SystemState } from "./types";
 import { setSystemError, setSystemErrorMsg, setSystemErrorType } from './actions'
+import { useCallback } from "react";
 
 interface RootState {
   system: SystemState,
@@ -32,9 +33,7 @@ export function useGlobalError() {
 }
 
 type ErrorDispatch = (msg: string, type?: string) => void;
-let dispatchFN: ErrorDispatch | undefined;
 type ClearDispatch = () => void;
-let clearFN: ClearDispatch;
   /**
    * Hook to access set global error fields
    *
@@ -43,20 +42,18 @@ let clearFN: ClearDispatch;
    */
 export function useGlobalErrorDispatch(): [ErrorDispatch, ClearDispatch] {
   const dispatch = useDispatch();
-  if (dispatchFN === undefined) {
-    dispatchFN = (msg: string, type?: string) => {
-      const errorType = (type !== undefined) ? type : '';
-      dispatch(setSystemError(true));
-      dispatch(setSystemErrorMsg(msg));
-      dispatch(setSystemErrorType(errorType));
-    }
-  }
-  if (clearFN === undefined) {
-    clearFN = () => {
-      dispatch(setSystemError(false));
-      dispatch(setSystemErrorMsg(''));
-      dispatch(setSystemErrorType(''));
-    }
-  }
+  const dispatchFN = useCallback((msg: string, type?: string) => {
+    const errorType = (type !== undefined) ? type : '';
+    dispatch(setSystemError(true));
+    dispatch(setSystemErrorMsg(msg));
+    dispatch(setSystemErrorType(errorType));
+  }, [dispatch])
+
+  const clearFN = useCallback(() => {
+    dispatch(setSystemError(false));
+    dispatch(setSystemErrorMsg(''));
+    dispatch(setSystemErrorType(''));
+  }, [dispatch])
+
   return [dispatchFN, clearFN];
 }
