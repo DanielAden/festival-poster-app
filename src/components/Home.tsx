@@ -5,6 +5,7 @@ import { Container, Row, Col } from 'reactstrap';
 import Poster from './Poster/Poster';
 import AppSelect, { useAppSelect } from './AppSelect/AppSelect';
 import domtoimage from 'dom-to-image';
+import { useSelector } from 'react-redux';
 
 const createImage = async () => {
   const node = document.getElementById('poster');
@@ -20,11 +21,11 @@ const createImage = async () => {
 
 const imageOptions = [
   {
-    text: 'Picture 1',
+    text: 'Theme 1',
     value: 'fireworks',
   },
   {
-    text: 'Picture 2',
+    text: 'Theme 2',
     value: 'city',
   },
 ]

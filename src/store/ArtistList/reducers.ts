@@ -12,7 +12,7 @@ const initialState: ArtistListState = {
 
 export function artistListReducer(state = initialState, action: ArtistListActionTypes): ArtistListState {
   switch (action.type) {
-        case SET_ARTISTLIST_ARTISTS:
+    case SET_ARTISTLIST_ARTISTS:
         return {...state,
                     artists: action.artists}
     case SET_ARTISTLIST_SEPERATOR:

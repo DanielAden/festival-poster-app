@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react'
 import ListRow from './ListRow'
 import AppButton from '../AppButton'
 import { ButtonGroup, InputGroup, Input, ListGroup, ListGroupItem } from 'reactstrap';
+import { useSelector, useDispatch } from 'react-redux';
 
 
 const SELECTALL = 'Select All';
@@ -47,6 +48,25 @@ export const useList = (handlerCallbacks?: ListHandlers, handlerMiddleware?: Lis
 
   const listItemHook = attachHandlers(setList, handlerCallbacks, handlerMiddleware);
   return [list, setListWrapper, listItemHook];
+}
+
+type UseReduxList = [ListItem[], (items: ListItem[]) => void, Required<ListHandlers>]
+export const useReduxList = ( 
+  selectorFN: (state: any) => ListItem[],
+  actionFN: (newList: ListItem[]) => void,
+): UseReduxList => {
+  const res = useSelector(selectorFN);
+  const dispatch = useDispatch();
+  const listFNSetter: ListSetter = (fn: (oldList: ListItem[]) => ListItem[]) => {
+    const newList =  fn(res);
+    dispatch(actionFN(newList));
+  }
+  const listSetter = useCallback((items: ListItem[]) => {
+    dispatch(actionFN(items));
+  }, [dispatch, actionFN])
+
+  const listItemHook = attachHandlers(listFNSetter);
+  return [res, listSetter, listItemHook];
 }
 
 type ListSetter = (fn: (oldList: ListItem[]) => ListItem[]) => void;

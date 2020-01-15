@@ -1,7 +1,8 @@
+import { ListItem } from "../../components/List/List";
 
 
 export interface ArtistListState {
-  artists: string[];
+  artists: ListItem[];
   seperator: ArtistListSeperator; // none dot
   gap: number;
   case: ArtistListCase; // uppercase lowercase none
@@ -13,7 +14,7 @@ export interface ArtistListState {
 export const SET_ARTISTLIST_ARTISTS = 'SET_ARTISTLIST_ARTISTS';
 export interface SetArtistlistArtistsAction {
   type: typeof SET_ARTISTLIST_ARTISTS;
-  artists: string[];
+  artists: ListItem[];
 }
 
 export type ArtistListSeperator = 'none' | 'dot';

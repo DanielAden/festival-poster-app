@@ -81,6 +81,7 @@ export const useSpotifyAPI = (): SpotifyAPI | null => {
   return memoedAPI;  
 }
 
+let count = 0;
 export const useTopArtists = (time_range: string = 'medium_term') => {
   const [topTracks, setTopTracks] = useLocalStorage<SpotifyTrackObject[]>(topArtistsKey, []);
   const api = useSpotifyAPI(); 
@@ -90,6 +91,8 @@ export const useTopArtists = (time_range: string = 'medium_term') => {
     const fetchData = async () => {
       if (!api) return;
       if (!api.topArtists) throw new Error('Expected topArtists method to exist on spotify api object');
+      count++;
+      if (count > 5) throw new Error('Max Count Reached')
       console.log('Using api to retreive top Artists for range ' + time_range)
       try {
         const topTracksData = await api.topArtists({ time_range });

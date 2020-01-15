@@ -1,6 +1,7 @@
 import {SET_ARTISTLIST_ARTISTS, SET_ARTISTLIST_SEPERATOR, SET_ARTISTLIST_GAP, SET_ARTISTLIST_CASE, SET_ARTISTLIST_COLOR1, SET_ARTISTLIST_COLOR2, SET_ARTISTLIST_COLOR3, ArtistListActionTypes, ArtistListSeperator, ArtistListCase} from './types'
+import { ListItem } from '../../components/List/List'
 
-export function setArtistListArtists(newArtists: string[]): ArtistListActionTypes {
+export function setArtistListArtists(newArtists: ListItem[]): ArtistListActionTypes {
   return {
     type: SET_ARTISTLIST_ARTISTS,
     artists: newArtists, 
