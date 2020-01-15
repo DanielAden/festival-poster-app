@@ -2,10 +2,11 @@ import React, { useState } from 'react'
 
 
 type UseAppSelect = [string, Props]
-export const useAppSelect = (options: SelectOption[], initialValue: string): UseAppSelect => {
+export const useAppSelect = (options: SelectOption[], initialValue: string, changeCB?: (value: string) => void): UseAppSelect => {
   const [selectedValue, setSelectedValue] = useState(initialValue);
   const handleChange = (value: string) => {
     setSelectedValue(value);
+    if (changeCB) changeCB(value);
   }
   
   return [selectedValue, {
@@ -26,7 +27,7 @@ interface Props {
 }
 const AppSelect: React.FC<Props> = ({ options, handleChange, selected}) => {
   const optionEls = options.map(opt => {
-    return <option value={opt.value}>{opt.text}</option>
+    return <option key={opt.value} value={opt.value}>{opt.text}</option>
   })
 
   return (

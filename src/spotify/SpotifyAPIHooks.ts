@@ -1,11 +1,9 @@
-import { useState, useEffect, useCallback, useMemo } from "react"
-import { spotifyAPIFactory, SpotifyAPI, SpotifyTrackObject } from "./SpotifyAPI"
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { spotifyAPIFactory, SpotifyAPI, SpotifyTrackObject } from './SpotifyAPI';
 
-const accessTokenKey = '__SPOTIFY_ACCESS_TOKEN_KEY__'
-const expireTimeKey = '__SPOTIFY_ACCESS_TOKEN_EXPIRE_TIME_KEY__'
-const artistsLongTermKey = '__SPOTIFY_ARTISTS_LONG_TERM_KEY__';
-const artistsShortTermKey = '__SPOTIFY_ARTISTS_SHORT_TERM_KEY__';
-const artistsMediumTermKey = '__SPOTIFY_ARTISTS_MEDIUM_TERM_KEY__';
+const accessTokenKey = '__SPOTIFY_ACCESS_TOKEN_KEY__';
+const expireTimeKey = '__SPOTIFY_ACCESS_TOKEN_EXPIRE_TIME_KEY__';
+const topArtistsKey = '__SPOTIFY_TOP_ARTISTS__';
 
 const nowSeconds = () => {
   return Math.floor(Date.now() / 1000)
@@ -41,27 +39,36 @@ export const useSpotifyAccessToken = () => {
 }
 
 // based on https://usehooks.com/useLocalStorage/
-export type UseLocalStorageType<T> = [T, (value: T) => void]
-export const useLocalStorage = <T>(key: string, initialValue: T): UseLocalStorageType<T> => {
-  const [storedValue, setStoredValue] = useState<T>(() => {
+export type UseLocalStorage<T> = [T, (value: T) => void]
+function useLocalStorage<T>(key: string, initialValue: T): UseLocalStorage<T> {
+  const [storedValue, setStoredValue] = useState(() => {
     try {
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
-    } catch(e) {
+    } catch (error) {
+      console.log(error);
       return initialValue;
     }
   });
 
-  const setValue = useCallback((value: T): void => {
+  const setValue = useCallback((value: T) => {
     try {
-      const toStore = value; // value instanceof Function ? value(storedValue) : value; //TODO implement ability to pass function to setValue
-      setStoredValue(toStore);
-      window.localStorage.setItem(key, JSON.stringify(toStore));
-    } catch (e) {
-      throw e;
+      // let valueToStore = value instanceof Function ? value(storedValue) : value;
+      if (value instanceof Function) {
+        setStoredValue((oldValue: T) => {
+          const toStore = value(oldValue);
+          window.localStorage.setItem(key, JSON.stringify(toStore));
+          return toStore;
+        })
+      } else {
+        setStoredValue(value);
+        window.localStorage.setItem(key, JSON.stringify(value));
+      }
+    } catch (error) {
+      console.log(error);
     }
   }, [key]);
-  
+
   return [storedValue, setValue];
 }
 
@@ -74,20 +81,19 @@ export const useSpotifyAPI = (): SpotifyAPI | null => {
   return memoedAPI;  
 }
 
-export const useTopArtists = () => {
-  const [topTracks, setTopTracks] = useLocalStorage<SpotifyTrackObject[]>(artistsLongTermKey, []);
+export const useTopArtists = (time_range: string = 'medium_term') => {
+  const [topTracks, setTopTracks] = useLocalStorage<SpotifyTrackObject[]>(topArtistsKey, []);
   const api = useSpotifyAPI(); 
 
   useEffect(() => {
     const fetchData = async () => {
-      if (topTracks.length > 0) return; // TODO 
-      console.log('Using api to retreive top Artists')
+      console.log('Using api to retreive top Artists for range ' + time_range)
       if (!api) return;
       if (!api.topArtists) throw new Error('Expected topArtists method to exist on spotify api object');
-      const topTracksData = await api.topArtists();
+      const topTracksData = await api.topArtists({ time_range });
       setTopTracks(topTracksData);
     }
     fetchData();
-  }, [api, topTracks, setTopTracks])
+  }, [api, setTopTracks, time_range])
   return topTracks;
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import ListRow from './ListRow'
 import AppButton from '../AppButton'
 import { ButtonGroup, InputGroup, Input, ListGroup, ListGroupItem } from 'reactstrap';
@@ -27,32 +27,36 @@ export function createNewListItem(oldItem: Omit<ListItem, 'id'>, newItem?: Omit<
   }
 }
 
-type UseList = [ListItem[], Required<ListHandlers>, () => void]
-export const useList = (baseValues: string[], isLoading: boolean,  handlerCallbacks?: ListHandlers, handlerMiddleware?: ListHandlerMiddleware): UseList => {
-  console.log('In useList')
-  const listItemsMap = (values: string[]) => values.map(v => {
-    return createNewListItem({
-      text: v,
-      isSelected: true,
-      canEdit: false,
-      userAdded: false,
+type UseList = [ListItem[], (items: string[]) => void, Required<ListHandlers>]
+export const useList = (handlerCallbacks?: ListHandlers, handlerMiddleware?: ListHandlerMiddleware): UseList => {
+  const [list, setList] = useState<ListItem[]>([])
+
+  // useEffect(() => {
+  //   const listItemsMap = (values: string[]) => values.map(v => {
+  //     return createNewListItem({
+  //       text: v,
+  //       isSelected: true,
+  //       canEdit: false,
+  //       userAdded: false,
+  //     })
+  //   })
+  //   setList(listItemsMap(baseValues));
+  // }, [setList, baseValues])
+
+  const setListWrapper = useCallback((items: string[]) => {
+    const listItemsMap = (values: string[]) => values.map(v => {
+      return createNewListItem({
+        text: v,
+        isSelected: true,
+        canEdit: false,
+        userAdded: false,
+      })
     })
-  })
-  const [list, setList] = useState<ListItem[]>(() => isLoading ?  [] :listItemsMap(baseValues))
-  const [isSet, setIsSet] = useState(false);
-  const handlers = attachHandlers(setList, handlerCallbacks, handlerMiddleware);
-  useEffect(() => {
-    if (isLoading) return;
-    if (isSet) return;
-    setList(listItemsMap(baseValues));
-    setIsSet(true);
-  }, [isSet, isLoading, baseValues])
+    setList(listItemsMap(items));
+  }, [])
 
-  const forceReset = () => {
-    setIsSet(false);
-  }
-
-  return [list, handlers, forceReset];
+  const listItemHook = attachHandlers(setList, handlerCallbacks, handlerMiddleware);
+  return [list, setListWrapper, listItemHook];
 }
 
 type ListSetter = (fn: (oldList: ListItem[]) => ListItem[]) => void;

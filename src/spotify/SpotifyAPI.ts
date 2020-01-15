@@ -80,7 +80,7 @@ export abstract class SpotifyAPI {
   public abstract async getPlaylists(): Promise<SpotifyPlaylistObject[]>;
   public abstract async getPlaylistTracks(playlistId: string): Promise<SpotifyTrackObject[]> ;
   public abstract async me(): Promise<SpotifyUserObject>;
-  public async topArtists?(): Promise<SpotifyTrackObject[]>;
+  public async topArtists?(query?: any): Promise<SpotifyTrackObject[]>;
 
   public async getPlaylistArtists(playlistId: string): Promise<string[]> {
     const trackData = await this.getPlaylistTracks(playlistId);
@@ -108,7 +108,7 @@ export class SpotifyAuthTokenAPI extends SpotifyAPI {
   }
 
   // public async topArtists(limit: string = '30', offset: string = '0', time_range: TimeRange = 'long_term') {
-  public async topArtists({ limit = '30', offset = '0', time_range = 'long_term' } = {}) {
+  public async topArtists({ limit = '30', offset = '0', time_range = 'medium_term' } = {}) {
     const data = await spotifyGETHelper<SpotifyTrackObject[]>(this.apiKey, ['me', 'top', 'artists'], {limit, offset, time_range});
     return data;
   }

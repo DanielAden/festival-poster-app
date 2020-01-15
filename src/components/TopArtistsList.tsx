@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useTopArtists } from '../spotify/SpotifyAPIHooks'
 import List, { useList } from './List/List'
 import AppSelect, { useAppSelect } from './AppSelect/AppSelect'
@@ -20,19 +20,24 @@ const topArtistOptions = [
   },
 ]
 
+
 interface Props {
   
 }
 const TopArtistsList: React.FC<Props> = () => {
-  const [topArtistsOption, artistSelectProps] = useAppSelect(topArtistOptions, topArtistOptions[0].value)
-  const artists = useTopArtists();
-  const artistNames = artists.map(a => a.name)
-  const [artistsList, artistHandlers] = useList(artistNames, artists.length === 0);
+  const [selected, artistSelectProps] = useAppSelect(topArtistOptions, topArtistOptions[0].value)
+  const artists = useTopArtists(selected);
+  const [artistsList, setArtistsList, artistListHook] = useList();
+
+  useEffect(() => {
+    const artistNames = artists.map(a => a.name)
+    setArtistsList(artistNames);
+  }, [selected, artists, setArtistsList])
+  console.log(`selected: ${selected}, Artists: ${artists.slice(0, 5)}`)
   return (
     <div>
-      <h3>{topArtistsOption}</h3>
       <AppSelect {...artistSelectProps} />
-      <List name={listName} items={artistsList} {...artistHandlers} canSelect />
+      <List name={listName} items={artistsList} {...artistListHook} canSelect />
     </div>
   )
 }
