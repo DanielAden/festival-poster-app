@@ -27,8 +27,9 @@ export function createNewListItem(oldItem: Omit<ListItem, 'id'>, newItem?: Omit<
   }
 }
 
-type UseList = [ListItem[], Required<ListHandlers>]
+type UseList = [ListItem[], Required<ListHandlers>, () => void]
 export const useList = (baseValues: string[], isLoading: boolean,  handlerCallbacks?: ListHandlers, handlerMiddleware?: ListHandlerMiddleware): UseList => {
+  console.log('In useList')
   const listItemsMap = (values: string[]) => values.map(v => {
     return createNewListItem({
       text: v,
@@ -47,7 +48,11 @@ export const useList = (baseValues: string[], isLoading: boolean,  handlerCallba
     setIsSet(true);
   }, [isSet, isLoading, baseValues])
 
-  return [list, handlers];
+  const forceReset = () => {
+    setIsSet(false);
+  }
+
+  return [list, handlers, forceReset];
 }
 
 type ListSetter = (fn: (oldList: ListItem[]) => ListItem[]) => void;
