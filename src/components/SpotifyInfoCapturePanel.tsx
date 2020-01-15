@@ -1,10 +1,5 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { constructSpotifyAuthURL } from '../spotify/SpotifyAuth';
-import { useDispatch } from 'react-redux';
-import { setSystemSpotifyUserId } from '../store/system/actions';
-import { Container, Row, } from 'reactstrap'
-import AppInput, { InputValidator } from './AppInput/AppInput';
-import AppButton from './AppButton'
 
 // const centerContent = 'justify-content-md-center';
 // const uriFormText = `Enter a Spotify User URI`;

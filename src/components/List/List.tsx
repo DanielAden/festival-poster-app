@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import ListRow from './ListRow'
 import AppButton from '../AppButton'
 import { ButtonGroup, InputGroup, Input, ListGroup, ListGroupItem } from 'reactstrap';
@@ -16,6 +16,7 @@ export interface ListItem {
 }
 // Quick and dirty way to generate probably unique ids, 
 // Should serve the purpose for this list implementation
+// TODO: Running into key errors with react so this needs to be updated
 const generateId = () => {
   return Date.now() + Math.random()
 } 
@@ -30,18 +31,6 @@ export function createNewListItem(oldItem: Omit<ListItem, 'id'>, newItem?: Omit<
 type UseList = [ListItem[], (items: string[]) => void, Required<ListHandlers>]
 export const useList = (handlerCallbacks?: ListHandlers, handlerMiddleware?: ListHandlerMiddleware): UseList => {
   const [list, setList] = useState<ListItem[]>([])
-
-  // useEffect(() => {
-  //   const listItemsMap = (values: string[]) => values.map(v => {
-  //     return createNewListItem({
-  //       text: v,
-  //       isSelected: true,
-  //       canEdit: false,
-  //       userAdded: false,
-  //     })
-  //   })
-  //   setList(listItemsMap(baseValues));
-  // }, [setList, baseValues])
 
   const setListWrapper = useCallback((items: string[]) => {
     const listItemsMap = (values: string[]) => values.map(v => {

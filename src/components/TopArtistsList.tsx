@@ -33,7 +33,6 @@ const TopArtistsList: React.FC<Props> = () => {
     const artistNames = artists.map(a => a.name)
     setArtistsList(artistNames);
   }, [selected, artists, setArtistsList])
-  console.log(`selected: ${selected}, Artists: ${artists.slice(0, 5)}`)
   return (
     <div>
       <AppSelect {...artistSelectProps} />

@@ -53,7 +53,6 @@ function useLocalStorage<T>(key: string, initialValue: T): UseLocalStorage<T> {
 
   const setValue = useCallback((value: T) => {
     try {
-      // let valueToStore = value instanceof Function ? value(storedValue) : value;
       if (value instanceof Function) {
         setStoredValue((oldValue: T) => {
           const toStore = value(oldValue);

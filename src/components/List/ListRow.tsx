@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { ListItem, createNewListItem, ListHandler, ListProps } from './List'
-import { InputGroupAddon, Input, InputGroup, ListGroupItem, ButtonGroup, Container, Row, Col } from 'reactstrap';
+import { InputGroupAddon, Input, InputGroup, ListGroupItem, ButtonGroup, } from 'reactstrap';
 import AppButton from '../AppButton'
 
 
