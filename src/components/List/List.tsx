@@ -16,9 +16,10 @@ export interface ListItem {
 }
 // Quick and dirty way to generate probably unique ids, 
 // Should serve the purpose for this list implementation
-// TODO: Running into key errors with react so this needs to be updated
+let _ID = -1;
 const generateId = () => {
-  return Date.now() + Math.random()
+  _ID++;
+  return _ID;
 } 
 export function createNewListItem(oldItem: Omit<ListItem, 'id'>, newItem?: Omit<Partial<ListItem>, 'id'>): ListItem {
   return {
