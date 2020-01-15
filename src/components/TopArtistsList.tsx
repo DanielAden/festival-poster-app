@@ -22,7 +22,7 @@ const topArtistOptions = [
 
 
 interface Props {
-  
+
 }
 const TopArtistsList: React.FC<Props> = () => {
   const [selected, artistSelectProps] = useAppSelect(topArtistOptions, topArtistOptions[0].value)
@@ -33,6 +33,7 @@ const TopArtistsList: React.FC<Props> = () => {
     const artistNames = artists.map(a => a.name)
     setArtistsList(artistNames);
   }, [selected, artists, setArtistsList])
+
   return (
     <div>
       <AppSelect {...artistSelectProps} />
