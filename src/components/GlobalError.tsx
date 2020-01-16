@@ -33,6 +33,7 @@ const GlobalError: React.FC<Props> = ( { children }) => {
   let errorBanner;
   if (!isError) {
     errorBanner = null;
+    if (sarModal) setSarModal(false);
   } else if (errorType === 'AuthExpiredError') {
     dispatch(setSystemSpotifyAccessToken(''));
     dispatch(setSystemSpotifyAccessTokenExpiresAt(''));
