@@ -10,6 +10,7 @@ const initialState: SystemState = {
 }
 
 export function systemReducer(state = initialState, action: SystemActionTypes): SystemState {
+  console.log('Dispatched: ' + JSON.stringify(action))
   switch (action.type) {
     case SET_SYSTEM_SPOTIFYACCESSTOKEN:
       return {...state,

@@ -44,9 +44,11 @@ export function useGlobalErrorDispatch(): [ErrorDispatch, ClearDispatch] {
   const dispatch = useDispatch();
   const dispatchFN = useCallback((msg: string, type?: string) => {
     const errorType = (type !== undefined) ? type : '';
+    console.log('Dispatching Error Type: ' + type)
     dispatch(setSystemError(true));
     dispatch(setSystemErrorMsg(msg));
     dispatch(setSystemErrorType(errorType));
+    console.log('Dispatched Error Type: ' + type)
   }, [dispatch])
 
   const clearFN = useCallback(() => {

@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { spotifyAPIFactory, SpotifyAPI, SpotifyTrackObject } from './SpotifyAPI';
 import { useGlobalErrorDispatch } from '../store/system/useGlobalError';
+import GlobalError from '../components/GlobalError';
+import { createAuthExpiredError } from '../errors';
 
 const accessTokenKey = '__SPOTIFY_ACCESS_TOKEN_KEY__';
 const expireTimeKey = '__SPOTIFY_ACCESS_TOKEN_EXPIRE_TIME_KEY__';
@@ -89,7 +91,11 @@ export const useTopArtists = (time_range: string = 'medium_term') => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!api) return;
+      if (!api) {
+        const e = createAuthExpiredError('Unable to access Spotify API');
+        errorDispatch(e.message, e.type);
+        return;
+      }
       if (!api.topArtists) throw new Error('Expected topArtists method to exist on spotify api object');
       count++;
       if (count > 5) throw new Error('Max Count Reached')

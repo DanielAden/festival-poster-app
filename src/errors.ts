@@ -11,6 +11,10 @@ export class AuthExpiredError extends GlobalError {
   }
 }
 
+export const createAuthExpiredError = (msg: string) => {
+  return new AuthExpiredError(msg)
+}
+
 export class ResourceNotFound extends GlobalError {
   get type() {
     return 'ResourceNotFound' as 'ResourceNotFound';
