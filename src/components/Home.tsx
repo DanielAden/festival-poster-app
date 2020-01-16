@@ -5,12 +5,11 @@ import { Container, Row, Col } from 'reactstrap';
 import Poster from './Poster/Poster';
 import AppSelect, { useAppSelect } from './AppSelect/AppSelect';
 import domtoimage from 'dom-to-image';
-import { useSelector } from 'react-redux';
 
 const createImage = async () => {
   const node = document.getElementById('poster');
   if (!node) throw Error('could not find poster element')
-  const dataURL = await domtoimage.toPng(node);
+  const dataURL = await domtoimage.toJpeg(node);
   let img = new Image();
   img.src = dataURL;
   var w = window.open("",'_blank');

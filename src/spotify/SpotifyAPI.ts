@@ -108,7 +108,7 @@ export class SpotifyAuthTokenAPI extends SpotifyAPI {
   }
 
   // public async topArtists(limit: string = '30', offset: string = '0', time_range: TimeRange = 'long_term') {
-  public async topArtists({ limit = '30', offset = '0', time_range = 'medium_term' } = {}) {
+  public async topArtists({ limit = '50', offset = '0', time_range = 'medium_term' } = {}) {
     const data = await spotifyGETHelper<SpotifyTrackObject[]>(this.apiKey, ['me', 'top', 'artists'], {limit, offset, time_range});
     return data;
   }

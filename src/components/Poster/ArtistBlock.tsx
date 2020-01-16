@@ -1,29 +1,60 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ListItem } from '../List/List';
-import './ArtistBlock.css';
 
 const dot = 9679;
 const artistBlockNameClass = 'artist-block-artist';
 const artistBlockClass = 'artist-block';
 
-interface Props {
-}
-const ArtistBlock: React.FC<Props> = () => {
-  const artists = useSelector((s: any) => s.artistList.artists as ListItem[])
+const FONT_SIZE = '16px';
 
-  const itemsToBlock = () => {
+interface Props {
+  posterRect?: DOMRect | null;
+}
+const ArtistBlock: React.FC<Props> = ({ posterRect }) => {
+  const artists = useSelector((s: any) => s.artistList.artists as ListItem[])
+  const ref = useRef<HTMLDivElement>(null);
+  const [top, setTop] = useState(0);
+
+  const renderArtist = (a: string, lastArtist: boolean) => {
+    return (
+      <span key={a} className={artistBlockNameClass}>
+        {a}
+        {(!lastArtist) ? String.fromCharCode(dot) : ''}
+      </span>
+    )
+  }
+
+  const style = (): React.CSSProperties => {
+    return {
+      color: 'rgb(250, 255, 152)',
+      position: 'absolute',
+      textAlign: 'center',
+      fontSize: FONT_SIZE,
+      fontWeight: 900,
+      top,
+    }
+  }
+
+  useEffect(() => {
+    const artistBlockRect = ref.current?.getBoundingClientRect();
+    if (!posterRect) return;
+    if (!artistBlockRect) return;
+    const top = posterRect.height - artistBlockRect.height;
+    setTop(top);
+  }, [posterRect,])
+
+  const renderArtists = () => {
     const artistNames = artists.filter(a => a.isSelected).map(a => a.text);
-    const els = artistNames.map((a, i) => {
-      return <span className={artistBlockNameClass}>
-        {a}{(i!==artistNames.length - 1) ? String.fromCharCode(dot) : ''}
-      </span>;
+     const artistELs = artistNames.map((a, i, arr) => {
+      return renderArtist(a, i === arr.length - 1);
     })
-    return els;
-  } 
+    return artistELs;
+  }
+
   return (
-    <div className={artistBlockClass}>
-      {itemsToBlock()}
+    <div ref={ref} className={artistBlockClass} style={style()}>
+      {renderArtists()}
     </div>
   )
 }

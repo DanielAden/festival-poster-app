@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useGlobalError, useGlobalErrorDispatch } from '../store/system/useGlobalError'
+import { useGlobalError } from '../store/system/useGlobalError'
 import { useDispatch } from 'react-redux';
 import { setSystemSpotifyAccessToken, setSystemSpotifyAccessTokenExpiresAt } from '../store/system/actions';
 import { Modal, ModalProps, ModalHeader, ModalBody } from 'reactstrap';
