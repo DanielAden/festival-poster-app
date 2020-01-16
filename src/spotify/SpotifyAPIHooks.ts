@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { spotifyAPIFactory, SpotifyAPI, SpotifyTrackObject } from './SpotifyAPI';
 import { useGlobalErrorDispatch } from '../store/system/useGlobalError';
-import GlobalError from '../components/GlobalError';
 import { createAuthExpiredError } from '../errors';
 
 const accessTokenKey = '__SPOTIFY_ACCESS_TOKEN_KEY__';

@@ -2,6 +2,7 @@ import React from 'react'
 import '../../style/Poster.css'
 import city from '../../images/city.jpg' 
 import fireworks from '../../images/fireworks.jpg' 
+import ArtistBlock from './ArtistBlock'
 
 
 const IMAGES: { [key: string]: string} = {
@@ -18,13 +19,14 @@ const posterStyle = (image: string): React.CSSProperties => {
   return {
     backgroundImage: `url(${i})`,
     backgroundSize: 'cover',
+    position: 'relative',
   }
 }
 
 const Poster: React.FC<Props> = ({ backgoundImage = 'fireworks' }) => {
   return (
     <div id="poster" style={posterStyle(backgoundImage)}>
-      Poster 
+      <ArtistBlock />
     </div>
   )
 }
