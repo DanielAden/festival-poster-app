@@ -38,6 +38,7 @@ const Home: React.FC<Props> = () => {
 
   return (
     <div className="home">
+      <h1>{'CANVAS'}</h1>
       <SpotifyInfoCapturePanel />
       <Container>
         <Row>
