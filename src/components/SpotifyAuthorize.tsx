@@ -26,7 +26,6 @@ const SpotifyAuthorize: React.FC<Props> = () => {
     return redirectHome(); 
   }
   const data = spotifyAuthFromWindow();
-  console.log('from window: ' + JSON.stringify(data))
   if (data.status !== 'AUTHORIZED') {
     console.log(`Non Authorized status: ${data.status}`)
     console.log(data.error)

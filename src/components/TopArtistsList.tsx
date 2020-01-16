@@ -31,7 +31,6 @@ const TopArtistsList: React.FC<Props> = () => {
   const artists = useTopArtists(selected);
   const artistsSelectorFN = (state: any) => state.artistList.artists as ListItem[];
   const [artistsList, setArtistsList, artistListHook] = useReduxList(artistsSelectorFN, setArtistListArtists);
-  console.log('changed');
 
   useEffect(() => {
     const artistNames = artists.map(a => a.name)
