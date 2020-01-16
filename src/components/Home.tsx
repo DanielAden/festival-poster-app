@@ -18,34 +18,32 @@ const createImage = async () => {
   w.document.close(); 
 }
 
-const imageOptions = [
+const themeOptions = [
   {
     text: 'Theme 1',
-    value: 'fireworks',
+    value: 'theme1',
   },
   {
     text: 'Theme 2',
-    value: 'city',
+    value: 'theme2',
   },
 ]
 
 interface Props {
-  
-}
+  }
 
 const Home: React.FC<Props> = () => {
-  const [selectedImage, imageSelectHook] = useAppSelect(imageOptions, imageOptions[0].value);
+  const [theme, themeSelectHook] = useAppSelect(themeOptions, themeOptions[0].value);
 
   return (
     <div className="home">
-      <h1>{'CANVAS'}</h1>
       <SpotifyInfoCapturePanel />
       <Container>
         <Row>
           <Col>
-            <AppSelect {...imageSelectHook} />
+            <AppSelect {...themeSelectHook} />
             <button onClick={() => createImage()}>Create Image</button>
-            <Poster backgoundImage={selectedImage}/>
+            <Poster themeType={theme}/>
           </Col>
           <Col>
             <TopArtistsList />

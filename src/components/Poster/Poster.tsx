@@ -1,50 +1,117 @@
 import React, { useRef, useState, useEffect } from 'react'
 import '../../style/Poster.css'
-import city from '../../images/city.jpg' 
-import fireworks from '../../images/fireworks.jpg' 
-import ArtistBlock from './ArtistBlock'
-import FestivalName from './FestivalName';
+import { useSelector } from 'react-redux'
+import { ListItem } from '../List/List'
+import { getPosterTheme } from './PosterThemes'
 
-
-const IMAGES: { [key: string]: string} = {
-  fireworks,
-  city
-}
 
 
 interface Props {
-  backgoundImage?: string; 
+  themeType?: string; 
 }
 
-const Poster: React.FC<Props> = ({ backgoundImage = 'fireworks' }) => {
-  const [storedRect, setStoredRect] = useState<DOMRect | null>(null)
-  const ref = useRef<HTMLDivElement>(null);
+
+const breakLines = (ctx: CanvasRenderingContext2D, artists: string[], width: number, seperator: string): string[] => {
+  const lines: string[] = [];
+  let currentLine = '';
+  for (let artist of artists) {
+    const lineWidth = Math.ceil(ctx.measureText(currentLine + artist).width);
+    if (lineWidth > width) {
+      lines.push(currentLine.slice(0, currentLine.length - 1))
+      currentLine = artist + seperator;
+      continue;
+    }
+    currentLine = currentLine + artist + seperator;
+  }
+  return lines;
+} 
+
+const Poster: React.FC<Props> = ({ themeType = 'theme1' }) => {
+  let artists = useSelector((s: any) => s.artistList.artists as ListItem[])
+  artists = artists.filter(a => a.isSelected)
+
+  const [width,] = useState(600);
+  const [height,] = useState(900);
+  const ref = useRef<HTMLCanvasElement>(null);
+  const festivalName = 'My Festial';
 
   useEffect(() => {
-    const rect = ref.current?.getBoundingClientRect();
-    if (rect) setStoredRect(rect);
-  }, [ref])
+    const ctx = ref.current?.getContext('2d');
+    if (!ctx) throw new Error('Expected context interface')
+    const theme = getPosterTheme(themeType);
+
+    const draw = (ctx: CanvasRenderingContext2D) => {
+      const img = new Image(width, height);
+      img.onload = () => {
+        // ctx.drawImage(img, 0, 0);
+        // drawImageProp(ctx, img, 0, 0, width, height);
+        scaleToFill(img);
+        drawFestivalName(ctx);
+        drawArtistBlock(ctx);
+      }
+      img.src = theme.image; 
+    }
+
+    const drawFestivalName = (ctx: CanvasRenderingContext2D) => {
+      const midX = width / 2;
+      ctx.font = theme.festivalNameFont;
+      ctx.textBaseline = 'top';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = theme.fontColor;
+      ctx.fillText(festivalName, midX, 0);
+    }
+
+    const drawArtistBlock = (ctx: CanvasRenderingContext2D) => {
+      const baseTop = 300;
+      const names = artists.map(a => a.text);
+
+      ctx.font = theme.artistFont;
+      const lines = breakLines(ctx, names, width, theme.seperator);
+
+      ctx.textBaseline = 'top';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = theme.fontColor;
+      ctx.shadowColor = 'black';
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      ctx.shadowBlur = 2;
+
+      lines.forEach((line, i) => {
+        const top = baseTop + ((i + 1) * theme.artistTextHeight);
+        ctx.fillText(line, width / 2, top, width);
+      })
+    }
+
+    // From this tutorial: https://riptutorial.com/html5-canvas/example/19169/scaling-image-to-fit-or-fill-
+    const scaleToFill = (img: HTMLImageElement) => {
+      // get the scale
+      var scale = Math.max(width / img.width, height / img.height);
+      var x = (width / 2) - (img.width / 2) * scale;
+      var y = (height / 2) - (img.height / 2) * scale;
+      ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+    }
+
+    draw(ctx);
+  }, [artists, height, ref, themeType, width])
 
   const style = (): React.CSSProperties => {
-    const i = IMAGES[backgoundImage]
     return {
-      backgroundImage: `url(${i})`,
-      backgroundSize: 'cover',
-      position: 'relative',
-      width: '600px',
-      height: '800px',
-      boxSizing: 'border-box',
+      border: '3px solid',
     }
   }
 
-  console.log('parent: ' + storedRect)
   return (
-    <div ref={ref} id="poster" style={style()}>
-      <FestivalName posterRect={storedRect}/>
-      <ArtistBlock posterRect={storedRect}/>
-    </div>
+    <canvas ref={ref} width={width} height={height} id="poster" style={style()}>
+      Festival Poster Viewer
+      {/* <FestivalName posterRect={storedRect}/>
+      <ArtistBlock posterRect={storedRect}/> */}
+    </canvas>
   )
 }
 
-export default Poster
+
+
+
+
+export default Poster;
   
