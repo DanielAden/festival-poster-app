@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux';
-import { systemReducer } from './system/reducers'
+import systemSliceReducer from './system/systemSlice';
 import posterSliceReducer from './Poster/posterSlice'; 
 import { useSelector } from 'react-redux';
 
 export const rootReducer = combineReducers({
   poster: posterSliceReducer,
-  system: systemReducer,
+  system: systemSliceReducer,
 })
 
 export type RootState = ReturnType<typeof rootReducer>;
