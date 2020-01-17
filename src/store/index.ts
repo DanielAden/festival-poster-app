@@ -1,8 +1,9 @@
-import { createStore, applyMiddleware, compose } from 'redux';
 import { configureStore } from '@reduxjs/toolkit'
 import { rootReducer } from './rootReducer'
 
 
+// TODO look into other options to replicate this functionality.
+// works for now but obviously not very efficient
 export const REDUX_LOCAL_STORAGE_KEY = '__REDUX_LOCAL_STORAGE_KEY'  
 const localStorageMiddleware = (store: any) => (next: any) => (action: any) => {
   let res = next(action);
@@ -12,20 +13,17 @@ const localStorageMiddleware = (store: any) => (next: any) => (action: any) => {
   return res;
 }
 
-// const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const initialJSON = window.localStorage.getItem(REDUX_LOCAL_STORAGE_KEY);
-const initialState = (initialJSON) ? JSON.parse(initialJSON) : undefined;
+const preloadedState = (initialJSON) ? JSON.parse(initialJSON) : undefined;
 
-// const store = createStore(
-//   rootReducer, 
-//   initialState,
-//   composeEnhancers(
-//     applyMiddleware(localStorageMiddleware),
-//   )
-// )
+const middleware = [
+  localStorageMiddleware
+]
 
 const store = configureStore({
   reducer: rootReducer,
+  preloadedState,
+  middleware,
 })
 
 export default store;
