@@ -3,14 +3,12 @@ import '../../style/Poster.css'
 import { useSelector } from 'react-redux'
 import { ListItem } from '../List/List'
 import { getPosterTheme } from './PosterThemes'
-
+import {createHiDPICanvas} from './CanvasUtils'
 
 
 interface Props {
   themeType?: string; 
 }
-
-
 const breakLines = (ctx: CanvasRenderingContext2D, artists: string[], width: number, seperator: string): string[] => {
   const lines: string[] = [];
   let currentLine = '';
@@ -33,11 +31,15 @@ const Poster: React.FC<Props> = ({ themeType = 'theme1' }) => {
   const [width,] = useState(600);
   const [height,] = useState(900);
   const ref = useRef<HTMLCanvasElement>(null);
-  const festivalName = 'My Festial';
+  const festivalName = 'My Festival';
 
   useEffect(() => {
+    const can = ref.current;
+    if (!can) throw new Error('Unable to retreive poster canvas element')
     const ctx = ref.current?.getContext('2d');
     if (!ctx) throw new Error('Expected context interface')
+    createHiDPICanvas(can, width, height);
+
     const theme = getPosterTheme(themeType);
 
     const draw = (ctx: CanvasRenderingContext2D) => {
@@ -58,7 +60,13 @@ const Poster: React.FC<Props> = ({ themeType = 'theme1' }) => {
       ctx.textBaseline = 'top';
       ctx.textAlign = 'center';
       ctx.fillStyle = theme.fontColor;
-      ctx.fillText(festivalName, midX, 0);
+
+      ctx.shadowColor = 'black';
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      ctx.shadowBlur = 2;
+
+      ctx.fillText(festivalName, midX, 30);
     }
 
     const drawArtistBlock = (ctx: CanvasRenderingContext2D) => {
@@ -71,10 +79,6 @@ const Poster: React.FC<Props> = ({ themeType = 'theme1' }) => {
       ctx.textBaseline = 'top';
       ctx.textAlign = 'center';
       ctx.fillStyle = theme.fontColor;
-      ctx.shadowColor = 'black';
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
-      ctx.shadowBlur = 2;
 
       lines.forEach((line, i) => {
         const top = baseTop + ((i + 1) * theme.artistTextHeight);
@@ -101,10 +105,8 @@ const Poster: React.FC<Props> = ({ themeType = 'theme1' }) => {
   }
 
   return (
-    <canvas ref={ref} width={width} height={height} id="poster" style={style()}>
+    <canvas ref={ref} id="poster" style={style()}>
       Festival Poster Viewer
-      {/* <FestivalName posterRect={storedRect}/>
-      <ArtistBlock posterRect={storedRect}/> */}
     </canvas>
   )
 }

@@ -68,7 +68,7 @@ const ListRow: React.FC<Props> = ({ disableActions, item, isEditing, setIsEditin
   const renderRow = () => {
     return (
       <ListGroupItem key={item.text} action={canSelect} active={canSelect && isSelected} 
-                     className="d-flex justify-content-between align-items-center"
+                     className="d-flex justify-content-between align-items-center py-1"
                      onClick={ (e) => listProps.handleSelectionChange?.(item) } >
               {item.text}
               {renderActionButtons()}
