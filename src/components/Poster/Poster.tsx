@@ -1,31 +1,16 @@
 import React, { useRef, useState, useEffect } from 'react'
 import '../../style/Poster.css'
-import { useSelector } from 'react-redux'
-import { ListItem } from '../List/List'
 import { getPosterTheme } from './PosterThemes'
 import {createHiDPICanvas} from './CanvasUtils'
+import useTypedSelector from '../../store/rootReducer'
+
 
 
 interface Props {
   themeType?: string; 
 }
-const breakLines = (ctx: CanvasRenderingContext2D, artists: string[], width: number, seperator: string): string[] => {
-  const lines: string[] = [];
-  let currentLine = '';
-  for (let artist of artists) {
-    const lineWidth = Math.ceil(ctx.measureText(currentLine + artist).width);
-    if (lineWidth > width) {
-      lines.push(currentLine.slice(0, currentLine.length - 1))
-      currentLine = artist + seperator;
-      continue;
-    }
-    currentLine = currentLine + artist + seperator;
-  }
-  return lines;
-} 
-
 const Poster: React.FC<Props> = ({ themeType = 'theme1' }) => {
-  let artists = useSelector((s: any) => s.artistList.artists as ListItem[])
+  let artists = useTypedSelector((s) => s.poster.artists)
   artists = artists.filter(a => a.isSelected)
 
   const [width,] = useState(600);
@@ -111,8 +96,20 @@ const Poster: React.FC<Props> = ({ themeType = 'theme1' }) => {
   )
 }
 
-
-
+const breakLines = (ctx: CanvasRenderingContext2D, artists: string[], width: number, seperator: string): string[] => {
+  const lines: string[] = [];
+  let currentLine = '';
+  for (let artist of artists) {
+    const lineWidth = Math.ceil(ctx.measureText(currentLine + artist).width);
+    if (lineWidth > width) {
+      lines.push(currentLine.slice(0, currentLine.length - 1))
+      currentLine = artist + seperator;
+      continue;
+    }
+    currentLine = currentLine + artist + seperator;
+  }
+  return lines;
+} 
 
 
 export default Poster;

@@ -5,6 +5,9 @@ import { Container, Row, Col } from 'reactstrap';
 import Poster from './Poster/Poster';
 import AppSelect, { useAppSelect } from './AppSelect/AppSelect';
 import domtoimage from 'dom-to-image';
+import { useDispatch } from 'react-redux';
+import { changeThemeType } from '../store/Poster/posterSlice';
+import useAppSelector from '../store/rootReducer';
 
 const createImage = async () => {
   const node = document.getElementById('poster');
@@ -33,7 +36,12 @@ interface Props {
   }
 
 const Home: React.FC<Props> = () => {
-  const [theme, themeSelectHook] = useAppSelect(themeOptions, themeOptions[0].value);
+  const dispatch = useDispatch();
+  const theme = useAppSelector((s) => s.poster.themeType)
+  const [, themeSelectHook] = useAppSelect(themeOptions, theme, (value) => {
+    dispatch(changeThemeType(value))
+  });
+  console.log(theme)
 
   return (
     <div className="home">

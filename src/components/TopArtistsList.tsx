@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react'
-import { useTopArtists } from '../spotify/SpotifyAPIHooks'
-import List, { ListItem, useReduxList, createNewListItem } from './List/List'
+import { useSpotifyTopArtists } from '../spotify/SpotifyAPIHooks'
+import List, { useReduxList, createNewListItem } from './List/List'
 import AppSelect, { useAppSelect } from './AppSelect/AppSelect'
-import { setArtistListArtists } from '../store/ArtistBlock/actions'
+import { RootState } from '../store/rootReducer'
+import { updateArtistList } from '../store/Poster/posterSlice'
 
 
 const listName = 'My Top Artists'
@@ -28,9 +29,10 @@ interface Props {
 }
 const TopArtistsList: React.FC<Props> = () => {
   const [selected, artistSelectProps] = useAppSelect(topArtistOptions, topArtistOptions[0].value)
-  const artists = useTopArtists(selected);
-  const artistsSelectorFN = (state: any) => state.artistList.artists as ListItem[];
-  const [artistsList, setArtistsList, artistListHook] = useReduxList(artistsSelectorFN, setArtistListArtists);
+  const artists = useSpotifyTopArtists(selected);
+
+  const artistsSelectorFN = (state: RootState) => state.poster.artists;
+  const [artistsList, setArtistsList, artistListHook] = useReduxList(artistsSelectorFN, updateArtistList);
 
   useEffect(() => {
     const artistNames = artists.map(a => a.name)

@@ -83,7 +83,7 @@ export const useSpotifyAPI = (): SpotifyAPI | null => {
 }
 
 let count = 0;
-export const useTopArtists = (time_range: string = 'medium_term') => {
+export const useSpotifyTopArtists = (time_range: string = 'medium_term') => {
   const [topTracks, setTopTracks] = useLocalStorage<SpotifyTrackObject[]>(topArtistsKey, []);
   const api = useSpotifyAPI(); 
   const [errorDispatch, ] = useGlobalErrorDispatch();

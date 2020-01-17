@@ -29,6 +29,6 @@ const posterSlice = createSlice({
   }
 })
 
-export const { changeThemeType, updateArtistList } = posterSlice.actions
+export const { changeThemeType, updateArtistList } = posterSlice.actions;
 
 export default posterSlice.reducer;
