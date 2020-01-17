@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { artistListReducer } from './ArtistList/reducers'
+import { artistListReducer } from './ArtistBlock/reducers'
 import { systemReducer } from './system/reducers'
 
 export const rootReducer = combineReducers({

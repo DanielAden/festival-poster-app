@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useTopArtists } from '../spotify/SpotifyAPIHooks'
 import List, { ListItem, useReduxList, createNewListItem } from './List/List'
 import AppSelect, { useAppSelect } from './AppSelect/AppSelect'
-import { setArtistListArtists } from '../store/ArtistList/actions'
+import { setArtistListArtists } from '../store/ArtistBlock/actions'
 
 
 const listName = 'My Top Artists'

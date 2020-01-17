@@ -1,4 +1,5 @@
 import { createStore, applyMiddleware, compose } from 'redux';
+import { configureStore } from '@reduxjs/toolkit'
 import { rootReducer } from './rootReducer'
 
 
@@ -11,15 +12,20 @@ const localStorageMiddleware = (store: any) => (next: any) => (action: any) => {
   return res;
 }
 
-const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+// const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const initialJSON = window.localStorage.getItem(REDUX_LOCAL_STORAGE_KEY);
 const initialState = (initialJSON) ? JSON.parse(initialJSON) : undefined;
 
-const store = createStore(
-  rootReducer, 
-  initialState,
-  composeEnhancers(
-    applyMiddleware(localStorageMiddleware),
-  )
-)
+// const store = createStore(
+//   rootReducer, 
+//   initialState,
+//   composeEnhancers(
+//     applyMiddleware(localStorageMiddleware),
+//   )
+// )
+
+const store = configureStore({
+  reducer: rootReducer,
+})
+
 export default store;
