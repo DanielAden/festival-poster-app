@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useEffect } from 'react'
 import '../../style/Poster.css'
 import { getPosterTheme } from './PosterThemes'
 import {createHiDPICanvas} from './CanvasUtils'
@@ -10,9 +10,9 @@ interface Props {
 const Poster: React.FC<Props> = ({ themeType = 'theme1' }) => {
   let artists = useTypedSelector((s) => s.poster.artists)
   artists = artists.filter(a => a.isSelected)
+  const width = useTypedSelector(s => s.poster.width)
+  const height = useTypedSelector(s => s.poster.height)
 
-  const [width,] = useState(600);
-  const [height,] = useState(900);
   const ref = useRef<HTMLCanvasElement>(null);
   const festivalName = 'My Festival';
 

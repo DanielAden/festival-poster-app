@@ -6,12 +6,16 @@ export interface PosterState {
   artists: ListItem[];
   topArtistsTimeRange: string; // TODO make this type safe
   themeType: string;
+  height: number;
+  width: number;
 }
 
 const initialState: PosterState = {
   artists: [],
   themeType: 'theme1',
-  topArtistsTimeRange: 'medium_term'
+  topArtistsTimeRange: 'medium_term',
+  width: 600,
+  height: 900,
 }
 
 const posterSlice = createSlice({
