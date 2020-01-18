@@ -22,3 +22,4 @@ export const createHiDPICanvas = function(can: HTMLCanvasElement, w: number, h: 
   ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
   return can;
 }
+

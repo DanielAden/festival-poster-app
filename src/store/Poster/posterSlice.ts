@@ -10,12 +10,15 @@ export interface PosterState {
   width: number;
 }
 
+const height = window.innerHeight * .8;
+const width = height * .65;
+
 const initialState: PosterState = {
   artists: [],
   themeType: 'theme1',
   topArtistsTimeRange: 'medium_term',
-  width: 600,
-  height: 900,
+  width,
+  height,
 }
 
 const posterSlice = createSlice({
