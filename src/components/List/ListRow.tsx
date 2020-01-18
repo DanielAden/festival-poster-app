@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { ListItem, createNewListItem, ListHandler, ListProps } from './List'
 import { InputGroupAddon, Input, InputGroup, ListGroupItem, ButtonGroup, } from 'reactstrap';
 import AppButton from '../AppButton'
+import '../../style.css'
 
 
 export function handleActionClick(e: any, item: ListItem, handler: ListHandler) {
@@ -70,7 +71,7 @@ const ListRow: React.FC<Props> = ({ rowNumber, disableActions, item, isEditing, 
     const active = canSelect && isSelected;
     return (
       <ListGroupItem key={item.text} action={canSelect} active={active} 
-                     className="d-flex justify-content-between align-items-center py-1"
+                     className="noselect d-flex justify-content-between align-items-center py-1"
                      onClick={ (e) => listProps.handleSelectionChange?.(item) } >
               {`${rowNumber + 1}. `}{item.text}
               {renderActionButtons()}
