@@ -99,15 +99,17 @@ const Poster: React.FC<Props> = ({ themeType = 'theme1' }) => {
 const breakLines = (ctx: CanvasRenderingContext2D, artists: string[], width: number, seperator: string): string[] => {
   const lines: string[] = [];
   let currentLine = '';
+  const cutTrailingChar = (s: string) => s.slice(0, s.length - 1);
   for (let artist of artists) {
     const lineWidth = Math.ceil(ctx.measureText(currentLine + artist).width);
     if (lineWidth > width) {
-      lines.push(currentLine.slice(0, currentLine.length - 1))
+      lines.push(cutTrailingChar(currentLine))
       currentLine = artist + seperator;
       continue;
     }
     currentLine = currentLine + artist + seperator;
   }
+  if (currentLine !== '') lines.push(cutTrailingChar(currentLine))
   return lines;
 } 
 
