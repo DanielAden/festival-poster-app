@@ -1,24 +1,19 @@
 import React from 'react'
-import SpotifyInfoCapturePanel from './SpotifyInfoCapturePanel';
 import TopArtistsList from './TopArtistsList'
-import { Container, Row, Col, Nav, NavItem } from 'reactstrap';
+import { Container, Row, Col, Nav, } from 'reactstrap';
 import Poster from './Poster/Poster';
 import AppSelect, { useAppSelect } from './AppSelect/AppSelect';
-import domtoimage from 'dom-to-image';
 import { useDispatch } from 'react-redux';
 import { changeThemeType } from '../store/Poster/posterSlice';
 import useAppSelector from '../store/rootReducer';
+import AppButton from './AppButton';
 
 const createImage = async () => {
-  const node = document.getElementById('poster');
-  if (!node) throw Error('could not find poster element')
-  const dataURL = await domtoimage.toJpeg(node);
-  let img = new Image();
-  img.src = dataURL;
-  var w = window.open("",'_blank');
-  if (!w) throw new Error('Could not get window')
-  w.document.write(img.outerHTML);
-  w.document.close(); 
+  const can = document.getElementById('poster') as HTMLCanvasElement;
+  if (!can) throw new Error('Expected canvas node')
+  const dataURL = can.toDataURL('image/jpeg', 1.0);
+  const w = window.open('_blank') 
+  w?.document.write(`<img src="${dataURL}"></img>`)
 }
 
 const themeOptions = [
@@ -52,7 +47,7 @@ const Home: React.FC<Props> = () => {
         <Row>
           <Col>
             <AppSelect {...themeSelectHook} />
-            <button onClick={() => createImage()}>Create Image</button>
+            <AppButton color={'warning'} onClick={() => createImage()}>Create Image</AppButton>
             <Poster themeType={theme}/>
           </Col>
           <Col>
