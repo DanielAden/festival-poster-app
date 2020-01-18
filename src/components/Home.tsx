@@ -41,7 +41,6 @@ const Home: React.FC<Props> = () => {
   const [, themeSelectHook] = useAppSelect(themeOptions, theme, (value) => {
     dispatch(changeThemeType(value))
   });
-  console.log(theme)
 
   return (
     <div className="home">

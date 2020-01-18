@@ -4,12 +4,14 @@ import produce from "immer"
 
 export interface PosterState {
   artists: ListItem[];
+  topArtistsTimeRange: string; // TODO make this type safe
   themeType: string;
 }
 
 const initialState: PosterState = {
   artists: [],
   themeType: 'theme1',
+  topArtistsTimeRange: 'medium_term'
 }
 
 const posterSlice = createSlice({
@@ -25,10 +27,15 @@ const posterSlice = createSlice({
       return produce(state, draftState => {
         draftState.artists = action.payload;
       })
-    }
+    },
+    topArtistsTimeRangeUpdated(state, action: PayloadAction<string>) {
+      return produce(state, draftState => {
+        draftState.topArtistsTimeRange = action.payload;
+      })
+    },
   }
 })
 
-export const { changeThemeType, updateArtistList } = posterSlice.actions;
+export const { changeThemeType, updateArtistList, topArtistsTimeRangeUpdated } = posterSlice.actions;
 
 export default posterSlice.reducer;

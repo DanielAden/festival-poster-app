@@ -1,8 +1,8 @@
 import React from 'react'
-import { useSpotifyAccessToken } from '../spotify/SpotifyAPIHooks'
 import { spotifyAuthFromWindow } from '../spotify/SpotifyAuth'
 import { Redirect } from 'react-router-dom'
-import { useGlobalErrorDispatch, useGlobalError } from '../store/system/useGlobalError'
+import { useDispatch } from 'react-redux'
+import { accessTokenUpdated } from '../store/system/systemSlice'
 
 const redirectHome = () => {
   return <Redirect to='/' />
@@ -12,29 +12,18 @@ interface Props {
   
 }
 const SpotifyAuthorize: React.FC<Props> = () => {
-  const { accessToken, setAccessToken, setExpiresIn } = useSpotifyAccessToken()
-  const { errorType } = useGlobalError();
-  const [, clearError] = useGlobalErrorDispatch();
-  const tryClearAuthError = () => {
-    if (errorType === 'AuthExpiredError') {
-      clearError();
-    }
+  const dispatch = useDispatch();
+  const authData = spotifyAuthFromWindow();
+
+  if (authData.status !== 'AUTHORIZED') {
+    console.log(`Non Authorized status: ${authData.status}`)
+    console.log(authData.error)
+    return redirectHome(); 
   }
 
-  if (accessToken !== '') {
-    tryClearAuthError();
-    return redirectHome(); 
-  }
-  const data = spotifyAuthFromWindow();
-  if (data.status !== 'AUTHORIZED') {
-    console.log(`Non Authorized status: ${data.status}`)
-    console.log(data.error)
-    return redirectHome(); 
-  }
-  if (!data.data) throw new Error('Received authorized status without data')
-  const { access_token, expires_in }  = data.data;
-  setAccessToken(access_token);
-  setExpiresIn(expires_in);
+  if (!authData.data) throw new Error('Received authorized status without data')
+  const { access_token, expires_in }  = authData.data;
+  dispatch(accessTokenUpdated({ spotifyAccessToken: access_token, spotifyAccessTokenExpire: expires_in}))
   return redirectHome(); 
 }
 

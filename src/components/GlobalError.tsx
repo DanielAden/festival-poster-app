@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import { useGlobalError } from '../store/system/useGlobalError'
-import { useDispatch } from 'react-redux';
-import { setSystemSpotifyAccessToken, setSystemSpotifyAccessTokenExpiresAt } from '../store/system/actions';
 import { Modal, ModalProps, ModalHeader, ModalBody } from 'reactstrap';
 import { constructSpotifyAuthURL } from '../spotify/SpotifyAuth';
+import useTypedSelector from '../store/rootReducer';
+import { AuthExpiredError } from '../errors';
 
 
 interface SpotifyAuthRefreshModalProps extends ModalProps {
@@ -22,33 +21,34 @@ const SpotifyAuthRefreshModal: React.FC<SpotifyAuthRefreshModalProps> = (props) 
 }
 
 interface Props {
-
 }
 const GlobalError: React.FC<Props> = ( { children }) => {
-  const { errorMsg, errorType, isError } = useGlobalError();
-  const dispatch = useDispatch();
-  const [sarModal, setSarModal] = useState(false);
-  const toggle = () => setSarModal(!sarModal);
+  const errorData = useTypedSelector((s) => s.system.error);
+  const [spotifyAccessRefreshModal, setSpotifyAccessRefreshModal] = useState(false);
+  const toggleModal = () => setSpotifyAccessRefreshModal(!spotifyAccessRefreshModal);
+
+  if (!errorData.isError) {
+    if (spotifyAccessRefreshModal) setSpotifyAccessRefreshModal(false);
+    return (<>{children}</>);
+  }
+
+  const { error } = errorData;
 
   let errorBanner;
-  if (!isError) {
-    errorBanner = null;
-    if (sarModal) setSarModal(false);
-  } else if (errorType === 'AuthExpiredError') {
-    dispatch(setSystemSpotifyAccessToken(''));
-    dispatch(setSystemSpotifyAccessTokenExpiresAt(''));
-    if (!sarModal) setSarModal(true);
-  } else {
-    errorBanner = (!isError) ? null : (
-      <div>
-        <h1>{`ERROR: ${errorMsg}`}</h1>
-        <h2>{`Type: ${errorType}`}</h2>
-      </div>
-    )
+  switch (error.type) {
+    case 'NoSpotifyAccess':
+      if (!spotifyAccessRefreshModal) setSpotifyAccessRefreshModal(true);
+      errorBanner = null; // Modal will take care of error message
+      break;
+    default:
+      const { error } = errorData;
+      errorBanner = <h3>Error</h3>;
+      console.error(error);
   }
+
   return (
     <>
-      <SpotifyAuthRefreshModal isOpen={sarModal} toggle={toggle} />
+      <SpotifyAuthRefreshModal isOpen={spotifyAccessRefreshModal} toggle={toggleModal} />
       {errorBanner}
       {children}      
     </>

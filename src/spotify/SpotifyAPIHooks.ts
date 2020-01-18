@@ -1,113 +1,77 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { spotifyAPIFactory, SpotifyAPI, SpotifyTrackObject } from './SpotifyAPI';
-import { useGlobalErrorDispatch } from '../store/system/useGlobalError';
+import { useEffect, useMemo, } from 'react';
+import { spotifyAPIFactory, SpotifyAPI, SpotifyArtistObject } from './SpotifyAPI';
 import { createAuthExpiredError } from '../errors';
+import { useDispatch } from 'react-redux';
+import useSpotifyAccessToken from '../store/system/useSpotifyAccessToken';
+import useTypedSelector from '../store/rootReducer';
+import { updateArtistList, topArtistsTimeRangeUpdated } from '../store/Poster/posterSlice';
+import { createNewListItem, ListItem } from '../components/List/List';
+import { useErrorLog, useAppLog  } from '../AppLog';
 
-const accessTokenKey = '__SPOTIFY_ACCESS_TOKEN_KEY__';
-const expireTimeKey = '__SPOTIFY_ACCESS_TOKEN_EXPIRE_TIME_KEY__';
-const topArtistsKey = '__SPOTIFY_TOP_ARTISTS__';
+export const useSpotifyAPI = (): SpotifyAPI | null => {
+  const tokenData = useSpotifyAccessToken();
+  const elog = useErrorLog();
+  let accessToken = '';
+  if (tokenData.status === 'NONE' || tokenData.status === 'EXPIRED') {
+    const e = createAuthExpiredError(`Spotify Access token status not valid.  status: ${tokenData.status}`);
+    elog(e, 'NoSpotifyAccess');
+  } else {
+    accessToken = tokenData.accessToken;
+  }
+  const memoedAPI = useMemo(() => {
+    if (accessToken === '') return null;
+    return spotifyAPIFactory( { authToken: accessToken} )
+  }, [accessToken])
 
-const nowSeconds = () => {
-  return Math.floor(Date.now() / 1000)
+  return memoedAPI;
 }
 
-export const useSpotifyAccessToken = () => {
-  const [accessToken, setAccessToken] = useLocalStorage(accessTokenKey, '');
-  const [expireTime, setExpireTime] = useLocalStorage(expireTimeKey, -1);
-  const [refreshRequired, setRefreshRequired] = useState(false);
+const artistObjectsToListItems = (artistObjects: SpotifyArtistObject[]) => {
+  return artistObjects.map(ao => {
+    return createNewListItem({
+      isSelected: true,
+      text: ao.name,
+      canEdit: false,
+      userAdded: false,
+    })
+  })
+}
 
-  const setExpiresIn = (expiresInSeconds: string) => {
-    const expiresInNum = parseInt(expiresInSeconds);
-    if (isNaN(expiresInNum)) throw new Error(`Could not convert expiresInSeconds parameter to number: ${expiresInSeconds}`)
-    setExpireTime(nowSeconds() + expiresInNum);
+let count = 0; // TODO remove
+type UseSpotifyTopArtists = [ListItem[], (newTimeRange: string) => void]
+export const useSpotifyTopArtists = () => {
+  const timeRange = useTypedSelector(s => s.poster.topArtistsTimeRange);
+  const topArtists = useTypedSelector(s => s.poster.artists);
+
+  const api = useSpotifyAPI(); 
+  const dispatch = useDispatch();
+  const log = useAppLog();
+  const elog = useErrorLog();
+
+  const setTopArtistsTimeRange = (newTimeRange: string) => {
+    dispatch(topArtistsTimeRangeUpdated(newTimeRange))
   }
 
   useEffect(() => {
-    if (expireTime > -1 && expireTime < nowSeconds()) {
-      setRefreshRequired(true);
-      setAccessToken('');
-    } else if (nowSeconds() > expireTime && refreshRequired) {
-      setRefreshRequired(false);
-    }
-  }, [accessToken, expireTime, refreshRequired, setRefreshRequired, setAccessToken])
-
-  return {
-    accessToken,
-    refreshRequired,
-    setAccessToken,
-    setRefreshRequired,
-    setExpiresIn,
-  };
-}
-
-// based on https://usehooks.com/useLocalStorage/
-export type UseLocalStorage<T> = [T, (value: T) => void]
-function useLocalStorage<T>(key: string, initialValue: T): UseLocalStorage<T> {
-  const [storedValue, setStoredValue] = useState(() => {
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      console.log(error);
-      return initialValue;
-    }
-  });
-
-  const setValue = useCallback((value: T) => {
-    try {
-      if (value instanceof Function) {
-        setStoredValue((oldValue: T) => {
-          const toStore = value(oldValue);
-          window.localStorage.setItem(key, JSON.stringify(toStore));
-          return toStore;
-        })
-      } else {
-        setStoredValue(value);
-        window.localStorage.setItem(key, JSON.stringify(value));
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }, [key]);
-
-  return [storedValue, setValue];
-}
-
-export const useSpotifyAPI = (): SpotifyAPI | null => {
-  const { accessToken } = useSpotifyAccessToken();
-  const memoedAPI = useMemo(
-    () => spotifyAPIFactory( { authToken: accessToken} ), 
-    [accessToken],
-  )
-  return memoedAPI;  
-}
-
-let count = 0;
-export const useSpotifyTopArtists = (time_range: string = 'medium_term') => {
-  const [topTracks, setTopTracks] = useLocalStorage<SpotifyTrackObject[]>(topArtistsKey, []);
-  const api = useSpotifyAPI(); 
-  const [errorDispatch, ] = useGlobalErrorDispatch();
-
-  useEffect(() => {
     const fetchData = async () => {
-      if (!api) {
-        const e = createAuthExpiredError('Unable to access Spotify API');
-        errorDispatch(e.message, e.type);
-        return;
-      }
-      if (!api.topArtists) throw new Error('Expected topArtists method to exist on spotify api object');
+      if (!api?.topArtists) throw new Error('Expected topArtists method to exist on spotify api object');
       count++;
       if (count > 5) throw new Error('Max Count Reached')
-      console.log('Using api to retreive top Artists for range ' + time_range)
+      log('Using api to retreive top Artists for range ' + timeRange)
+      let topArtistsData;
       try {
-        const topTracksData = await api.topArtists({ time_range });
-        setTopTracks(topTracksData);
+        topArtistsData = await api.topArtists({ time_range: timeRange });
       } catch(e) {
-        console.log('Caught Error ' + e.message + e.type)
-        errorDispatch(e.message, e.type);
+        elog(e);
+      } finally {
+        if (!topArtistsData) throw Error('Expected top artists data');
+        const topArtistsList = artistObjectsToListItems(topArtistsData);
+        dispatch(updateArtistList(topArtistsList));
       }
     }
+    if (!api) return;
     fetchData();
-  }, [api, setTopTracks, time_range, errorDispatch])
-  return topTracks;
+  }, [dispatch, log, elog, api, timeRange])
+
+  return { topArtists, setTopArtistsTimeRange };
 }

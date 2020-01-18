@@ -1,5 +1,8 @@
 import useTypedSelector from "../rootReducer";
 
+const nowSeconds = () => {
+  return Math.floor(Date.now() / 1000)
+}
 
 type UseSpotifyAccessToken = { status: 'NONE' } | { status: 'EXPIRED' } | { status: 'VALID', accessToken: string}
 const useSpotifyAccessToken = (): UseSpotifyAccessToken => {
@@ -9,7 +12,7 @@ const useSpotifyAccessToken = (): UseSpotifyAccessToken => {
   if (accessToken === '' || expire === '') throw new Error('Spotify access token/expire in invalid state')
 
   const expireTime = parseInt(expire, 10);
-  if (Date.now() >= expireTime) return { status: 'EXPIRED' }
+  if (expireTime < nowSeconds()) return { status: 'EXPIRED' }
   return {
     status: 'VALID',
     accessToken,

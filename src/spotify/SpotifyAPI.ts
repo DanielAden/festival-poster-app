@@ -52,14 +52,6 @@ export interface SpotifyArtistObjectSimple {
 }
 
 export interface SpotifyArtistObject {
-  name: string;
-  id: string;
-  href: string; // A link to the Web API endpoint providing full details of the artist.
-  type: 'artist';
-  uri: string;
-}
-
-export interface SpotifyTrackObject {
   album: SpotifyAlbumObjectSimple; 
   artists: SpotifyArtistObjectSimple[];
   duration_ms: number;
@@ -68,7 +60,7 @@ export interface SpotifyTrackObject {
   name: string;  
   popularity: number;
   track_number: number;
-  type: 'track';
+  type: 'artist';
   uri: string;
 }
 
@@ -78,9 +70,9 @@ export abstract class SpotifyAPI {
   constructor(public apiKey: string) {}
 
   public abstract async getPlaylists(): Promise<SpotifyPlaylistObject[]>;
-  public abstract async getPlaylistTracks(playlistId: string): Promise<SpotifyTrackObject[]> ;
+  public abstract async getPlaylistTracks(playlistId: string): Promise<SpotifyArtistObject[]> ;
   public abstract async me(): Promise<SpotifyUserObject>;
-  public async topArtists?(query?: any): Promise<SpotifyTrackObject[]>;
+  public async topArtists?(query?: any): Promise<SpotifyArtistObject[]>;
 
   public async getPlaylistArtists(playlistId: string): Promise<string[]> {
     const trackData = await this.getPlaylistTracks(playlistId);
@@ -109,7 +101,7 @@ export class SpotifyAuthTokenAPI extends SpotifyAPI {
 
   // public async topArtists(limit: string = '30', offset: string = '0', time_range: TimeRange = 'long_term') {
   public async topArtists({ limit = '50', offset = '0', time_range = 'medium_term' } = {}) {
-    const data = await spotifyGETHelper<SpotifyTrackObject[]>(this.apiKey, ['me', 'top', 'artists'], {limit, offset, time_range});
+    const data = await spotifyGETHelper<SpotifyArtistObject[]>(this.apiKey, ['me', 'top', 'artists'], {limit, offset, time_range});
     return data;
   }
 }
@@ -209,15 +201,15 @@ export async function spotifyPlaylistsFromToken(accessToken: string): Promise<Sp
 }
 
 export interface SpotifyPlaylistTrackObject {
-  track: SpotifyTrackObject;
+  track: SpotifyArtistObject;
 }
-export async function spotifyTracksFromPlaylist(accessToken: string, playlist_id: string): Promise<SpotifyTrackObject[]> {
+export async function spotifyTracksFromPlaylist(accessToken: string, playlist_id: string): Promise<SpotifyArtistObject[]> {
   const res = await spotifyGETHelper<SpotifyPlaylistTrackObject[]>(accessToken, ['playlists', playlist_id, 'tracks']);
   // Strip off the PlaylistTrackObject information
   return res.map(playlistTrackObject => playlistTrackObject.track)
 }
 
-export function extractArtistsFromTracks(tracks: SpotifyTrackObject[]): string[] {
+export function extractArtistsFromTracks(tracks: SpotifyArtistObject[]): string[] {
   let artistsSet = new Set<string>();
   tracks.forEach(track => {
     artistsSet.add(track.artists[0].name)

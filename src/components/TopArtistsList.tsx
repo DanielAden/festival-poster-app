@@ -1,14 +1,12 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useSpotifyTopArtists } from '../spotify/SpotifyAPIHooks'
-import List, { useReduxList, createNewListItem } from './List/List'
+import List, { useReduxList, } from './List/List'
 import AppSelect, { useAppSelect } from './AppSelect/AppSelect'
 import { RootState } from '../store/rootReducer'
 import { updateArtistList } from '../store/Poster/posterSlice'
 
-
 const listName = 'My Top Artists'
-
-const topArtistOptions = [
+const topArtistTROptions = [
   {
     text: 'Last 6 Months',
     value: 'medium_term',
@@ -23,29 +21,18 @@ const topArtistOptions = [
   },
 ]
 
-
 interface Props {
 
 }
 const TopArtistsList: React.FC<Props> = () => {
-  const [selected, artistSelectProps] = useAppSelect(topArtistOptions, topArtistOptions[0].value)
-  const artists = useSpotifyTopArtists(selected);
+  const { setTopArtistsTimeRange } = useSpotifyTopArtists();
+  const [, artistSelectProps] = useAppSelect(topArtistTROptions, topArtistTROptions[0].value, (v) => setTopArtistsTimeRange(v))
 
-  const artistsSelectorFN = (state: RootState) => state.poster.artists;
-  const [artistsList, setArtistsList, artistListHook] = useReduxList(artistsSelectorFN, updateArtistList);
+  const [artistsList, artistListHook] = useReduxList(
+    (state: RootState) => state.poster.artists, 
+    updateArtistList,
+  );
 
-  useEffect(() => {
-    const artistNames = artists.map(a => a.name)
-    const artistListItems = artistNames.map((artistName) => {
-      return createNewListItem({
-        text: artistName,
-        isSelected: true,
-        canEdit: false,
-        userAdded: false,
-      })
-    })
-    setArtistsList(artistListItems);
-  }, [selected, artists, setArtistsList])
 
   return (
     <div>
