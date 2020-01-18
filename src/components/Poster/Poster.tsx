@@ -4,8 +4,6 @@ import { getPosterTheme } from './PosterThemes'
 import {createHiDPICanvas} from './CanvasUtils'
 import useTypedSelector from '../../store/rootReducer'
 
-
-
 interface Props {
   themeType?: string; 
 }

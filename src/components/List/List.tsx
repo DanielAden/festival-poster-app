@@ -3,6 +3,7 @@ import ListRow from './ListRow'
 import AppButton from '../AppButton'
 import { ButtonGroup, InputGroup, Input, ListGroup, ListGroupItem } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
+import produce from 'immer';
 
 
 const SELECTALL = 'Select All';
@@ -73,6 +74,7 @@ export const useReduxList = (
   };
 }
 
+// TODO use immer produce for all of this
 type ListSetter = (fn: (oldList: ListItem[]) => ListItem[]) => void;
 export function attachHandlers(
   setter: ListSetter, 
@@ -105,12 +107,11 @@ export function attachHandlers(
     },
     handleSelectionChange: (selectedItem) => { 
       setter((oldItems) => {
-        let newItems = [...oldItems];
-        const newItem = newItems.find(i => i.id === selectedItem.id)
-        if (!newItem) return oldItems; 
-        newItem.isSelected = !(selectedItem.isSelected)
-        handlerCallbacks?.handleSelectionChange?.(newItem);
-        return newItems; 
+        return produce(oldItems, (draft) => {
+          const i = draft.findIndex(i => i.id === selectedItem.id)
+          draft[i].isSelected = !selectedItem.isSelected;
+          handlerCallbacks?.handleSelectionChange?.(draft[i]);
+        })
       });
     },
     handleSelectAll: () => {
