@@ -4,6 +4,8 @@ import { PosterState } from '../../store/Poster/posterSlice'
 import { AppError } from '../../error'
 import useTypedSelector from '../../store/rootReducer'
 import { useLayoutEffect, useState } from 'react'
+import { createHiDPICanvas } from './CanvasUtils'
+
 
 type Case = 'none' | 'upper'
 abstract class PosterTheme {
@@ -127,6 +129,7 @@ abstract class PosterTheme {
     this.ctx = this.getContext(can);
     can.width = this.w;
     can.height = this.h;
+    createHiDPICanvas(can, this.w, this.h);
 
     const img = new Image(this.w, this.h);
     img.onload = () => {
