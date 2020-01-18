@@ -15,8 +15,9 @@ interface Props extends ListProps {
   isEditing: boolean;
   setIsEditing: React.Dispatch<any>;
   disableActions: boolean;
+  rowNumber: number;
 }
-const ListRow: React.FC<Props> = ({ disableActions, item, isEditing, setIsEditing, ...listProps }) => {
+const ListRow: React.FC<Props> = ({ rowNumber, disableActions, item, isEditing, setIsEditing, ...listProps }) => {
   const [editText, setEditText] = useState(item.text);
 
   const { handleRemove, handleEdit, handleSelectionChange: handleSelect } = listProps;
@@ -66,12 +67,14 @@ const ListRow: React.FC<Props> = ({ disableActions, item, isEditing, setIsEditin
   }
 
   const renderRow = () => {
+    const active = canSelect && isSelected;
     return (
-      <ListGroupItem key={item.text} action={canSelect} active={canSelect && isSelected} 
+      <ListGroupItem key={item.text} action={canSelect} active={active} 
                      className="d-flex justify-content-between align-items-center py-1"
                      onClick={ (e) => listProps.handleSelectionChange?.(item) } >
-              {item.text}
+              {`${rowNumber + 1}. `}{item.text}
               {renderActionButtons()}
+              {(active) ? '✅' : '❌'}
       </ListGroupItem>
     )
   }

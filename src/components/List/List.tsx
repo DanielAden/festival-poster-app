@@ -158,7 +158,7 @@ export interface ListHandlers {
   handleClear?: (newItems?: ListItem[]) => void; 
 }
 export interface ListProps extends ListHandlers {
-  name: string;
+  name?: string;
   items: ListItem[];
   canRemove?: boolean;
   canAddRow?: boolean;
@@ -219,14 +219,14 @@ const List: React.FC<ListProps> = (props) => {
     let clear = null;
     if (canSelectAll) {
       selectAll = (
-        <AppButton onClick={(e) => {
+        <AppButton color='success' onClick={(e) => {
           props.handleSelectAll?.(); 
         }}>{SELECTALL}</AppButton>
       )
     } 
     if (canClear) {
       clear = (
-        <AppButton color="primary" onClick={(e) => {
+        <AppButton color='warning' onClick={(e) => {
           props.handleClear?.(); 
         }}>{CLEAR}</AppButton>
       )
@@ -247,19 +247,20 @@ const List: React.FC<ListProps> = (props) => {
         display: 'flex',
         justifyContent: 'space-between',
       }}>
-        <h3>{props.name}</h3>
+        { (props.name) ? <h3>{props.name}</h3> : null }
         {renderListActions()}
       </div>
     )
   }
 
   function renderList() {
-    const rows = items.map((item) => {
+    const rows = items.map((item, i) => {
       return <ListRow key={item.id} 
                       item={item} 
                       setIsEditing={setIsEditing}
                       isEditing={isEditing}
                       disableActions={isAddingRow}
+                      rowNumber={i}
                       {...props} />
     })
     return (

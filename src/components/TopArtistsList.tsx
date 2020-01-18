@@ -6,7 +6,7 @@ import useTypedSelector, { RootState } from '../store/rootReducer'
 import { updateArtistList } from '../store/Poster/posterSlice'
 import { usePosterSize } from './Poster/PosterThemes'
 
-const listName = 'My Top Artists'
+const listName = 'Top Artists'
 const topArtistTROptions = [
   {
     text: 'Last 6 Months',
@@ -39,9 +39,10 @@ const TopArtistsList: React.FC<Props> = () => {
 
   return (
     <div>
+      <h3 style={{display: 'inline-block'}}>{listName}</h3>
       <AppSelect {...artistSelectProps} />
       <div style={{maxHeight: h, overflowY: 'scroll'}}>
-        <List name={listName} items={items} {...listProps} canSelect />
+        <List  items={items} {...listProps} canSelect />
       </div>
     </div>
   )
