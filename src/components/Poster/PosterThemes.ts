@@ -7,6 +7,7 @@ import {createHiDPICanvas} from './CanvasUtils'
 import useTypedSelector from '../../store/rootReducer'
 import { useLayoutEffect, useState } from 'react'
 
+type Case = 'none' | 'upper'
 abstract class PosterTheme {
   protected ctx!: CanvasRenderingContext2D;
   protected w: number = 900;
@@ -14,16 +15,18 @@ abstract class PosterTheme {
 
   protected bgImage: string = '';
 
-  protected festivalName: string = 'My Festival'; 
+  protected festivalNameText: string = 'My Festival'; 
   protected festivalNameColor: string = 'white'; 
   protected festivalNameFont: string = 'serif'; 
   protected festivalNameFontRatio: number = .1; 
+  protected festivalNameCase: Case = 'upper';
 
   protected artistSeperator: string =  '/';
   protected artistFont = 'serif';
   protected artistColor: string = 'white'; 
   protected artistFontRatio: number = .025; 
   protected artistTopRatio: number = .5;
+  protected artistCase: Case = 'upper';
 
   constructor(protected ps: PosterState,) { }
   protected getContext(can: HTMLCanvasElement,) {
@@ -65,11 +68,18 @@ abstract class PosterTheme {
     return Math.floor(this.h / 2);
   }
 
+  protected get festivalName() {
+    return (this.festivalNameCase === 'upper') ? 
+      this.festivalNameText.toUpperCase() : 
+      this.festivalNameText;
+  } 
+
   protected artistLines() {
     const lines: string[] = [];
     let currentLine = '';
     for (let item of this.ps.artists) {
-      const artist = item.text;
+      let artist = item.text;
+      if (this.artistCase === 'upper') artist = artist.toUpperCase();
       const lineWidth = Math.ceil(this.ctx.measureText(currentLine + artist).width);
       if (lineWidth > this.w) {
         lines.push(this.cutTrailingChar(currentLine))
@@ -134,7 +144,7 @@ class PosterTheme1 extends PosterTheme {
 
   artistColor = 'lightblue';
   artistSeperator = String.fromCharCode(8226);
-  artistTopRatio = .6;
+  artistTopRatio = .4;
 }
 
 class PosterTheme2 extends PosterTheme {
