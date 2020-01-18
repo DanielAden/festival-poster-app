@@ -2,8 +2,6 @@ import React, { useState } from 'react'
 import { Modal, ModalProps, ModalHeader, ModalBody } from 'reactstrap';
 import { constructSpotifyAuthURL } from '../spotify/SpotifyAuth';
 import useTypedSelector from '../store/rootReducer';
-import { AuthExpiredError } from '../errors';
-
 
 interface SpotifyAuthRefreshModalProps extends ModalProps {
   toggle: () => void;

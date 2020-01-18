@@ -50,23 +50,27 @@ export const useList = (handlerCallbacks?: ListHandlers, handlerMiddleware?: Lis
   return [list, setListWrapper, listItemHook];
 }
 
-type UseReduxList = [ListItem[], (items: ListItem[]) => void, Required<ListHandlers>]
+type UseReduxList = { items: ListItem[], setItems: (items: ListItem[]) => void, listProps: Required<ListHandlers> }
 export const useReduxList = ( 
   selectorFN: (state: any) => ListItem[],
   actionFN: (newList: ListItem[]) => void,
 ): UseReduxList => {
-  const res = useSelector(selectorFN);
+  const items = useSelector(selectorFN);
   const dispatch = useDispatch();
   const listFNSetter: ListSetter = (fn: (oldList: ListItem[]) => ListItem[]) => {
-    const newList =  fn(res);
+    const newList =  fn(items);
     dispatch(actionFN(newList));
   }
-  const listSetter = useCallback((items: ListItem[]) => {
+  const setItems = useCallback((items: ListItem[]) => {
     dispatch(actionFN(items));
   }, [dispatch, actionFN])
 
-  const listItemHook = attachHandlers(listFNSetter);
-  return [res, listSetter, listItemHook];
+  const listProps = attachHandlers(listFNSetter);
+  return { 
+    items: items, 
+    setItems, 
+    listProps,
+  };
 }
 
 type ListSetter = (fn: (oldList: ListItem[]) => ListItem[]) => void;

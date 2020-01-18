@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { ListItem } from '../List/List';
+import useTypedSelector from '../../store/rootReducer';
 
 const dot = 9679;
 const artistBlockNameClass = 'artist-block-artist';
@@ -12,7 +11,7 @@ interface Props {
   posterRect?: DOMRect | null;
 }
 const ArtistBlock: React.FC<Props> = ({ posterRect }) => {
-  const artists = useSelector((s: any) => s.artistList.artists as ListItem[])
+  const artists = useTypedSelector(s => s.poster.artists) 
   const ref = useRef<HTMLDivElement>(null);
   const [top, setTop] = useState(0);
 
@@ -46,7 +45,7 @@ const ArtistBlock: React.FC<Props> = ({ posterRect }) => {
 
   const renderArtists = () => {
     const artistNames = artists.filter(a => a.isSelected).map(a => a.text);
-     const artistELs = artistNames.map((a, i, arr) => {
+    const artistELs = artistNames.map((a, i, arr) => {
       return renderArtist(a, i === arr.length - 1);
     })
     return artistELs;

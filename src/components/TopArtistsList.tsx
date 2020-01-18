@@ -2,7 +2,7 @@ import React from 'react'
 import { useSpotifyTopArtists } from '../spotify/SpotifyAPIHooks'
 import List, { useReduxList, } from './List/List'
 import AppSelect, { useAppSelect } from './AppSelect/AppSelect'
-import { RootState } from '../store/rootReducer'
+import useTypedSelector, { RootState } from '../store/rootReducer'
 import { updateArtistList } from '../store/Poster/posterSlice'
 
 const listName = 'My Top Artists'
@@ -26,9 +26,10 @@ interface Props {
 }
 const TopArtistsList: React.FC<Props> = () => {
   const { setTopArtistsTimeRange } = useSpotifyTopArtists();
-  const [, artistSelectProps] = useAppSelect(topArtistTROptions, topArtistTROptions[0].value, (v) => setTopArtistsTimeRange(v))
+  const initialTimeRange = useTypedSelector(s => s.poster.topArtistsTimeRange)
+  const [, artistSelectProps] = useAppSelect(topArtistTROptions, initialTimeRange, (v) => setTopArtistsTimeRange(v))
 
-  const [artistsList, artistListHook] = useReduxList(
+  const { items, listProps } = useReduxList(
     (state: RootState) => state.poster.artists, 
     updateArtistList,
   );
@@ -37,7 +38,7 @@ const TopArtistsList: React.FC<Props> = () => {
   return (
     <div>
       <AppSelect {...artistSelectProps} />
-      <List name={listName} items={artistsList} {...artistListHook} canSelect />
+      <List name={listName} items={items} {...listProps} canSelect />
     </div>
   )
 }
