@@ -1,19 +1,19 @@
 import { useEffect, useMemo, } from 'react';
 import { spotifyAPIFactory, SpotifyAPI, SpotifyArtistObject } from './SpotifyAPI';
-import { createAuthExpiredError } from '../errors';
 import { useDispatch } from 'react-redux';
 import useSpotifyAccessToken from '../store/system/useSpotifyAccessToken';
 import useTypedSelector from '../store/rootReducer';
 import { updateArtistList, topArtistsTimeRangeUpdated } from '../store/Poster/posterSlice';
 import { createNewListItem, ListItem } from '../components/List/List';
 import { useErrorLog, useAppLog  } from '../AppLog';
+import { AppError } from '../error';
 
 export const useSpotifyAPI = (): SpotifyAPI | null => {
   const tokenData = useSpotifyAccessToken();
   const elog = useErrorLog();
   let accessToken = '';
   if (tokenData.status === 'NONE' || tokenData.status === 'EXPIRED') {
-    const e = createAuthExpiredError(`Spotify Access token status not valid.  status: ${tokenData.status}`);
+    const e = new AppError(`Spotify Access token status not valid.  status: ${tokenData.status}`);
     elog(e, 'NoSpotifyAccess');
   } else {
     accessToken = tokenData.accessToken;
@@ -62,9 +62,13 @@ export const useSpotifyTopArtists = () => {
       try {
         topArtistsData = await api.topArtists({ time_range: timeRange });
       } catch(e) {
-        elog(e);
+        elog(e, 'NoSpotifyAccess');
       } finally {
-        if (!topArtistsData) throw Error('Expected top artists data');
+        if (!topArtistsData) throw new AppError('Expected top artists data');
+        if (topArtistsData instanceof Error) {
+          elog(topArtistsData);
+          return;
+        }
         const topArtistsList = artistObjectsToListItems(topArtistsData);
         dispatch(updateArtistList(topArtistsList));
       }

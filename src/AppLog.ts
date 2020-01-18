@@ -1,7 +1,8 @@
-import useTypedSelector from "./store/rootReducer";
+// import useTypedSelector from "./store/rootReducer";
 import { useDispatch } from "react-redux";
-import { caughtGlobalError, AppErrorType } from "./store/system/systemSlice";
+import { caughtGlobalError } from "./store/system/systemSlice";
 import { useCallback } from "react";
+import { AppErrorType } from "./error";
 
 
 
@@ -9,14 +10,14 @@ import { useCallback } from "react";
 // TODO implement smarter error logging.  This will so far 
 //      only catch one error at a time.
 export const useErrorLog = () => {
-  const error = useTypedSelector(s => s.system.error)
+  // const error = useTypedSelector(s => s.system.error)
   const dispatch = useDispatch();
 
   const log = useCallback((e: Error, type?: AppErrorType) => {
-    if (error.isError) return; 
-    if (type) (e as any).errorType = type;
+    // if (error.isError) return; 
+    if (type) (e as any).type = type;
     dispatch(caughtGlobalError(e));
-  }, [dispatch, error.isError])
+  }, [dispatch, ])
   return log;
 }
 

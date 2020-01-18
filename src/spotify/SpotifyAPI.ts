@@ -1,4 +1,4 @@
-import { AuthExpiredError } from '../errors';
+import { AppError } from '../error';
 
 export const SPOTIFY_API_HOST = 'https://api.spotify.com';
 export const SPOTIFY_VERSION = 'v1';
@@ -69,20 +69,25 @@ type TimeRange = 'long_term' | 'medium_term' | 'short_term';
 export abstract class SpotifyAPI {
   constructor(public apiKey: string) {}
 
-  public abstract async getPlaylists(): Promise<SpotifyPlaylistObject[]>;
-  public abstract async getPlaylistTracks(playlistId: string): Promise<SpotifyArtistObject[]> ;
-  public abstract async me(): Promise<SpotifyUserObject>;
-  public async topArtists?(query?: any): Promise<SpotifyArtistObject[]>;
+  public abstract async getPlaylists(): Promise<SpotifyPlaylistObject[] | AppError>;
+  public abstract async getPlaylistTracks(playlistId: string): Promise<SpotifyArtistObject[] | AppError>
+  public abstract async me(): Promise<SpotifyUserObject | AppError>;
+  public async topArtists?(query?: any): Promise<SpotifyArtistObject[] | AppError>;
 
-  public async getPlaylistArtists(playlistId: string): Promise<string[]> {
+  public async getPlaylistArtists(playlistId: string): Promise<string[] | AppError> {
     const trackData = await this.getPlaylistTracks(playlistId);
+    if (trackData instanceof AppError) return trackData;
     return extractArtistsFromTracks(trackData)
   }
 
-  public async noAuthAPICall(url: string) {
-    const res = await fetch(url);
-    const json = await unpackResponse(res, url); 
-    return json;
+  public async noAuthAPICall(url: string): Promise<any | AppError> {
+    try {
+      const res = await fetch(url);
+      const json = await unpackResponse(res, url); 
+      return json;
+    } catch(e) {
+      return e;
+    }
   }
 }
 
@@ -145,29 +150,33 @@ export function apiurl(...endpoints: string[]): string {
   return new URL(endpointString, SPOTIFY_API_HOST).href
 }
 
-function handleError(e: any): never {
-  throw e;
-}
-
 export async function unpackResponse(res: Response, url: string) {
   if (!res.ok) {
-    if (res.status === 401) throw new AuthExpiredError(`Fetch for URL ${url} returned not ok status.  Status: ${res.status}`);
-    throw new Error(`Fetch for URL ${url} returned not ok status.  Status: ${res.status}`)
+    if (res.status === 401) return new AppError(`Fetch for URL ${url} returned not ok status.  Status: ${res.status}`, 'NoSpotifyAccess');
+    return new AppError(`Fetch for URL ${url} returned not ok status.  Status: ${res.status}`, 'NoSpotifyAccess')
   }
   if (res.status !== 200) {
-    throw new Error(`Fetch for URL ${url} returned a status of ${res.status}`)
+    return new AppError(`Fetch for URL ${url} returned a status of ${res.status}`, 'NoSpotifyAccess')
   }
-  let json = await res.json().catch(handleError)
-  return json;
+  try {
+    let json = await res.json()
+    return json;
+  } catch(e) {
+    return e;
+  }
 }
 
-export async function spotifyFetch(access_token: string, url: string) {
-  let res = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${access_token}`
-    }
-  }).catch(handleError);
-  return unpackResponse(res, url);
+export async function spotifyFetch(access_token: string, url: string): Promise<AppError | any> {
+  const headers = {
+    Authorization: `Bearer ${access_token}`
+  }
+  let res;
+  try {
+    res = await fetch(url, { headers });
+    return unpackResponse(res, url);
+  } catch (e) {
+    return e;
+  }
 }
 
 type QueryParamsObject = {[k: string]: string}
@@ -180,14 +189,15 @@ function objectToQueryParams(queryObject?: QueryParamsObject): string {
   return USP.toString();
 }
 
-async function spotifyGETHelper<T>(accessToken: string, urlParams: string[], queryParams?: QueryParamsObject): Promise<T> {
+async function spotifyGETHelper<T>(accessToken: string, urlParams: string[], queryParams?: QueryParamsObject): Promise<T | AppError> {
   const queryStr = objectToQueryParams(queryParams);
   const url = apiurl(...urlParams, `?${queryStr}`);
-  const data = await spotifyFetch(accessToken, url).catch(handleError);
+  const data = await spotifyFetch(accessToken, url)
+  if (data instanceof AppError) return data;
   if (!data.hasOwnProperty('items')) {
-    throw new Error(`Returned paging object does not contain items field.  Url: ${url}`)
+    throw new AppError(`Returned paging object does not contain items field.  Url: ${url}`)
   }
-  return data.items; 
+  return data.items;
 }
 
 export async function spotifyMe(accessToken: string): Promise<SpotifyUserObject> {
@@ -196,16 +206,17 @@ export async function spotifyMe(accessToken: string): Promise<SpotifyUserObject>
   return data;
 }
 
-export async function spotifyPlaylistsFromToken(accessToken: string): Promise<SpotifyPlaylistObject[]> {
+export async function spotifyPlaylistsFromToken(accessToken: string): Promise<SpotifyPlaylistObject[] | AppError> {
   return spotifyGETHelper(accessToken, ['me', 'playlists']);
 }
 
 export interface SpotifyPlaylistTrackObject {
   track: SpotifyArtistObject;
 }
-export async function spotifyTracksFromPlaylist(accessToken: string, playlist_id: string): Promise<SpotifyArtistObject[]> {
+export async function spotifyTracksFromPlaylist(accessToken: string, playlist_id: string): Promise<SpotifyArtistObject[] | AppError> {
   const res = await spotifyGETHelper<SpotifyPlaylistTrackObject[]>(accessToken, ['playlists', playlist_id, 'tracks']);
   // Strip off the PlaylistTrackObject information
+  if (res instanceof AppError) return res;
   return res.map(playlistTrackObject => playlistTrackObject.track)
 }
 

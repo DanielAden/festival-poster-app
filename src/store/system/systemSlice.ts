@@ -1,22 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import produce from "immer"
-
-
-export type AppErrorType = 'NoSpotifyAccess';
-export interface AppError {
-  message: string;
-  stack: string | undefined;
-  name: string;
-  type: AppErrorType | null;
-  [key: string]: any; 
-}
-export const nativeToAppError = function(e: Error) {
-  const appError: AppError = {} as AppError;
-  Object.getOwnPropertyNames(e).forEach(key => {
-    appError[key] = (e as any)[key];
-  });
-  return appError;
-};
+import { toStorable, AppErrorStorable } from '../../error';
 
 export interface SpotifyAccessTokenPackage {
   spotifyAccessToken: string;
@@ -24,7 +8,7 @@ export interface SpotifyAccessTokenPackage {
 }
 
 export type GlobalErrorNone = { isError: false };
-export type GlobalError = { isError: true, error: AppError}
+export type GlobalError = { isError: true, error: AppErrorStorable}
 export type GlobalErrorPackage = GlobalError | GlobalErrorNone; 
 
 export interface SystemState extends SpotifyAccessTokenPackage {
@@ -53,18 +37,10 @@ const systemSlice = createSlice({
       })
     },
     caughtGlobalError(state, action: PayloadAction<Error>) {
-      const { payload, } = action;
-      const errorType = (payload as any).errorType; 
-      const appError: AppError = {
-        message: payload.message,
-        name: payload.name,
-        stack: payload.stack,
-        type: (errorType) ? errorType : null,
-      }
       return produce(state, draftState => {
         draftState.error = {
           isError: true,
-          error: appError,
+          error: toStorable(action.payload),
         }
       })
     },
