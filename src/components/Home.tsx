@@ -1,7 +1,7 @@
 import React from 'react'
 import SpotifyInfoCapturePanel from './SpotifyInfoCapturePanel';
 import TopArtistsList from './TopArtistsList'
-import { Container, Row, Col } from 'reactstrap';
+import { Container, Row, Col, Nav, NavItem } from 'reactstrap';
 import Poster from './Poster/Poster';
 import AppSelect, { useAppSelect } from './AppSelect/AppSelect';
 import domtoimage from 'dom-to-image';
@@ -33,8 +33,7 @@ const themeOptions = [
 ]
 
 interface Props {
-  }
-
+}
 const Home: React.FC<Props> = () => {
   const dispatch = useDispatch();
   const theme = useAppSelector((s) => s.poster.themeType)
@@ -43,8 +42,12 @@ const Home: React.FC<Props> = () => {
   });
 
   return (
-    <div className="home">
-      <SpotifyInfoCapturePanel />
+    <div className='home'>
+      <Nav className='navbar navbar-expand-sm navbar-light bg-light py-0'
+        style={{marginBottom: '10px'}}>
+        <div className='navbar-brand'>Poster App</div>
+        {renderDevTools()}
+      </Nav>
       <Container>
         <Row>
           <Col>
@@ -56,11 +59,21 @@ const Home: React.FC<Props> = () => {
             <TopArtistsList />
           </Col>
         </Row>
-        <Row>
-          Footer
-        </Row>
       </Container>
     </div>
+  )
+}
+
+const renderDevTools = () => {
+  if (process.env.NODE_ENV !== 'development') return null;
+  return (
+    <form className='form-inline'>
+      <button className="btn btn-outline-danger" type="button"
+        onClick={() => {
+          window.localStorage.clear();
+          window.location.reload();
+      }}>Clear Cache</button>
+    </form>
   )
 }
 

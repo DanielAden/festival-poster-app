@@ -10,7 +10,7 @@ const SpotifyAuthRefreshModal: React.FC<SpotifyAuthRefreshModalProps> = (props) 
   const { toggle } = props;
   return (
     <Modal {...props} className='spotify-auth-refresh-modal'>
-      <ModalHeader toggle={toggle}>Spotify Needs to be Re-Authorized</ModalHeader>
+      <ModalHeader toggle={toggle}>Spotify Is Asking To Be Authorized</ModalHeader>
       <ModalBody>
         <a href={constructSpotifyAuthURL()}>Authorize Spotify</a>
       </ModalBody>
