@@ -2,8 +2,6 @@ import city from '../../images/city.jpg'
 import fireworks from '../../images/fireworks.jpg' 
 import { PosterState } from '../../store/Poster/posterSlice'
 import { AppError } from '../../error'
-
-import {createHiDPICanvas} from './CanvasUtils'
 import useTypedSelector from '../../store/rootReducer'
 import { useLayoutEffect, useState } from 'react'
 
@@ -74,10 +72,14 @@ abstract class PosterTheme {
       this.festivalNameText;
   } 
 
+  protected get artists() {
+    return this.ps.artists.filter(a => a.isSelected);
+  }
+
   protected artistLines() {
     const lines: string[] = [];
     let currentLine = '';
-    for (let item of this.ps.artists) {
+    for (let item of this.artists) {
       let artist = item.text;
       if (this.artistCase === 'upper') artist = artist.toUpperCase();
       const lineWidth = Math.ceil(this.ctx.measureText(currentLine + artist).width);

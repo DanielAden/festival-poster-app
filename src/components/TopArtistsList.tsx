@@ -4,6 +4,7 @@ import List, { useReduxList, } from './List/List'
 import AppSelect, { useAppSelect } from './AppSelect/AppSelect'
 import useTypedSelector, { RootState } from '../store/rootReducer'
 import { updateArtistList } from '../store/Poster/posterSlice'
+import { usePosterSize } from './Poster/PosterThemes'
 
 const listName = 'My Top Artists'
 const topArtistTROptions = [
@@ -25,6 +26,7 @@ interface Props {
 
 }
 const TopArtistsList: React.FC<Props> = () => {
+  const [, h] = usePosterSize();
   const { setTopArtistsTimeRange } = useSpotifyTopArtists();
   const initialTimeRange = useTypedSelector(s => s.poster.topArtistsTimeRange)
   const [, artistSelectProps] = useAppSelect(topArtistTROptions, initialTimeRange, (v) => setTopArtistsTimeRange(v))
@@ -38,7 +40,9 @@ const TopArtistsList: React.FC<Props> = () => {
   return (
     <div>
       <AppSelect {...artistSelectProps} />
-      <List name={listName} items={items} {...listProps} canSelect />
+      <div style={{maxHeight: h, overflowY: 'scroll'}}>
+        <List name={listName} items={items} {...listProps} canSelect />
+      </div>
     </div>
   )
 }
