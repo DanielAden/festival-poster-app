@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "165898ea0c935c9a2adffd65c1fa37c2",
+    "revision": "36f9c882971ecd3db10091427d0478ad",
     "url": "/festival-poster-app/index.html"
   },
   {
-    "revision": "f98097e1f1c4c2765605",
+    "revision": "cb2954ae9129a08d0108",
     "url": "/festival-poster-app/static/css/main.870b1b3f.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/festival-poster-app/static/js/2.644ce3a8.chunk.js.LICENSE"
   },
   {
-    "revision": "f98097e1f1c4c2765605",
-    "url": "/festival-poster-app/static/js/main.6edd57d3.chunk.js"
+    "revision": "cb2954ae9129a08d0108",
+    "url": "/festival-poster-app/static/js/main.11797438.chunk.js"
   },
   {
     "revision": "e5bd0bda25262c62530b",
