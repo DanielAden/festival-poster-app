@@ -41,7 +41,6 @@ const GlobalError: React.FC<Props> = ( { children }) => {
         errorBanner = null; // Modal will take care of error message
         break;
       default:
-        const { error } = errorData;
         errorBanner = <h3>Error</h3>;
         console.error(error);
     }
