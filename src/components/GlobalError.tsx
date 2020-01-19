@@ -26,7 +26,9 @@ const GlobalError: React.FC<Props> = ( { children }) => {
   const toggleModal = () => setSpotifyAccessRefreshModal(!spotifyAccessRefreshModal);
 
   if (!errorData.isError || !errorData.error) {
-    if (spotifyAccessRefreshModal) setSpotifyAccessRefreshModal(false);
+    if (spotifyAccessRefreshModal) {
+      toggleModal();
+    }
     return (<>{children}</>);
   }
 
@@ -48,7 +50,7 @@ const GlobalError: React.FC<Props> = ( { children }) => {
 
   return (
     <>
-      <SpotifyAuthRefreshModal isOpen={spotifyAccessRefreshModal} toggle={toggleModal} />
+      {spotifyAccessRefreshModal && <SpotifyAuthRefreshModal isOpen={spotifyAccessRefreshModal} toggle={toggleModal} />}
       {errorBanner}
       {children}      
     </>
