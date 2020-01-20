@@ -34,7 +34,7 @@ const ListRow: React.FC<Props> = ({
   setIsEditing,
   ...listProps
 }) => {
-  const [editText, setEditText] = useState(item.text);
+  const [editText, setEditText] = useState(item.data);
 
   const {
     handleRemove,
@@ -65,7 +65,7 @@ const ListRow: React.FC<Props> = ({
               onClick={e => {
                 handleActionClick(
                   e,
-                  createNewListItem(item, { text: editText }),
+                  createNewListItem(item, { data: editText }),
                   handleEdit as ListHandler,
                 );
                 setEditText('');
@@ -120,14 +120,14 @@ const ListRow: React.FC<Props> = ({
     const active = canSelect && isSelected;
     return (
       <ListGroupItem
-        key={item.text}
+        key={item.data}
         action={canSelect}
         active={active}
         className='noselect d-flex justify-content-between align-items-center py-1'
         onClick={e => listProps.handleSelectionChange?.(item)}
       >
         {`${rowNumber + 1}. `}
-        {item.text}
+        {item.data}
         {renderActionButtons()}
         {active ? '✅' : '❌'}
       </ListGroupItem>

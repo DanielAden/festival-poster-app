@@ -16,7 +16,7 @@ const CLEAR = 'Unselect All';
 
 export interface ListItem {
   id: number;
-  text: string;
+  data: string;
   canEdit?: boolean;
   isSelected: boolean;
   userAdded?: boolean;
@@ -51,7 +51,7 @@ export const useList = (
     const listItemsMap = (values: string[]) =>
       values.map(v => {
         return createNewListItem({
-          text: v,
+          data: v,
           isSelected: true,
           canEdit: false,
           userAdded: false,
@@ -129,7 +129,7 @@ export function attachHandlers(
           throw new Error(
             `Could not find edited item: ${JSON.stringify(editedItem)}`,
           );
-        itemToEdit.text = editedItem.text;
+        itemToEdit.data = editedItem.data;
         return newItems;
       });
       handlerCallbacks?.handleEdit?.(editedItem);
@@ -220,7 +220,7 @@ const List: React.FC<ListProps> = props => {
                   onClick={() => {
                     const newItem = createNewListItem(
                       {
-                        text: addRowText,
+                        data: addRowText,
                         userAdded: true,
                         isSelected: false,
                       },

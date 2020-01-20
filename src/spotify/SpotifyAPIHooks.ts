@@ -39,7 +39,7 @@ const artistObjectsToListItems = (artistObjects: SpotifyArtistObject[]) => {
   return artistObjects.map(ao => {
     return createNewListItem({
       isSelected: true,
-      text: ao.name,
+      data: ao.name,
       canEdit: false,
       userAdded: false,
     });

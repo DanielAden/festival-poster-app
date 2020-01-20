@@ -81,7 +81,7 @@ abstract class PosterTheme {
     const lines: string[] = [];
     let currentLine = '';
     for (let item of this.artists) {
-      let artist = item.text;
+      let artist = item.data;
       if (this.artistCase === 'upper') artist = artist.toUpperCase();
       const lineWidth = Math.ceil(
         this.ctx.measureText(currentLine + artist).width,
