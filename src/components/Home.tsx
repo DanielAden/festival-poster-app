@@ -30,8 +30,8 @@ const themeOptions = [
 interface Props {}
 const Home: React.FC<Props> = () => {
   const dispatch = useDispatch();
-  const theme = useAppSelector(s => s.poster.themeType);
-  const [, themeSelectHook] = useAppSelect(themeOptions, theme, value => {
+  const themeType = useAppSelector(s => s.poster.themeType);
+  const [, themeSelectHook] = useAppSelect(themeOptions, themeType, value => {
     dispatch(changeThemeType(value));
   });
 
@@ -51,7 +51,7 @@ const Home: React.FC<Props> = () => {
             <AppButton color={'warning'} onClick={() => createImage()}>
               Create Image
             </AppButton>
-            <Poster themeType={theme} />
+            <Poster />
           </Col>
           <Col>
             <TopArtistsList />

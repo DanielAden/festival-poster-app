@@ -40,11 +40,12 @@ abstract class PosterTheme {
   }
 
   // From this tutorial: https://riptutorial.com/html5-canvas/example/19169/scaling-image-to-fit-or-fill-
-  protected drawBGImage(img: HTMLImageElement) {
-    var scale = Math.max(this.w / img.width, this.h / img.height);
-    var x = this.w / 2 - (img.width / 2) * scale;
-    var y = this.h / 2 - (img.height / 2) * scale;
-    this.ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+  protected _drawBGImage(can: HTMLCanvasElement, img: HTMLImageElement) {
+    let ctx = this.getContext(can);
+    const scale = Math.max(can.width / img.width, can.height / img.height);
+    const x = can.width / 2 - (img.width / 2) * scale;
+    const y = can.height / 2 - (img.height / 2) * scale;
+    ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
   }
 
   protected font(fontRatio: number, font: string) {
@@ -133,19 +134,31 @@ abstract class PosterTheme {
     });
   }
 
-  public draw(can: HTMLCanvasElement) {
+  protected _draw() {
+    this.drawFestivalName();
+    this.drawArtistBlock();
+  }
+
+  public draw(can: HTMLCanvasElement, drawBackground = false) {
     this.ctx = this.getContext(can);
     can.width = this.w;
     can.height = this.h;
     createHiDPICanvas(can, this.w, this.h);
 
+    if (!drawBackground) {
+      this._draw();
+    } else {
+      this.drawBackground(can, this._draw.bind(this));
+    }
+  }
+
+  public drawBackground(can: HTMLCanvasElement, cb?: any, src = this.bgImage) {
     const img = new Image(this.w, this.h);
     img.onload = () => {
-      this.drawBGImage(img);
-      this.drawFestivalName();
-      this.drawArtistBlock();
+      this._drawBGImage(can, img);
+      if (cb) cb();
     };
-    img.src = this.bgImage;
+    img.src = src;
   }
 }
 
