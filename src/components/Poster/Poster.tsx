@@ -2,6 +2,8 @@ import React, { useRef, useEffect } from 'react';
 import '../../style/Poster.css';
 import { usePosterTheme, usePosterSize } from './PosterThemes';
 
+export const POSTER_CANVAS_ID = 'poster-canvas';
+
 interface Props {
   themeType?: string;
 }
@@ -42,15 +44,15 @@ const Poster: React.FC<Props> = ({ themeType = 'theme1' }) => {
       }}
     >
       <canvas
+        id='poster-bg'
         width={posterWidth}
         height={posterHeight}
         ref={bgRef}
-        id='poster-bg'
         style={canvasStyle()}
       >
         Poster BackGround
       </canvas>
-      <canvas ref={ref} id='poster' style={canvasStyle()}>
+      <canvas ref={ref} id={POSTER_CANVAS_ID} style={canvasStyle()}>
         Festival Poster Viewer
       </canvas>
     </div>

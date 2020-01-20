@@ -11,6 +11,7 @@ abstract class PosterTheme {
   protected ctx!: CanvasRenderingContext2D;
   protected w: number = 900;
   protected h: number = 600;
+  protected _postDrawCB?: any;
 
   protected bgImage: string = '';
 
@@ -139,16 +140,25 @@ abstract class PosterTheme {
     this.drawArtistBlock();
   }
 
+  public set postDrawCB(cb: any) {
+    this._postDrawCB = cb;
+  }
+
   public draw(can: HTMLCanvasElement, drawBackground = false) {
     this.ctx = this.getContext(can);
     can.width = this.w;
     can.height = this.h;
     createHiDPICanvas(can, this.w, this.h);
 
+    const cb = () => {
+      this._draw();
+      if (this._postDrawCB) this._postDrawCB();
+    };
+
     if (!drawBackground) {
       this._draw();
     } else {
-      this.drawBackground(can, this._draw.bind(this));
+      this.drawBackground(can, cb.bind(this));
     }
   }
 

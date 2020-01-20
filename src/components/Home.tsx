@@ -1,19 +1,27 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import TopArtistsList from './TopArtistsList';
 import { Container, Row, Col, Nav } from 'reactstrap';
-import Poster from './Poster/Poster';
+import Poster, { POSTER_CANVAS_ID } from './Poster/Poster';
 import AppSelect, { useAppSelect } from './AppSelect/AppSelect';
 import { useDispatch } from 'react-redux';
 import { changeThemeType } from '../store/Poster/posterSlice';
 import useAppSelector from '../store/rootReducer';
 import AppButton from './AppButton';
+import { usePosterTheme } from './Poster/PosterThemes';
 
-const createImage = async () => {
-  const can = document.getElementById('poster') as HTMLCanvasElement;
-  if (!can) throw new Error('Expected canvas node');
-  const dataURL = can.toDataURL('image/jpeg', 1.0);
-  const w = window.open('_blank');
-  w?.document.write(`<img src="${dataURL}"></img>`);
+const useCreateImage = () => {
+  const theme = usePosterTheme();
+  const createImage = useCallback(() => {
+    const can = document.getElementById(POSTER_CANVAS_ID) as HTMLCanvasElement;
+    if (!can) throw new Error('Expected canvas node');
+    theme.postDrawCB = () => {
+      const dataURL = can.toDataURL('image/jpeg', 1.0);
+      const w = window.open('_blank');
+      w?.document.write(`<img src="${dataURL}"></img>`);
+    };
+    theme.draw(can, true);
+  }, [theme]);
+  return createImage;
 };
 
 const themeOptions = [
@@ -34,6 +42,7 @@ const Home: React.FC<Props> = () => {
   const [, themeSelectHook] = useAppSelect(themeOptions, themeType, value => {
     dispatch(changeThemeType(value));
   });
+  const createImage = useCreateImage();
 
   return (
     <div className='home'>
