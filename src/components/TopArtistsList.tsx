@@ -1,12 +1,12 @@
-import React from 'react'
-import { useSpotifyTopArtists } from '../spotify/SpotifyAPIHooks'
-import List, { useReduxList, } from './List/List'
-import AppSelect, { useAppSelect } from './AppSelect/AppSelect'
-import useTypedSelector, { RootState } from '../store/rootReducer'
-import { updateArtistList } from '../store/Poster/posterSlice'
-import { usePosterSize } from './Poster/PosterThemes'
+import React from 'react';
+import { useSpotifyTopArtists } from '../spotify/SpotifyAPIHooks';
+import List, { useReduxList } from './List/List';
+import AppSelect, { useAppSelect } from './AppSelect/AppSelect';
+import useTypedSelector, { RootState } from '../store/rootReducer';
+import { updateArtistList } from '../store/Poster/posterSlice';
+import { usePosterSize } from './Poster/PosterThemes';
 
-const listName = 'Top Artists'
+const listName = 'Top Artists';
 const topArtistTROptions = [
   {
     text: 'Last 6 Months',
@@ -18,34 +18,35 @@ const topArtistTROptions = [
   },
   {
     text: '1 Month',
-    value: 'short_term'
+    value: 'short_term',
   },
-]
+];
 
-interface Props {
-
-}
+interface Props {}
 const TopArtistsList: React.FC<Props> = () => {
   const [, h] = usePosterSize();
   const { setTopArtistsTimeRange } = useSpotifyTopArtists();
-  const initialTimeRange = useTypedSelector(s => s.poster.topArtistsTimeRange)
-  const [, artistSelectProps] = useAppSelect(topArtistTROptions, initialTimeRange, (v) => setTopArtistsTimeRange(v))
+  const initialTimeRange = useTypedSelector(s => s.poster.topArtistsTimeRange);
+  const [, artistSelectProps] = useAppSelect(
+    topArtistTROptions,
+    initialTimeRange,
+    v => setTopArtistsTimeRange(v),
+  );
 
   const { items, listProps } = useReduxList(
-    (state: RootState) => state.poster.artists, 
+    (state: RootState) => state.poster.artists,
     updateArtistList,
   );
 
-
   return (
     <div>
-      <h3 style={{display: 'inline-block'}}>{listName}</h3>
+      <h3 style={{ display: 'inline-block' }}>{listName}</h3>
       <AppSelect {...artistSelectProps} />
-      <div style={{maxHeight: h, overflowY: 'scroll'}}>
-        <List  items={items} {...listProps} canSelect />
+      <div style={{ maxHeight: h, overflowY: 'scroll' }}>
+        <List items={items} {...listProps} canSelect />
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default TopArtistsList;

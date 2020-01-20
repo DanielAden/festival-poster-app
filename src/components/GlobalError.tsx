@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Modal, ModalProps, ModalHeader, ModalBody } from 'reactstrap';
 import { constructSpotifyAuthURL } from '../spotify/SpotifyAuth';
 import useTypedSelector from '../store/rootReducer';
@@ -6,36 +6,45 @@ import useTypedSelector from '../store/rootReducer';
 interface SpotifyAuthRefreshModalProps extends ModalProps {
   toggle: () => void;
 }
-const SpotifyAuthRefreshModal: React.FC<SpotifyAuthRefreshModalProps> = (props) => {
+const SpotifyAuthRefreshModal: React.FC<SpotifyAuthRefreshModalProps> = props => {
   const { toggle } = props;
   return (
     <Modal {...props} className='spotify-auth-refresh-modal'>
-      <ModalHeader toggle={toggle}>Spotify Is Asking To Be Authorized</ModalHeader>
+      <ModalHeader toggle={toggle}>
+        Spotify Is Asking To Be Authorized
+      </ModalHeader>
       <ModalBody>
         <a href={constructSpotifyAuthURL()}>Authorize Spotify</a>
       </ModalBody>
     </Modal>
-  ) 
-}
+  );
+};
 
-interface Props {
-}
-const GlobalError: React.FC<Props> = ( { children }) => {
-  const errorData = useTypedSelector((s) => s.system.error);
-  const [spotifyAccessRefreshModal, setSpotifyAccessRefreshModal] = useState(false);
-  const toggleModal = () => setSpotifyAccessRefreshModal(!spotifyAccessRefreshModal);
+interface Props {}
+const GlobalError: React.FC<Props> = ({ children }) => {
+  const errorData = useTypedSelector(s => s.system.error);
+  const [spotifyAccessRefreshModal, setSpotifyAccessRefreshModal] = useState(
+    false,
+  );
+
+  const toggleModal = () =>
+    setSpotifyAccessRefreshModal(!spotifyAccessRefreshModal);
 
   if (!errorData.isError || !errorData.error) {
     if (spotifyAccessRefreshModal) {
       toggleModal();
     }
-    return (<>{children}</>);
+    return <>{children}</>;
   }
 
   const error = errorData.error;
 
   let errorBanner;
-  console.log(`isError: ${errorData.isError}, error: ${!!error}, errorData.error: ${!!errorData.error}`)
+  console.log(
+    `isError: ${
+      errorData.isError
+    }, error: ${!!error}, errorData.error: ${!!errorData.error}`,
+  );
   if (error) {
     switch (error.type) {
       case 'NoSpotifyAccess':
@@ -50,12 +59,16 @@ const GlobalError: React.FC<Props> = ( { children }) => {
 
   return (
     <>
-      {spotifyAccessRefreshModal && <SpotifyAuthRefreshModal isOpen={spotifyAccessRefreshModal} toggle={toggleModal} />}
+      {spotifyAccessRefreshModal && (
+        <SpotifyAuthRefreshModal
+          isOpen={spotifyAccessRefreshModal}
+          toggle={toggleModal}
+        />
+      )}
       {errorBanner}
-      {children}      
+      {children}
     </>
-  )
-}
-
+  );
+};
 
 export default GlobalError;

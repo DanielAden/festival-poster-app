@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { constructSpotifyAuthURL } from '../spotify/SpotifyAuth';
 
 // const centerContent = 'justify-content-md-center';
@@ -16,13 +16,9 @@ import { constructSpotifyAuthURL } from '../spotify/SpotifyAuth';
 //   return userId;
 // }
 
-interface Props {
-  
-}
+interface Props {}
 const SpotifyInfoCapturePanel: React.FC<Props> = () => {
-  return (
-        <a href={constructSpotifyAuthURL()}>Authorize Spotify</a>
-  )
-}
+  return <a href={constructSpotifyAuthURL()}>Authorize Spotify</a>;
+};
 
 export default SpotifyInfoCapturePanel;

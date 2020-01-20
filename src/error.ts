@@ -1,12 +1,11 @@
-
 export const toStorable = function(e: Error): AppErrorStorable {
-  const type = (e instanceof AppError) ? e.type : null;
+  const type = e instanceof AppError ? e.type : null;
   return {
     message: e.message,
     name: e.name,
     stack: e.stack,
-    type: type,  
-  }
+    type: type,
+  };
 };
 
 export type AppErrorType = 'NoSpotifyAccess' | null;
@@ -17,7 +16,7 @@ export interface AppErrorStorable {
   type: AppErrorType;
 }
 
-export class AppError extends  Error {
+export class AppError extends Error {
   private _type: AppErrorType = null;
 
   constructor(message: string, type?: AppErrorType) {
