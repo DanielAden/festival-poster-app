@@ -36,6 +36,7 @@ const TopArtistsList: React.FC<Props> = () => {
   const { items, listProps } = useReduxList(
     (state: RootState) => state.poster.artists,
     updateArtistList,
+    data => data.name,
   );
 
   return (

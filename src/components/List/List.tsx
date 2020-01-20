@@ -14,13 +14,14 @@ import produce from 'immer';
 const SELECTALL = 'Select All';
 const CLEAR = 'Unselect All';
 
-export interface ListItem {
+export interface ListItem<T> {
   id: number;
-  data: string;
+  data: T;
   canEdit?: boolean;
   isSelected: boolean;
   userAdded?: boolean;
 }
+export type ListItems<T> = ListItem<T>[];
 // Quick and dirty way to generate probably unique ids,
 // Should serve the purpose for this list implementation
 let _ID = -1;
@@ -29,10 +30,10 @@ const generateId = () => {
   return _ID;
 };
 
-export function createNewListItem(
-  oldItem: Omit<ListItem, 'id'>,
-  newItem?: Omit<Partial<ListItem>, 'id'>,
-): ListItem {
+export function createNewListItem<T>(
+  oldItem: Omit<ListItem<T>, 'id'>,
+  newItem?: Omit<Partial<ListItem<T>>, 'id'>,
+): ListItem<T> {
   return {
     id: generateId(),
     ...oldItem,
@@ -40,24 +41,27 @@ export function createNewListItem(
   };
 }
 
-type UseList = [ListItem[], (items: string[]) => void, Required<ListHandlers>];
-export const useList = (
-  handlerCallbacks?: ListHandlers,
-  handlerMiddleware?: ListHandlerMiddleware,
-): UseList => {
-  const [list, setList] = useState<ListItem[]>([]);
+type UseList<T> = [
+  ListItems<T>,
+  (items: T[]) => void,
+  Required<ListHandlers<T>>,
+];
+export function useList<T>(
+  handlerCallbacks?: ListHandlers<T>,
+  handlerMiddleware?: ListHandlerMiddleware<T>,
+): UseList<T> {
+  const [list, setList] = useState<ListItems<T>>([]);
 
-  const setListWrapper = useCallback((items: string[]) => {
-    const listItemsMap = (values: string[]) =>
-      values.map(v => {
-        return createNewListItem({
-          data: v,
-          isSelected: true,
-          canEdit: false,
-          userAdded: false,
-        });
+  const setListWrapper = useCallback((dataList: T[]) => {
+    const items = dataList.map(data => {
+      return createNewListItem({
+        data: data,
+        isSelected: true,
+        canEdit: false,
+        userAdded: false,
       });
-    setList(listItemsMap(items));
+    });
+    setList(items);
   }, []);
 
   const listItemHook = attachHandlers(
@@ -66,47 +70,48 @@ export const useList = (
     handlerMiddleware,
   );
   return [list, setListWrapper, listItemHook];
-};
+}
 
-type UseReduxList = {
-  items: ListItem[];
-  setItems: (items: ListItem[]) => void;
-  listProps: Required<ListHandlers>;
+type UseReduxList<T> = {
+  items: ListItems<T>;
+  setItems: (items: ListItems<T>) => void;
+  listProps: Omit<ListProps<T>, 'items'>;
 };
-export const useReduxList = (
-  selectorFN: (state: any) => ListItem[],
-  actionFN: (newList: ListItem[]) => void,
-): UseReduxList => {
+export function useReduxList<T>(
+  selectorFN: (state: any) => ListItems<T>,
+  actionFN: (newList: ListItems<T>) => void,
+  renderData: (data: T) => JSX.Element | string,
+): UseReduxList<T> {
   const items = useSelector(selectorFN);
   const dispatch = useDispatch();
-  const listFNSetter: ListSetter = (
-    fn: (oldList: ListItem[]) => ListItem[],
+  const listFNSetter: ListSetter<T> = (
+    fn: (oldList: ListItems<T>) => ListItems<T>,
   ) => {
     const newList = fn(items);
     dispatch(actionFN(newList));
   };
   const setItems = useCallback(
-    (items: ListItem[]) => {
+    (items: ListItems<T>) => {
       dispatch(actionFN(items));
     },
     [dispatch, actionFN],
   );
 
-  const listProps = attachHandlers(listFNSetter);
+  const listProps = { ...attachHandlers(listFNSetter), renderData };
   return {
     items: items,
     setItems,
     listProps,
   };
-};
+}
 
 // TODO use immer produce for all of this
-type ListSetter = (fn: (oldList: ListItem[]) => ListItem[]) => void;
-export function attachHandlers(
-  setter: ListSetter,
-  handlerCallbacks?: ListHandlers,
-  handlerMiddleware?: ListHandlerMiddleware,
-): Required<ListHandlers> {
+type ListSetter<T> = (fn: (oldList: ListItems<T>) => ListItems<T>) => void;
+export function attachHandlers<T>(
+  setter: ListSetter<T>,
+  handlerCallbacks?: ListHandlers<T>,
+  handlerMiddleware?: ListHandlerMiddleware<T>,
+): Required<ListHandlers<T>> {
   return {
     handleRemove: toRemove => {
       setter(oldItems => {
@@ -139,7 +144,7 @@ export function attachHandlers(
         return produce(oldItems, draft => {
           const i = draft.findIndex(i => i.id === selectedItem.id);
           draft[i].isSelected = !selectedItem.isSelected;
-          handlerCallbacks?.handleSelectionChange?.(draft[i]);
+          handlerCallbacks?.handleSelectionChange?.(draft[i] as ListItem<T>);
         });
       });
     },
@@ -170,32 +175,34 @@ export function attachHandlers(
   };
 }
 
-export interface ListHandlerMiddleware {
-  addRow?: (item: ListItem) => ListItem;
-  selectAll?: (items: ListItem[]) => ListItem[];
-  clear?: (items: ListItem[]) => ListItem[];
+export interface ListHandlerMiddleware<T> {
+  addRow?: (item: ListItem<T>) => ListItem<T>;
+  selectAll?: (items: ListItems<T>) => ListItems<T>;
+  clear?: (items: ListItems<T>) => ListItems<T>;
 }
 
-export type ListHandler = (item: ListItem) => void;
+export type ListHandler<T> = (item: ListItem<T>) => void;
 export type ListActionHandler = (actionValue: any) => void;
-export interface ListHandlers {
-  handleRemove?: ListHandler;
-  handleAddRow?: ListHandler;
-  handleEdit?: ListHandler;
-  handleSelectionChange?: ListHandler;
-  handleSelectAll?: (newItems?: ListItem[]) => void;
-  handleClear?: (newItems?: ListItem[]) => void;
+export interface ListHandlers<T> {
+  handleRemove?: ListHandler<T>;
+  handleAddRow?: ListHandler<T>;
+  handleEdit?: ListHandler<T>;
+  handleSelectionChange?: ListHandler<T>;
+  handleSelectAll?: (newItems?: ListItem<T>[]) => void;
+  handleClear?: (newItems?: ListItems<T>) => void;
 }
-export interface ListProps extends ListHandlers {
+export interface ListProps<T> extends ListHandlers<T> {
+  items: ListItems<T>;
+  renderData: (data: T) => JSX.Element | string;
   name?: string;
-  items: ListItem[];
   canRemove?: boolean;
   canAddRow?: boolean;
   canEditGlobal?: boolean;
   canSelect?: boolean;
 }
 
-const List: React.FC<ListProps> = props => {
+type FCList<T = any> = React.FC<ListProps<T>>;
+const List: FCList = props => {
   const [isAddingRow, setisAddingRow] = useState(false);
   const [addRowText, setAddRowText] = useState('');
   const [isEditing, setIsEditing] = useState(false);

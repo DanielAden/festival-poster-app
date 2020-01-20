@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ListItem } from '../../components/List/List';
+import { ListItems } from '../../components/List/List';
 import produce from 'immer';
+import { SpotifyArtistObject } from '../../spotify/SpotifyAPI';
 
 export interface PosterState {
-  artists: ListItem[];
+  artists: ListItems<SpotifyArtistObject>;
   topArtistsTimeRange: string; // TODO make this type safe
   themeType: string;
   height: number;
@@ -30,7 +31,7 @@ const posterSlice = createSlice({
         draftState.themeType = action.payload;
       });
     },
-    updateArtistList(state, action: PayloadAction<ListItem[]>) {
+    updateArtistList(state, action: PayloadAction<PosterState['artists']>) {
       return produce(state, draftState => {
         draftState.artists = action.payload;
       });

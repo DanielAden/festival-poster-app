@@ -10,28 +10,30 @@ import {
 import AppButton from '../AppButton';
 import '../../style.css';
 
-export function handleActionClick(
+export function handleActionClick<T>(
   e: any,
-  item: ListItem,
-  handler: ListHandler,
+  item: ListItem<T>,
+  handler: ListHandler<T>,
 ) {
   e.preventDefault();
   handler(item);
 }
 
-interface Props extends ListProps {
-  item: ListItem;
+interface Props<T> extends ListProps<T> {
+  item: ListItem<T>;
   isEditing: boolean;
   setIsEditing: React.Dispatch<any>;
   disableActions: boolean;
   rowNumber: number;
 }
-const ListRow: React.FC<Props> = ({
+type FCRow<T = any> = React.FC<Props<T>>;
+const ListRow: FCRow = ({
   rowNumber,
   disableActions,
   item,
   isEditing,
   setIsEditing,
+  renderData,
   ...listProps
 }) => {
   const [editText, setEditText] = useState(item.data);
@@ -63,10 +65,12 @@ const ListRow: React.FC<Props> = ({
           <InputGroupAddon addonType='append'>
             <AppButton
               onClick={e => {
+                if (!handleEdit)
+                  throw Error('Expected handleEdit to exist by this point');
                 handleActionClick(
                   e,
                   createNewListItem(item, { data: editText }),
-                  handleEdit as ListHandler,
+                  handleEdit,
                 );
                 setEditText('');
                 setIsEditing(false);
@@ -120,14 +124,14 @@ const ListRow: React.FC<Props> = ({
     const active = canSelect && isSelected;
     return (
       <ListGroupItem
-        key={item.data}
+        key={item.id}
         action={canSelect}
         active={active}
         className='noselect d-flex justify-content-between align-items-center py-1'
         onClick={e => listProps.handleSelectionChange?.(item)}
       >
         {`${rowNumber + 1}. `}
-        {item.data}
+        {renderData(item.data)}
         {renderActionButtons()}
         {active ? '✅' : '❌'}
       </ListGroupItem>

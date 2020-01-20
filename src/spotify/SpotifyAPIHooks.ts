@@ -11,7 +11,7 @@ import {
   updateArtistList,
   topArtistsTimeRangeUpdated,
 } from '../store/Poster/posterSlice';
-import { createNewListItem, ListItem } from '../components/List/List';
+import { createNewListItem, ListItems } from '../components/List/List';
 import { useErrorLog, useAppLog } from '../AppLog';
 import { AppError } from '../error';
 
@@ -39,7 +39,7 @@ const artistObjectsToListItems = (artistObjects: SpotifyArtistObject[]) => {
   return artistObjects.map(ao => {
     return createNewListItem({
       isSelected: true,
-      data: ao.name,
+      data: ao,
       canEdit: false,
       userAdded: false,
     });
@@ -47,7 +47,7 @@ const artistObjectsToListItems = (artistObjects: SpotifyArtistObject[]) => {
 };
 
 let count = 0; // TODO remove
-type UseSpotifyTopArtists = [ListItem[], (newTimeRange: string) => void];
+type UseSpotifyTopArtists<T> = [ListItems<T>, (newTimeRange: string) => void];
 export const useSpotifyTopArtists = () => {
   const timeRange = useTypedSelector(s => s.poster.topArtistsTimeRange);
   const topArtists = useTypedSelector(s => s.poster.artists);

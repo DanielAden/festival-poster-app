@@ -73,16 +73,20 @@ abstract class PosterTheme {
       : this.festivalNameText;
   }
 
-  protected get artists() {
-    return this.ps.artists.filter(a => a.isSelected);
+  protected get artistNames() {
+    let artists = this.ps.artists.filter(a => a.isSelected);
+    const artistNames = artists.map(a => {
+      let { name } = a.data;
+      if (this.artistCase === 'upper') name = name.toUpperCase();
+      return name;
+    });
+    return artistNames;
   }
 
   protected artistLines() {
     const lines: string[] = [];
     let currentLine = '';
-    for (let item of this.artists) {
-      let artist = item.data;
-      if (this.artistCase === 'upper') artist = artist.toUpperCase();
+    for (let artist of this.artistNames) {
       const lineWidth = Math.ceil(
         this.ctx.measureText(currentLine + artist).width,
       );
