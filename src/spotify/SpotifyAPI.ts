@@ -62,6 +62,13 @@ export interface SpotifyArtistObject {
   track_number: number;
   type: 'artist';
   uri: string;
+  images: SpotifyImage[];
+}
+
+export interface SpotifyImage {
+  height: number;
+  width: number;
+  url: string;
 }
 
 type TimeRange = 'long_term' | 'medium_term' | 'short_term';
