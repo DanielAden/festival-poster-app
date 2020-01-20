@@ -24,7 +24,7 @@ interface Props<T> extends ListProps<T> {
   isEditing: boolean;
   setIsEditing: React.Dispatch<any>;
   disableActions: boolean;
-  rowNumber: number;
+  rowNumber?: number;
 }
 type FCRow<T = any> = React.FC<Props<T>>;
 const ListRow: FCRow = ({
@@ -130,7 +130,7 @@ const ListRow: FCRow = ({
         className='noselect d-flex justify-content-between align-items-center py-1'
         onClick={e => listProps.handleSelectionChange?.(item)}
       >
-        {`${rowNumber + 1}. `}
+        {typeof rowNumber === 'number' && `${rowNumber + 1}. `}
         {renderData(item.data)}
         {renderActionButtons()}
         {active ? '✅' : '❌'}

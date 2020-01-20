@@ -199,6 +199,7 @@ export interface ListProps<T> extends ListHandlers<T> {
   canAddRow?: boolean;
   canEditGlobal?: boolean;
   canSelect?: boolean;
+  rowNumbers?: boolean;
 }
 
 type FCList<T = any> = React.FC<ListProps<T>>;
@@ -322,6 +323,7 @@ const List: FCList = props => {
 
   function renderList() {
     const rows = items.map((item, i) => {
+      const rowNumber = props.rowNumbers ? i : undefined;
       return (
         <ListRow
           key={item.id}
@@ -329,7 +331,7 @@ const List: FCList = props => {
           setIsEditing={setIsEditing}
           isEditing={isEditing}
           disableActions={isAddingRow}
-          rowNumber={i}
+          rowNumber={rowNumber}
           {...props}
         />
       );
