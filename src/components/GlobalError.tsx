@@ -25,28 +25,32 @@ const GlobalError: React.FC<Props> = ( { children }) => {
   const [spotifyAccessRefreshModal, setSpotifyAccessRefreshModal] = useState(false);
   const toggleModal = () => setSpotifyAccessRefreshModal(!spotifyAccessRefreshModal);
 
-  if (!errorData.isError) {
-    if (spotifyAccessRefreshModal) setSpotifyAccessRefreshModal(false);
+  if (!errorData.isError || !errorData.error) {
+    if (spotifyAccessRefreshModal) {
+      toggleModal();
+    }
     return (<>{children}</>);
   }
 
-  const { error } = errorData;
+  const error = errorData.error;
 
   let errorBanner;
-  switch (error.type) {
-    case 'NoSpotifyAccess':
-      if (!spotifyAccessRefreshModal) setSpotifyAccessRefreshModal(true);
-      errorBanner = null; // Modal will take care of error message
-      break;
-    default:
-      const { error } = errorData;
-      errorBanner = <h3>Error</h3>;
-      console.error(error);
+  console.log(`isError: ${errorData.isError}, error: ${!!error}, errorData.error: ${!!errorData.error}`)
+  if (error) {
+    switch (error.type) {
+      case 'NoSpotifyAccess':
+        if (!spotifyAccessRefreshModal) setSpotifyAccessRefreshModal(true);
+        errorBanner = null; // Modal will take care of error message
+        break;
+      default:
+        errorBanner = <h3>Error</h3>;
+        console.error(error);
+    }
   }
 
   return (
     <>
-      <SpotifyAuthRefreshModal isOpen={spotifyAccessRefreshModal} toggle={toggleModal} />
+      {spotifyAccessRefreshModal && <SpotifyAuthRefreshModal isOpen={spotifyAccessRefreshModal} toggle={toggleModal} />}
       {errorBanner}
       {children}      
     </>

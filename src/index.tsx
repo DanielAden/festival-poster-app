@@ -9,7 +9,7 @@ import { Provider } from 'react-redux'
 import store from './store'
 import GlobalError from './components/GlobalError'
 import {
-  BrowserRouter as Router,
+  MemoryRouter  as Router,
 } from "react-router-dom";
 
 
