@@ -36,7 +36,24 @@ const TopArtistsList: React.FC<Props> = () => {
   const { items, listProps } = useReduxList(
     (state: RootState) => state.poster.artists,
     updateArtistList,
-    data => data.name,
+    data => {
+      const url = data.images[data.images.length - 1].url;
+      return (
+        <span>
+          <img
+            className='img-thumbnail rounded-circle'
+            alt={data.name + ' photo'}
+            src={url}
+            style={{
+              height: '75px',
+              width: '75px',
+              marginRight: '5px',
+            }}
+          />
+          {data.name}
+        </span>
+      );
+    },
   );
 
   return (

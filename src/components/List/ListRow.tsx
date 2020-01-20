@@ -37,7 +37,6 @@ const ListRow: FCRow = ({
   ...listProps
 }) => {
   const [editText, setEditText] = useState(item.data);
-
   const {
     handleRemove,
     handleEdit,
