@@ -1,21 +1,45 @@
 
 
 .toolbar {
-  background-color: tomato;
-  height: 2rem;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
   display: flex;
-  justify-content: center;
+  background-color: tomato;
+  justify-content: space-between;
 }
-
 
 .toolbar__item {
+  height: auto;
+  width: auto;
+  padding: .5rem;
   flex: 1 1 auto;
-  display: flex;
-  align-items: center;
   justify-content: center;
+  text-align: center;
 }
 
-.toolbar__item:not(:last-child)  {
-  border-right: solid 1px black;
 
+.toolbar-window {
+}
+
+@keyframes slideinbottom {
+
+  from {
+    top: 0;
+  }
+
+  to {
+    top: -1vh;
+  }
+}
+
+@keyframes slideoutbottom {
+
+  from {
+    margin-top: 0; 
+  }
+
+  to {
+    margin-top: 100%;
+  }
 }

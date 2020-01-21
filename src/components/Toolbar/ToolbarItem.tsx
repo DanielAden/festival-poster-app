@@ -2,17 +2,17 @@ import React from 'react';
 import './Toolbar.css';
 
 export interface ToolbarItemProps {
-  id: number;
-  clicked?: boolean;
-  handleClick: (id: number) => void;
+  id: string;
+  currentClickedId: string;
+  handleClick: (id: string) => void;
 }
-const ToolbarItem: React.FC<ToolbarItemProps> = ({
+export const ToolbarItem: React.FC<ToolbarItemProps> = ({
   id,
-  clicked,
+  currentClickedId,
   children,
   handleClick,
 }) => {
-  const bgColor = clicked ? 'lime' : '';
+  const bgColor = currentClickedId === id ? 'lime' : '';
   return (
     <div
       className='toolbar__item'
@@ -25,5 +25,3 @@ const ToolbarItem: React.FC<ToolbarItemProps> = ({
     </div>
   );
 };
-
-export default ToolbarItem;
