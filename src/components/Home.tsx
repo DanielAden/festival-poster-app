@@ -8,6 +8,7 @@ import { changeThemeType } from '../store/Poster/posterSlice';
 import useAppSelector from '../store/rootReducer';
 import AppButton from './AppButton';
 import { usePosterTheme } from './Poster/PosterThemes';
+import Toolbar from './Toolbar/Toolbar';
 
 const useCreateImage = () => {
   const theme = usePosterTheme();
@@ -53,6 +54,7 @@ const Home: React.FC<Props> = () => {
         <div className='navbar-brand'>Poster App</div>
         {renderDevTools()}
       </Nav>
+      <Toolbar />
       <Container>
         <Row>
           <Col>
