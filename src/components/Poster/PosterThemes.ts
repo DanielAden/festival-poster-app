@@ -1,10 +1,9 @@
-import city from '../../images/city.jpg';
-import fireworks from '../../images/fireworks.jpg';
 import { PosterState } from '../../store/Poster/posterSlice';
 import { AppError } from '../../error';
 import useTypedSelector from '../../store/rootReducer';
 import { useLayoutEffect, useState } from 'react';
 import { createHiDPICanvas } from './CanvasUtils';
+import { DEFAULT_BACKGROUND_IMAGE } from '../../images';
 
 type Case = 'none' | 'upper';
 abstract class PosterTheme {
@@ -13,7 +12,7 @@ abstract class PosterTheme {
   protected h: number = 600;
   protected _postDrawCB?: any;
 
-  protected bgImage: string = '';
+  protected _bgImage: string = DEFAULT_BACKGROUND_IMAGE;
 
   protected festivalNameText: string = 'My Festival';
   protected festivalNameColor: string = 'white';
@@ -38,6 +37,10 @@ abstract class PosterTheme {
   public setPosterSize(w: number, h: number) {
     this.w = w;
     this.h = h;
+  }
+
+  public set backgroundImage(image: string) {
+    this._bgImage = image;
   }
 
   // From this tutorial: https://riptutorial.com/html5-canvas/example/19169/scaling-image-to-fit-or-fill-
@@ -162,7 +165,7 @@ abstract class PosterTheme {
     }
   }
 
-  public drawBackground(can: HTMLCanvasElement, cb?: any, src = this.bgImage) {
+  public drawBackground(can: HTMLCanvasElement, cb?: any, src = this._bgImage) {
     const img = new Image(this.w, this.h);
     img.onload = () => {
       this._drawBGImage(can, img);
@@ -173,8 +176,6 @@ abstract class PosterTheme {
 }
 
 class PosterTheme1 extends PosterTheme {
-  bgImage = fireworks;
-
   festivalNameFont = 'Impact';
   festivalNameColor = 'tomato';
 
@@ -184,8 +185,6 @@ class PosterTheme1 extends PosterTheme {
 }
 
 class PosterTheme2 extends PosterTheme {
-  bgImage = city;
-
   festivalNameColor = 'lime';
   festivalNameFont = 'Avant Garde';
 
@@ -217,6 +216,8 @@ export const usePosterSize = () => {
 export const usePosterTheme = (): PosterTheme => {
   const [w, h] = usePosterSize();
   const ps = useTypedSelector(s => s.poster);
+  const bgimage = useTypedSelector(s => s.poster.textStyle);
+
   let theme;
   switch (ps.themeType) {
     case 'theme1':
@@ -229,5 +230,6 @@ export const usePosterTheme = (): PosterTheme => {
       throw new AppError(`Invalid theme ${ps.themeType}`);
   }
   theme.setPosterSize(w, h);
+  theme.backgroundImage = bgimage;
   return theme;
 };

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Input, FormGroup, Label } from 'reactstrap';
 
 type UseAppSelect = [string, Props];
 export const useAppSelect = (
@@ -22,16 +23,22 @@ export const useAppSelect = (
   ];
 };
 
-interface SelectOption {
+export interface SelectOption {
   value: string;
   text: string;
 }
 interface Props {
+  labelText?: string;
   selected: string;
   options: SelectOption[];
   handleChange?: (value: string) => void;
 }
-const AppSelect: React.FC<Props> = ({ options, handleChange, selected }) => {
+const AppSelect: React.FC<Props> = ({
+  options,
+  handleChange,
+  selected,
+  labelText,
+}) => {
   const optionEls = options.map(opt => {
     return (
       <option key={opt.value} value={opt.value}>
@@ -41,14 +48,18 @@ const AppSelect: React.FC<Props> = ({ options, handleChange, selected }) => {
   });
 
   return (
-    <select
-      value={selected}
-      onChange={e => {
-        if (handleChange) handleChange(e.target.value);
-      }}
-    >
-      {optionEls}
-    </select>
+    <FormGroup>
+      {labelText && <Label>{labelText}</Label>}
+      <Input
+        type='select'
+        value={selected}
+        onChange={e => {
+          if (handleChange) handleChange(e.target.value);
+        }}
+      >
+        {optionEls}
+      </Input>
+    </FormGroup>
   );
 };
 
