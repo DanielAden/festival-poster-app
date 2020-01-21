@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import TopArtistsList from './TopArtistsList';
-import { Container, Row, Col, Nav, Form, Label } from 'reactstrap';
-import Poster, { POSTER_CANVAS_ID } from './Poster/Poster';
+import { Container, Row, Col, Nav } from 'reactstrap';
+import Poster from './Poster/Poster';
 import Options from './Options';
 
 const renderDevTools = () => {
