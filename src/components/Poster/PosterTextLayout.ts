@@ -148,6 +148,8 @@ export class WeekendLayout extends PosterTextLayout {
   }
 
   drawArtistBlock() {
+    const xStart = 3;
+    const xRStart = this.posterWidth - xStart;
     const lines = this.artistLines();
     const oneThird = Math.ceil(lines.length / 3);
     const day1Lines = lines.slice(0, oneThird);
@@ -167,31 +169,31 @@ export class WeekendLayout extends PosterTextLayout {
 
     day1Lines.forEach((line, i) => {
       top += fh;
-      this.ctx.fillText(line, 0, top, this.posterWidth);
+      this.ctx.fillText(line, xStart, top, this.posterWidth);
     });
 
     top = top + fh * 3;
     this.ctx.textAlign = 'right';
 
     this.dayFont();
-    this.ctx.fillText('SATURDAY', this.posterWidth, top);
+    this.ctx.fillText('SATURDAY', xRStart, top);
     this.artistFont();
 
     day2Lines.forEach((line, i) => {
       top += fh;
-      this.ctx.fillText(line, this.posterWidth, top, this.posterWidth);
+      this.ctx.fillText(line, xRStart, top, this.posterWidth);
     });
 
     top = top + fh * 3;
     this.ctx.textAlign = 'left';
 
     this.dayFont();
-    this.ctx.fillText('SUNDAY', 0, top);
+    this.ctx.fillText('SUNDAY', 5, top);
     this.artistFont();
 
     day3Lines.forEach((line, i) => {
       top += fh;
-      this.ctx.fillText(line, 0, top, this.posterWidth);
+      this.ctx.fillText(line, xStart, top, this.posterWidth);
     });
   }
 }
