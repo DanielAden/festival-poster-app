@@ -1,8 +1,8 @@
 const client_id = 'f775b626d4784dfba4491742d5453d55'; // Your client id
-const redirect_uri =
-  process.env.NODE_ENV === 'development'
-    ? 'http://localhost:3000/'
-    : 'https://danieladen.github.io/festival-poster-app/'; // TODO remove hard coded redirect
+const redirect_uri = window.location.href;
+// process.env.NODE_ENV === 'development'
+//   ? window.location.href
+//   : 'https://danieladen.github.io/festival-poster-app/'; // TODO remove hard coded redirect
 const scope = 'user-top-read';
 const SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize';
 const SPOTIFY_ACCESS_TOKEN_FIELD = 'access_token';
