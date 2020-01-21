@@ -1,30 +1,30 @@
 import React, { useRef, useEffect } from 'react';
 import '../../style/Poster.css';
-import { usePosterTheme, usePosterSize } from './PosterThemes';
+import { usePoster, usePosterSize } from './Poster';
 
 export const POSTER_CANVAS_ID = 'poster-canvas';
 
 interface Props {
   themeType?: string;
 }
-const Poster: React.FC<Props> = ({ themeType = 'theme1' }) => {
+const PosterCanvas: React.FC<Props> = ({ themeType = 'theme1' }) => {
   const [posterWidth, posterHeight] = usePosterSize();
-  const theme = usePosterTheme();
+  const poster = usePoster();
   const ref = useRef<HTMLCanvasElement>(null);
   const bgRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const can = ref.current;
     if (!can) throw new Error('Unable to retreive poster canvas element');
-    theme.draw(can, false);
+    poster.draw(can, false);
   });
 
   useEffect(() => {
     const bgcan = bgRef.current;
     if (!bgcan)
       throw new Error('Unable to retreive poster background canvas element');
-    theme.drawBackground(bgcan);
-  }, [theme]);
+    poster.drawBackground(bgcan);
+  }, [poster]);
 
   const canvasStyle = (): React.CSSProperties => {
     return {
@@ -59,4 +59,4 @@ const Poster: React.FC<Props> = ({ themeType = 'theme1' }) => {
   );
 };
 
-export default Poster;
+export default PosterCanvas;

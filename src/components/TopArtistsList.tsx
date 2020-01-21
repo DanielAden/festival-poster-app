@@ -4,7 +4,7 @@ import List, { useReduxList } from './List/List';
 import AppSelect, { useAppSelect } from './AppSelect/AppSelect';
 import useTypedSelector, { RootState } from '../store/rootReducer';
 import { updateArtistList } from '../store/Poster/posterSlice';
-import { usePosterSize } from './Poster/PosterThemes';
+import { usePosterSize } from './Poster/Poster';
 
 const listName = 'Top Artists';
 const topArtistTROptions = [

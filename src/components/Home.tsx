@@ -1,7 +1,7 @@
 import React from 'react';
 import TopArtistsList from './TopArtistsList';
 import { Container, Row, Col, Nav } from 'reactstrap';
-import Poster from './Poster/Poster';
+import PosterCanvas from './Poster/PosterCanvas';
 import Options from './Options';
 
 const renderDevTools = () => {
@@ -41,7 +41,7 @@ const Home: React.FC<Props> = () => {
         </Row>
         <Row>
           <Col>
-            <Poster />
+            <PosterCanvas />
           </Col>
           <Col>
             <TopArtistsList />

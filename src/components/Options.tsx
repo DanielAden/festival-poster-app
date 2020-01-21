@@ -2,14 +2,14 @@ import React, { useCallback } from 'react';
 import { Form, Row, Col } from 'reactstrap';
 import AppSelect, { useAppSelect, SelectOption } from './AppSelect/AppSelect';
 import AppButton from './AppButton';
-import { usePosterTheme } from './Poster/PosterThemes';
-import { POSTER_CANVAS_ID } from './Poster/Poster';
+import { usePoster } from './Poster/Poster';
+import { POSTER_CANVAS_ID } from './Poster/PosterCanvas';
 import { changeThemeType, changeLayoutType } from '../store/Poster/posterSlice';
 import { useDispatch } from 'react-redux';
 import useAppSelector from '../store/rootReducer';
 
 const useCreateImage = () => {
-  const theme = usePosterTheme();
+  const theme = usePoster();
   const createImage = useCallback(() => {
     const can = document.getElementById(POSTER_CANVAS_ID) as HTMLCanvasElement;
     if (!can) throw new Error('Expected canvas node');
