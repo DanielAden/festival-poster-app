@@ -39,6 +39,10 @@ const layoutOptions: SelectOption[] = [
     text: 'Basic',
     value: 'basic',
   },
+  {
+    text: 'Weekend',
+    value: 'weekend',
+  },
 ];
 
 interface Props {}
