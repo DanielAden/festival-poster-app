@@ -6,7 +6,7 @@ import { SpotifyArtistObject } from '../../spotify/SpotifyAPI';
 export interface PosterState {
   artists: ListItems<SpotifyArtistObject>;
   topArtistsTimeRange: string; // TODO make this type safe
-  textStyle: string;
+  layoutType: string;
   themeType: string;
   height: number;
   width: number;
@@ -17,9 +17,9 @@ const width = height * 0.65;
 
 const initialState: PosterState = {
   artists: [],
-  themeType: 'theme1',
-  textStyle: 'none',
   topArtistsTimeRange: 'medium_term',
+  layoutType: 'basic',
+  themeType: 'theme1',
   width,
   height,
 };
@@ -33,9 +33,9 @@ const posterSlice = createSlice({
         draftState.themeType = action.payload;
       });
     },
-    changeTextStyle(state, action: PayloadAction<string>) {
+    changeLayoutType(state, action: PayloadAction<string>) {
       return produce(state, draftState => {
-        draftState.textStyle = action.payload;
+        draftState.layoutType = action.payload;
       });
     },
     updateArtistList(state, action: PayloadAction<PosterState['artists']>) {
@@ -55,7 +55,7 @@ export const {
   changeThemeType,
   updateArtistList,
   topArtistsTimeRangeUpdated,
-  changeTextStyle,
+  changeLayoutType,
 } = posterSlice.actions;
 
 export default posterSlice.reducer;

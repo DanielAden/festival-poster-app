@@ -5,6 +5,8 @@ import { useLayoutEffect, useState } from 'react';
 import { createHiDPICanvas } from './CanvasUtils';
 import { DEFAULT_BACKGROUND_IMAGE } from '../../images';
 
+abstract class PosterLayout {}
+
 type Case = 'none' | 'upper';
 abstract class PosterTheme {
   protected ctx!: CanvasRenderingContext2D;
@@ -216,7 +218,7 @@ export const usePosterSize = () => {
 export const usePosterTheme = (): PosterTheme => {
   const [w, h] = usePosterSize();
   const ps = useTypedSelector(s => s.poster);
-  const bgimage = useTypedSelector(s => s.poster.textStyle);
+  const bgimage = useTypedSelector(s => s.poster.layoutType);
 
   let theme;
   switch (ps.themeType) {

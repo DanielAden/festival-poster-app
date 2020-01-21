@@ -4,7 +4,7 @@ import AppSelect, { useAppSelect, SelectOption } from './AppSelect/AppSelect';
 import AppButton from './AppButton';
 import { usePosterTheme } from './Poster/PosterThemes';
 import { POSTER_CANVAS_ID } from './Poster/Poster';
-import { changeThemeType, changeTextStyle } from '../store/Poster/posterSlice';
+import { changeThemeType, changeLayoutType } from '../store/Poster/posterSlice';
 import { useDispatch } from 'react-redux';
 import useAppSelector from '../store/rootReducer';
 
@@ -34,10 +34,10 @@ const themeOptions: SelectOption[] = [
   },
 ];
 
-const textStyleOptions: SelectOption[] = [
+const layoutOptions: SelectOption[] = [
   {
-    text: 'Default',
-    value: 'none',
+    text: 'Basic',
+    value: 'basic',
   },
 ];
 
@@ -46,16 +46,16 @@ interface Props {}
 const Options: React.FC<Props> = () => {
   const dispatch = useDispatch();
   const themeType = useAppSelector(s => s.poster.themeType);
-  const textStyle = useAppSelector(s => s.poster.textStyle);
+  const layoutType = useAppSelector(s => s.poster.layoutType);
 
   const [, themeSelectHook] = useAppSelect(themeOptions, themeType, value => {
     dispatch(changeThemeType(value));
   });
-  const [, textStyleSelectHook] = useAppSelect(
-    textStyleOptions,
-    textStyle,
+  const [, layoutSelectHook] = useAppSelect(
+    layoutOptions,
+    layoutType,
     value => {
-      dispatch(changeTextStyle(value));
+      dispatch(changeLayoutType(value));
     },
   );
   const createImage = useCreateImage();
@@ -67,7 +67,7 @@ const Options: React.FC<Props> = () => {
             <AppSelect labelText={'Theme'} {...themeSelectHook} />
           </Col>
           <Col md={6}>
-            <AppSelect labelText={'Text Style'} {...textStyleSelectHook} />
+            <AppSelect labelText={'Text Layout'} {...layoutSelectHook} />
           </Col>
         </Row>
       </Form>
