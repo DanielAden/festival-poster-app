@@ -17,7 +17,6 @@ export abstract class Poster {
   protected festivalNameText: string = 'My Festival';
   protected festivalNameCase: Case = 'upper';
 
-  public artistSeperator: string = '/';
   protected artistCase: Case = 'upper';
 
   constructor(
@@ -45,6 +44,11 @@ export abstract class Poster {
 
   public get w() {
     return this._w;
+  }
+
+  public get artistSeperator() {
+    // return this.ps.
+    return String.fromCharCode(8226);
   }
 
   // From this tutorial: https://riptutorial.com/html5-canvas/example/19169/scaling-image-to-fit-or-fill-

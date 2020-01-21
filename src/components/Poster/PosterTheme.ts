@@ -13,11 +13,11 @@ export abstract class PosterTheme {
 
 export class Theme1 extends PosterTheme {
   backgroundImage = fireworks;
-  festivalNameColor = 'lightblue';
+  festivalNameColor = '#37C3E1';
   festivalNameFont = 'serif';
 
   artistFont = 'serif';
-  artistColor = 'tomato';
+  artistColor = '#37C3E1';
 }
 
 export class Theme2 extends PosterTheme {
