@@ -1,24 +1,26 @@
 {
   "files": {
-    "main.css": "/festival-poster-app/static/css/main.870b1b3f.chunk.css",
-    "main.js": "/festival-poster-app/static/js/main.ef144691.chunk.js",
-    "main.js.map": "/festival-poster-app/static/js/main.ef144691.chunk.js.map",
+    "main.css": "/festival-poster-app/static/css/main.62635ff3.chunk.css",
+    "main.js": "/festival-poster-app/static/js/main.bf6ea500.chunk.js",
+    "main.js.map": "/festival-poster-app/static/js/main.bf6ea500.chunk.js.map",
     "runtime-main.js": "/festival-poster-app/static/js/runtime-main.81049c0c.js",
     "runtime-main.js.map": "/festival-poster-app/static/js/runtime-main.81049c0c.js.map",
-    "static/js/2.644ce3a8.chunk.js": "/festival-poster-app/static/js/2.644ce3a8.chunk.js",
-    "static/js/2.644ce3a8.chunk.js.map": "/festival-poster-app/static/js/2.644ce3a8.chunk.js.map",
+    "static/js/2.b0f43672.chunk.js": "/festival-poster-app/static/js/2.b0f43672.chunk.js",
+    "static/js/2.b0f43672.chunk.js.map": "/festival-poster-app/static/js/2.b0f43672.chunk.js.map",
     "index.html": "/festival-poster-app/index.html",
-    "precache-manifest.24a63cd54ced004e95d3d2267f814d83.js": "/festival-poster-app/precache-manifest.24a63cd54ced004e95d3d2267f814d83.js",
+    "precache-manifest.fa390c601e0d19ce0495bcbeda6acd77.js": "/festival-poster-app/precache-manifest.fa390c601e0d19ce0495bcbeda6acd77.js",
     "service-worker.js": "/festival-poster-app/service-worker.js",
-    "static/css/main.870b1b3f.chunk.css.map": "/festival-poster-app/static/css/main.870b1b3f.chunk.css.map",
-    "static/js/2.644ce3a8.chunk.js.LICENSE": "/festival-poster-app/static/js/2.644ce3a8.chunk.js.LICENSE",
+    "static/css/main.62635ff3.chunk.css.map": "/festival-poster-app/static/css/main.62635ff3.chunk.css.map",
+    "static/js/2.b0f43672.chunk.js.LICENSE": "/festival-poster-app/static/js/2.b0f43672.chunk.js.LICENSE",
     "static/media/city.jpg": "/festival-poster-app/static/media/city.7878fa91.jpg",
-    "static/media/fireworks.jpg": "/festival-poster-app/static/media/fireworks.c1f1ed0c.jpg"
+    "static/media/desert.png": "/festival-poster-app/static/media/desert.1f4ebc63.png",
+    "static/media/fireworks.jpg": "/festival-poster-app/static/media/fireworks.c1f1ed0c.jpg",
+    "static/media/fonts.css": "/festival-poster-app/static/media/western_bang_bang.92c70263.otf"
   },
   "entrypoints": [
     "static/js/runtime-main.81049c0c.js",
-    "static/js/2.644ce3a8.chunk.js",
-    "static/css/main.870b1b3f.chunk.css",
-    "static/js/main.ef144691.chunk.js"
+    "static/js/2.b0f43672.chunk.js",
+    "static/css/main.62635ff3.chunk.css",
+    "static/js/main.bf6ea500.chunk.js"
   ]
 }
