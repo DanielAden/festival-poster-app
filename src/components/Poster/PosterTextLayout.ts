@@ -68,6 +68,10 @@ export abstract class PosterTextLayout {
     return this.poster.w;
   }
 
+  protected get maxPosterWidth() {
+    return this.posterWidth - this.theme.textMargin * 2;
+  }
+
   protected get posterHeight() {
     return this.poster.h;
   }
@@ -112,8 +116,30 @@ export abstract class PosterTextLayout {
     const fh = this.fontHeight(this.artistFontRatio);
     lines.forEach((line, i) => {
       const top = baseTop + (i + 1) * fh;
-      ctx.fillText(line, this.midX, top, this.posterWidth);
+      this.printCenter(line, top);
     });
+  }
+
+  public printCenter(str: string, top: number) {
+    const ctx = this.ctx;
+    ctx.textAlign = 'center';
+    ctx.fillText(str, this.midX, top, this.maxPosterWidth);
+  }
+
+  public printLeft(str: string, top: number) {
+    const ctx = this.ctx;
+    ctx.textAlign = 'left';
+    ctx.fillText(str, this.theme.textMargin, top, this.maxPosterWidth);
+  }
+
+  public printRight(str: string, top: number) {
+    this.ctx.textAlign = 'right';
+    this.ctx.fillText(
+      str,
+      this.posterWidth - this.theme.textMargin,
+      top,
+      this.maxPosterWidth,
+    );
   }
 
   public drawFestivalName() {
@@ -128,18 +154,7 @@ export abstract class PosterTextLayout {
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 2;
 
-    if (this.calculateTextWidth(this.poster.festivalName) > this.posterWidth) {
-      ctx.textAlign = 'left';
-      ctx.fillText(
-        this.poster.festivalName,
-        this.theme.textMargin,
-        30,
-        this.posterWidth - this.theme.textMargin * 2,
-      );
-    } else {
-      ctx.textAlign = 'center';
-      ctx.fillText(this.poster.festivalName, this.midX, 30);
-    }
+    this.printCenter(this.poster.festivalName, 30);
   }
 }
 
@@ -163,8 +178,6 @@ export class WeekendLayout extends PosterTextLayout {
   }
 
   drawArtistBlock() {
-    const xStart = 3;
-    const xRStart = this.posterWidth - xStart;
     const lines = this.artistLines();
     const oneThird = Math.ceil(lines.length / 3);
     const day1Lines = lines.slice(0, oneThird);
@@ -172,43 +185,40 @@ export class WeekendLayout extends PosterTextLayout {
     const day3Lines = lines.slice(oneThird * 2);
 
     this.ctx.textBaseline = 'bottom';
-    this.ctx.textAlign = 'left';
     this.ctx.fillStyle = this.theme.artistColor;
 
     let top = this.posterHeight * this.artistTopRatio;
     const fh = this.fontHeight(this.artistFontRatio);
 
     this.dayFont();
-    this.ctx.fillText('FRIDAY', 0, top);
+    this.printLeft('FRIDAY', top);
     this.artistFont();
 
     day1Lines.forEach((line, i) => {
       top += fh;
-      this.ctx.fillText(line, xStart, top, this.posterWidth);
+      this.printLeft(line, top);
     });
 
     top = top + fh * 3;
-    this.ctx.textAlign = 'right';
 
     this.dayFont();
-    this.ctx.fillText('SATURDAY', xRStart, top);
+    this.printRight('SATURDAY', top);
     this.artistFont();
 
     day2Lines.forEach((line, i) => {
       top += fh;
-      this.ctx.fillText(line, xRStart, top, this.posterWidth);
+      this.printRight(line, top);
     });
 
     top = top + fh * 3;
     this.ctx.textAlign = 'left';
 
     this.dayFont();
-    this.ctx.fillText('SUNDAY', 5, top);
+    this.printLeft('SUNDAY', top);
     this.artistFont();
-
     day3Lines.forEach((line, i) => {
       top += fh;
-      this.ctx.fillText(line, xStart, top, this.posterWidth);
+      this.printLeft(line, top);
     });
   }
 }
