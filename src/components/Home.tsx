@@ -45,9 +45,9 @@ const Home: React.FC<Props> = () => {
         {renderDevTools()}
       </Nav>
       <SideNav active={navActive} toggle={toggleNav} />
+      <Options />
       <div ref={ref} className='h-100'>
         <Container className='h-100'>
-          {/* <Options /> */}
           <Row>
             <Col className='d-flex justify-content-center'>
               <PosterCanvas

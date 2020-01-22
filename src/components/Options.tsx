@@ -71,12 +71,13 @@ const Options: React.FC<Props> = () => {
     <div>
       <Form>
         <Row form>
-          <Col md={6}>
+          <Col md={6} xs={6}>
             <AppSelect labelText={'Theme'} {...themeSelectHook} />
           </Col>
-          <Col md={6}>
+          <Col md={6} xs={6}>
             <AppSelect labelText={'Text Layout'} {...layoutSelectHook} />
           </Col>
+          <Col md={6} xs={6}></Col>
         </Row>
       </Form>
       <AppButton color={'warning'} onClick={() => createImage()}>
