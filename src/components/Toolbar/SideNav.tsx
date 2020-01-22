@@ -8,7 +8,6 @@ interface Props {
 }
 const SideNav: React.FC<Props> = ({ active, toggle }) => {
   const width = active ? 300 : 0;
-  console.log(active);
   return (
     <div className='sidenav' style={{ width }}>
       <a href='#' className='closebtn' onClick={toggle}>

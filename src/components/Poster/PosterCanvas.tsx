@@ -4,13 +4,25 @@ import { usePoster } from './Poster';
 
 export const POSTER_CANVAS_ID = 'poster-canvas';
 
+const calculatePosterDims = (parentWidth?: number) => {
+  const aspectRatio = 3 / 2; // 2:3
+  const defaultDims = { w: 600, h: 900 };
+  if (parentWidth === undefined) return defaultDims;
+  if (parentWidth > 600) return defaultDims;
+  const w = parentWidth;
+  const h = Math.ceil(w * aspectRatio);
+  return { w, h };
+};
+
 interface Props {
-  themeType?: string;
+  parentWidth?: number;
 }
-const PosterCanvas: React.FC<Props> = ({ themeType = 'theme1' }) => {
+const PosterCanvas: React.FC<Props> = ({ parentWidth }) => {
   const poster = usePoster();
   const ref = useRef<HTMLCanvasElement>(null);
   const bgRef = useRef<HTMLCanvasElement>(null);
+  const { w, h } = calculatePosterDims(parentWidth);
+  poster.setPosterSize(w, h);
 
   useEffect(() => {
     const can = ref.current;

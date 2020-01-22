@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, RefObject } from 'react';
 import { Container, Row, Col, Nav } from 'reactstrap';
 import PosterCanvas from './Poster/PosterCanvas';
 import Options from './Options';
 import AppButton from './AppButton';
 import SideNav from './Toolbar/SideNav';
+import { useBoundingRectangle } from '../utils';
 
 const renderDevTools = () => {
   if (process.env.NODE_ENV !== 'development') return null;
@@ -27,6 +28,8 @@ interface Props {}
 const Home: React.FC<Props> = () => {
   const [navActive, setNavActive] = useState(false);
   const toggleNav = () => setNavActive(!navActive);
+  const [rect, ref] = useBoundingRectangle<HTMLDivElement>();
+  const canvasParentWidth = rect?.width;
 
   return (
     <div className='home'>
@@ -41,14 +44,16 @@ const Home: React.FC<Props> = () => {
         {renderDevTools()}
       </Nav>
       <SideNav active={navActive} toggle={toggleNav} />
-      <Container>
-        {/* <Options /> */}
-        <Row>
-          <Col className='d-flex justify-content-center'>
-            <PosterCanvas />
-          </Col>
-        </Row>
-      </Container>
+      <div ref={ref}>
+        <Container>
+          {/* <Options /> */}
+          <Row>
+            <Col className='d-flex justify-content-center'>
+              <PosterCanvas parentWidth={canvasParentWidth} />
+            </Col>
+          </Row>
+        </Container>
+      </div>
     </div>
   );
 };

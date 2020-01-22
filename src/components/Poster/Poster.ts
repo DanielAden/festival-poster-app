@@ -7,9 +7,6 @@ import { PosterTheme, usePosterTheme } from './PosterTheme';
 import { PosterTextLayout } from './PosterTextLayout';
 import { usePosterLayout } from './PosterTextLayout';
 
-const MAX_POSTER_WIDTH = 600;
-const MAX_POSTER_HEIGHT = 900;
-
 type Case = 'none' | 'upper';
 export abstract class Poster {
   public canvasCtx!: CanvasRenderingContext2D;
@@ -120,35 +117,19 @@ export abstract class Poster {
 
 class BasicPoster extends Poster {}
 
-export function useWindowSize() {
-  const [size, setSize] = useState([0, 0]);
-  useLayoutEffect(() => {
-    function updateSize() {
-      setSize([window.innerWidth, window.innerHeight]);
-    }
-    window.addEventListener('resize', updateSize);
-    updateSize();
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-  return size;
-}
-
-export const usePosterSize = () => {
-  // const [, windowH] = useWindowSize();
-  // const h = Math.floor(windowH * 0.8);
-  // const w = Math.floor(h * 0.7);
-  const w = 600;
-  const h = 900;
-  return [Math.min(w, MAX_POSTER_WIDTH), Math.min(h, MAX_POSTER_HEIGHT)];
-};
+// export const usePosterSize = () => {
+//   // const [, windowH] = useWindowSize();
+//   // const h = Math.floor(windowH * 0.8);
+//   // const w = Math.floor(h * 0.7);
+//   const w = 600;
+//   const h = 900;
+//   return [Math.min(w, MAX_POSTER_WIDTH), Math.min(h, MAX_POSTER_HEIGHT)];
+// };
 
 export const usePoster = (): Poster => {
-  const [w, h] = usePosterSize();
   const theme = usePosterTheme();
   const layout = usePosterLayout();
   const ps = useTypedSelector(s => s.poster);
   const poster = new BasicPoster(ps, theme, layout);
-
-  poster.setPosterSize(w, h);
   return poster;
 };

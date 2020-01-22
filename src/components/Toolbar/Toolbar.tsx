@@ -1,19 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Toolbar.css';
 import { ToolbarItem, ToolbarWindow } from './';
-
-type UseBoundingRectangle<T> = [DOMRect | null, React.RefObject<T>];
-function useBoundingRectangle<T extends HTMLElement>(): UseBoundingRectangle<
-  T
-> {
-  const [rect, setrect] = useState<DOMRect | null>(null);
-  const ref = useRef<T>(null);
-  useEffect(() => {
-    const rect = ref.current?.getBoundingClientRect();
-    setrect(rect || null);
-  }, [ref]);
-  return [rect, ref];
-}
+import { useBoundingRectangle } from '../../utils';
 
 interface Props {}
 export const Toolbar: React.FC<Props> = ({ children }) => {
@@ -41,7 +29,7 @@ export const Toolbar: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     const toolbarHeight = rect?.height || 0;
     setWindowHeight(window.outerHeight - toolbarHeight);
-  }, [setWindowHeight, rect]);
+  }, [rect, setWindowHeight]);
 
   return (
     <div ref={ref} className='toolbar'>
