@@ -39,7 +39,7 @@ export class DesertTheme extends PosterTheme {
   festivalNameColor = 'orange';
   festivalNameFont = 'TexasTango';
 
-  artistFont = 'TexasTango';
+  artistFont = 'WesternBangBang';
   artistColor = 'orange';
 }
 

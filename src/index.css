@@ -19,3 +19,8 @@
   font-family: 'TexasTango';
   src: local('TexasTango'), url(./fonts/texas_tango/texas_tango.otf) format('opentype');
 }
+
+@font-face {
+  font-family: 'WesternBangBang';
+  src: local('WesternBangBang'), url(./fonts/western_bang_bang/western_bang_bang.otf) format('opentype');
+}

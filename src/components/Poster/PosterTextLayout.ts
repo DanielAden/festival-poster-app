@@ -23,6 +23,7 @@ export abstract class PosterTextLayout {
   protected artistFontRatio: number = 0.025;
 
   protected festivalNameFontRatio: number = 0.1;
+  protected textMargin: number = 0;
 
   constructor(private _poster?: Poster) {}
 
