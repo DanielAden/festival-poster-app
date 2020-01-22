@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import '../../style/Poster.css';
-import { usePoster, usePosterSize } from './Poster';
+import { usePoster } from './Poster';
 
 export const POSTER_CANVAS_ID = 'poster-canvas';
 
@@ -8,7 +8,6 @@ interface Props {
   themeType?: string;
 }
 const PosterCanvas: React.FC<Props> = ({ themeType = 'theme1' }) => {
-  const [posterWidth, posterHeight] = usePosterSize();
   const poster = usePoster();
   const ref = useRef<HTMLCanvasElement>(null);
   const bgRef = useRef<HTMLCanvasElement>(null);
@@ -33,29 +32,14 @@ const PosterCanvas: React.FC<Props> = ({ themeType = 'theme1' }) => {
   };
 
   return (
-    <div
-      className='canvas-container'
-      style={{
-        position: 'relative',
-        width: posterWidth,
-        height: posterHeight,
-        border: '3px solid',
-        boxSizing: 'content-box',
-      }}
-    >
-      <canvas
-        id='poster-bg'
-        width={posterWidth}
-        height={posterHeight}
-        ref={bgRef}
-        style={canvasStyle()}
-      >
+    <>
+      <canvas id='poster-bg' ref={bgRef} style={{ position: 'absolute' }}>
         Poster BackGround
       </canvas>
       <canvas ref={ref} id={POSTER_CANVAS_ID} style={canvasStyle()}>
         Festival Poster Viewer
       </canvas>
-    </div>
+    </>
   );
 };
 

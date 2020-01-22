@@ -43,7 +43,7 @@ export class DesertTheme extends PosterTheme {
   artistFont = 'WesternBangBang';
   artistColor = 'orange';
 
-  textMargin = 17;
+  textMargin = 20;
 }
 
 export const usePosterTheme = (): PosterTheme => {

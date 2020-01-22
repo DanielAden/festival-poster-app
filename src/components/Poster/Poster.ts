@@ -7,6 +7,9 @@ import { PosterTheme, usePosterTheme } from './PosterTheme';
 import { PosterTextLayout } from './PosterTextLayout';
 import { usePosterLayout } from './PosterTextLayout';
 
+const MAX_POSTER_WIDTH = 600;
+const MAX_POSTER_HEIGHT = 900;
+
 type Case = 'none' | 'upper';
 export abstract class Poster {
   public canvasCtx!: CanvasRenderingContext2D;
@@ -104,7 +107,9 @@ export abstract class Poster {
   }
 
   public drawBackground(can: HTMLCanvasElement, cb?: any) {
-    const img = new Image(this.w, this.h); // TODO try removing w and h paremeters
+    const img = new Image(this.w, this.h);
+    can.width = this.w;
+    can.height = this.h;
     img.onload = () => {
       this._drawBGImage(can, img);
       if (cb) cb();
@@ -129,10 +134,12 @@ export function useWindowSize() {
 }
 
 export const usePosterSize = () => {
-  const [, windowH] = useWindowSize();
-  const h = Math.floor(windowH * 0.8);
-  const w = Math.floor(h * 0.7);
-  return [w, h];
+  // const [, windowH] = useWindowSize();
+  // const h = Math.floor(windowH * 0.8);
+  // const w = Math.floor(h * 0.7);
+  const w = 600;
+  const h = 900;
+  return [Math.min(w, MAX_POSTER_WIDTH), Math.min(h, MAX_POSTER_HEIGHT)];
 };
 
 export const usePoster = (): Poster => {

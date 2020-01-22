@@ -134,7 +134,7 @@ export abstract class PosterTextLayout {
         this.poster.festivalName,
         this.theme.textMargin,
         30,
-        this.posterWidth, // - this.theme.textMargin,
+        this.posterWidth - this.theme.textMargin * 2,
       );
     } else {
       ctx.textAlign = 'center';

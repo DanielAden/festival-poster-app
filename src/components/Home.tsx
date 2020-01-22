@@ -42,8 +42,12 @@ const Home: React.FC<Props> = () => {
       </Nav>
       <SideNav active={navActive} toggle={toggleNav} />
       <Container>
-        <Options />
-        <PosterCanvas />
+        {/* <Options /> */}
+        <Row>
+          <Col className='d-flex justify-content-center'>
+            <PosterCanvas />
+          </Col>
+        </Row>
       </Container>
     </div>
   );

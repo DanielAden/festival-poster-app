@@ -59,13 +59,13 @@ const GlobalError: React.FC<Props> = ({ children }) => {
 
   return (
     <>
-      {spotifyAccessRefreshModal && (
+      {/* {spotifyAccessRefreshModal && (
         <SpotifyAuthRefreshModal
           isOpen={spotifyAccessRefreshModal}
           toggle={toggleModal}
         />
       )}
-      {errorBanner}
+      {errorBanner} */}
       {children}
     </>
   );
