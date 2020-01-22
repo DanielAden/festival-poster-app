@@ -1,4 +1,9 @@
-import { DEFAULT_BACKGROUND_IMAGE, fireworks, city } from '../../images';
+import {
+  DEFAULT_BACKGROUND_IMAGE,
+  fireworks,
+  city,
+  desert,
+} from '../../images';
 import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
 
@@ -29,6 +34,15 @@ export class Theme2 extends PosterTheme {
   artistColor = 'lime';
 }
 
+export class DesertTheme extends PosterTheme {
+  backgroundImage = desert;
+  festivalNameColor = 'orange';
+  festivalNameFont = 'TexasTango';
+
+  artistFont = 'TexasTango';
+  artistColor = 'orange';
+}
+
 export const usePosterTheme = (): PosterTheme => {
   const themeType = useTypedSelector(s => s.poster.themeType);
   let theme;
@@ -38,6 +52,9 @@ export const usePosterTheme = (): PosterTheme => {
       break;
     case 'theme2':
       theme = new Theme2();
+      break;
+    case 'desert':
+      theme = new DesertTheme();
       break;
     default:
       throw new AppError(`Invalid theme ${themeType}`);

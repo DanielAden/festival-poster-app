@@ -25,6 +25,10 @@ const useCreateImage = () => {
 
 const themeOptions: SelectOption[] = [
   {
+    text: 'Desert',
+    value: 'desert',
+  },
+  {
     text: 'Theme 1',
     value: 'theme1',
   },
