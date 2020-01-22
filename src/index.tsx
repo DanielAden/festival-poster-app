@@ -10,6 +10,22 @@ import store from './store';
 import GlobalError from './components/GlobalError';
 import { MemoryRouter as Router } from 'react-router-dom';
 
+// TODO this is only for development but still need to figure out a better way
+// to do this
+const VERSION = 2;
+const key = 'version';
+const versionStr = window.localStorage.getItem(key);
+if (!versionStr) {
+  window.localStorage.clear();
+  window.localStorage.setItem(key, VERSION.toString());
+} else {
+  const version = parseInt(versionStr, 10);
+  if (version < VERSION) {
+    window.localStorage.clear();
+    window.localStorage.setItem(key, VERSION.toString());
+  }
+}
+
 ReactDOM.render(
   <Provider store={store}>
     <GlobalError>

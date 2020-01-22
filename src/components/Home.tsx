@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import TopArtistsList from './TopArtistsList';
 import { Container, Row, Col, Nav } from 'reactstrap';
 import PosterCanvas from './Poster/PosterCanvas';
 import Options from './Options';
