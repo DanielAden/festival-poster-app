@@ -23,7 +23,6 @@ export abstract class PosterTextLayout {
   protected artistFontRatio: number = 0.025;
 
   protected festivalNameFontRatio: number = 0.1;
-  protected textMargin: number = 0;
 
   constructor(private _poster?: Poster) {}
 
@@ -73,6 +72,13 @@ export abstract class PosterTextLayout {
     return this.poster.h;
   }
 
+  protected calculateTextWidth(...text: string[]) {
+    const fullText = text.reduce((prev, cur) => prev + cur, '');
+    const metrics = this.ctx.measureText(fullText);
+    const marginWidth = this.theme.textMargin * 2;
+    return Math.ceil(metrics.width) + marginWidth;
+  }
+
   protected artistLines() {
     const lines: string[] = [];
     const poster = this.poster;
@@ -82,9 +88,7 @@ export abstract class PosterTextLayout {
     );
     let currentLine = '';
     for (let artist of this.poster.artistNames) {
-      const lineWidth = Math.ceil(
-        poster.canvasCtx.measureText(currentLine + artist).width,
-      );
+      const lineWidth = this.calculateTextWidth(currentLine, artist);
       if (lineWidth > this.posterWidth) {
         lines.push(this.cutTrailingChar(currentLine));
         currentLine = artist + poster.artistSeperator;
@@ -124,8 +128,18 @@ export abstract class PosterTextLayout {
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 2;
 
-    ctx.fillText(this.poster.festivalName, this.midX, 30);
-    ctx.strokeText(this.poster.festivalName, this.midX, 30);
+    if (this.calculateTextWidth(this.poster.festivalName) > this.posterWidth) {
+      ctx.textAlign = 'left';
+      ctx.fillText(
+        this.poster.festivalName,
+        this.theme.textMargin,
+        30,
+        this.posterWidth, // - this.theme.textMargin,
+      );
+    } else {
+      ctx.textAlign = 'center';
+      ctx.fillText(this.poster.festivalName, this.midX, 30);
+    }
   }
 }
 

@@ -14,6 +14,7 @@ export abstract class PosterTheme {
 
   public artistFont: string = 'serif';
   public artistColor: string = 'white';
+  public textMargin: number = 0;
 }
 
 export class Theme1 extends PosterTheme {
@@ -41,6 +42,8 @@ export class DesertTheme extends PosterTheme {
 
   artistFont = 'WesternBangBang';
   artistColor = 'orange';
+
+  textMargin = 17;
 }
 
 export const usePosterTheme = (): PosterTheme => {
