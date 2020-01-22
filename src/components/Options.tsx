@@ -9,17 +9,17 @@ import { useDispatch } from 'react-redux';
 import useAppSelector from '../store/rootReducer';
 
 const useCreateImage = () => {
-  const theme = usePoster();
+  const poster = usePoster();
   const createImage = useCallback(() => {
     const can = document.getElementById(POSTER_CANVAS_ID) as HTMLCanvasElement;
     if (!can) throw new Error('Expected canvas node');
-    theme.postDrawCB = () => {
+    poster.postDrawCB = () => {
       const dataURL = can.toDataURL('image/jpeg', 1.0);
       const w = window.open('_blank');
       w?.document.write(`<img src="${dataURL}"></img>`);
     };
-    theme.draw(can, true);
-  }, [theme]);
+    poster.draw(can, true);
+  }, [poster]);
   return createImage;
 };
 

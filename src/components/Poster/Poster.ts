@@ -9,8 +9,8 @@ import { usePosterLayout } from './PosterTextLayout';
 type Case = 'none' | 'upper';
 export abstract class Poster {
   public canvasCtx!: CanvasRenderingContext2D;
-  protected _w: number = 900;
-  protected _h: number = 600;
+  protected _w: number = 600;
+  protected _h: number = 900;
   protected _postDrawCB?: any;
 
   protected festivalNameText: string = 'My Festival';
