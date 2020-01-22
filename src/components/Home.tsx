@@ -35,25 +35,16 @@ const Home: React.FC<Props> = () => {
         className='navbar navbar-expand-sm navbar-light bg-light py-0'
         style={{ marginBottom: '10px' }}
       >
-        <AppButton onClick={() => toggleNav()}>Artists</AppButton>
+        <AppButton className='mr-2' onClick={() => toggleNav()}>
+          Artists
+        </AppButton>
         <div className='navbar-brand'>Poster App</div>
         {renderDevTools()}
       </Nav>
       <SideNav active={navActive} toggle={toggleNav} />
       <Container>
-        <Row>
-          <Col>
-            <Options />
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <PosterCanvas />
-          </Col>
-          <Col>
-            <TopArtistsList />
-          </Col>
-        </Row>
+        <Options />
+        <PosterCanvas />
       </Container>
     </div>
   );

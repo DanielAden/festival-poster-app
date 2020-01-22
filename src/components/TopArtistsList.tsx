@@ -41,12 +41,12 @@ const TopArtistsList: React.FC<Props> = () => {
       return (
         <span>
           <img
-            className='img-thumbnail rounded-circle'
+            className=''
             alt={data.name + ' photo'}
             src={url}
             style={{
-              height: '75px',
-              width: '75px',
+              height: '50px',
+              width: '50px',
               marginRight: '5px',
             }}
           />
