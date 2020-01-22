@@ -6,6 +6,7 @@ import SpotifyAuthorize from './components/SpotifyAuthorize';
 import { useDispatch } from 'react-redux';
 import { spotifyAuthFromWindow } from './spotify/SpotifyAuth';
 import { accessTokenUpdated } from './store/system/systemSlice';
+import { nowSeconds } from './utils';
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -19,11 +20,15 @@ const App: React.FC = () => {
     if (!authData.data)
       throw new Error('Received authorized status without data');
     const { access_token, expires_in } = authData.data;
+    const expiresInNum = parseInt(expires_in, 10);
+    if (isNaN(expiresInNum))
+      throw new Error(`Spotify did not return a valid number ${expires_in}`);
+    const expireTime = nowSeconds() + expiresInNum;
     window.location.hash = '';
     dispatch(
       accessTokenUpdated({
         spotifyAccessToken: access_token,
-        spotifyAccessTokenExpire: expires_in,
+        spotifyAccessTokenExpire: expireTime.toString(),
       }),
     );
   }

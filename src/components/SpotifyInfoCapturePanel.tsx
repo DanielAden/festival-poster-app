@@ -18,7 +18,17 @@ import { constructSpotifyAuthURL } from '../spotify/SpotifyAuth';
 
 interface Props {}
 const SpotifyInfoCapturePanel: React.FC<Props> = () => {
-  return <a href={constructSpotifyAuthURL()}>Authorize Spotify</a>;
+  return (
+    <div className='h-100 d-flex justify-content-center align-items-center'>
+      <a
+        className='btn btn-success'
+        role='button'
+        href={constructSpotifyAuthURL()}
+      >
+        Authorize Spotify
+      </a>
+    </div>
+  );
 };
 
 export default SpotifyInfoCapturePanel;
