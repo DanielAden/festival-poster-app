@@ -24,3 +24,8 @@
   font-family: 'WesternBangBang';
   src: local('WesternBangBang'), url(./fonts/western_bang_bang/western_bang_bang.otf) format('opentype');
 }
+
+html, body, #root, .App {
+  height: 100%;
+  overflow: hidden;
+}

@@ -30,9 +30,10 @@ const Home: React.FC<Props> = () => {
   const toggleNav = () => setNavActive(!navActive);
   const [rect, ref] = useBoundingRectangle<HTMLDivElement>();
   const canvasParentWidth = rect?.width;
+  const canvasParentHeight = rect?.height;
 
   return (
-    <div className='home'>
+    <div className='home h-100'>
       <Nav
         className='navbar navbar-expand-sm navbar-light bg-light py-0'
         style={{ marginBottom: '10px' }}
@@ -44,12 +45,15 @@ const Home: React.FC<Props> = () => {
         {renderDevTools()}
       </Nav>
       <SideNav active={navActive} toggle={toggleNav} />
-      <div ref={ref}>
-        <Container>
+      <div ref={ref} className='h-100'>
+        <Container className='h-100'>
           {/* <Options /> */}
           <Row>
             <Col className='d-flex justify-content-center'>
-              <PosterCanvas parentWidth={canvasParentWidth} />
+              <PosterCanvas
+                parentWidth={canvasParentWidth}
+                parentHeight={canvasParentHeight}
+              />
             </Col>
           </Row>
         </Container>

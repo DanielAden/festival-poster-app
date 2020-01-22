@@ -1,7 +1,6 @@
 import { PosterState } from '../../store/Poster/posterSlice';
 import { AppError } from '../../error';
 import useTypedSelector from '../../store/rootReducer';
-import { useLayoutEffect, useState } from 'react';
 import { createHiDPICanvas } from './CanvasUtils';
 import { PosterTheme, usePosterTheme } from './PosterTheme';
 import { PosterTextLayout } from './PosterTextLayout';
