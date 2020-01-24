@@ -9,10 +9,10 @@ import { AppError } from '../../error';
 
 export abstract class PosterTheme {
   public backgroundImage: string = DEFAULT_BACKGROUND_IMAGE;
-  public festivalNameColor: string = 'white';
+  public festivalNameColor: string = 'TexasTango';
   public festivalNameFont: string = 'serif';
 
-  public artistFont: string = 'serif';
+  public artistFont: string = 'WesternBangBang';
   public artistColor: string = 'white';
   public textMargin: number = 0;
 }
@@ -20,18 +20,18 @@ export abstract class PosterTheme {
 export class Theme1 extends PosterTheme {
   backgroundImage = fireworks;
   festivalNameColor = '#37C3E1';
-  festivalNameFont = 'serif';
+  festivalNameFont = 'TexasTango';
 
-  artistFont = 'serif';
+  artistFont = 'WesternBangBang';
   artistColor = '#37C3E1';
 }
 
 export class Theme2 extends PosterTheme {
   backgroundImage = city;
   festivalNameColor = 'lime';
-  festivalNameFont = 'serif';
+  festivalNameFont = 'TexasTango';
 
-  artistFont = 'serif';
+  artistFont = 'WesternBangBang';
   artistColor = 'lime';
 }
 
