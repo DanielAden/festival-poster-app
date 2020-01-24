@@ -68,7 +68,7 @@ const Options: React.FC<Props> = () => {
   );
   const createImage = useCreateImage();
   return (
-    <div>
+    <div className='options mb-2'>
       <Form>
         <Row form>
           <Col md={6} xs={6}>

@@ -4,14 +4,14 @@ import { usePoster } from './Poster';
 
 export const POSTER_CANVAS_ID = 'poster-canvas';
 
-const aspectRatio = [2, 3]; // 2:3
+const aspectRatio = [4, 5]; // 4:5
 const getH = (w: number) => w * (aspectRatio[1] / aspectRatio[0]);
-const calculatePosterDims = (width: number, height: number) => {
-  let w = width;
-  const maxDims = { w: 600, h: 900 };
-  if (w > 600) w = maxDims.w;
+const maxHeight = (top: number) => window.innerHeight - top;
+const calculatePosterDims = (r?: DOMRect) => {
+  if (!r) return { w: 0, h: 0 };
+  let w = r.width;
   let h = getH(w);
-  while (h >= height) {
+  while (h >= maxHeight(r.top)) {
     w = w - 5;
     h = getH(w);
   }
@@ -19,35 +19,41 @@ const calculatePosterDims = (width: number, height: number) => {
 };
 
 interface Props {
-  parentWidth?: number;
-  parentHeight?: number;
+  parentDomRect?: DOMRect;
 }
-const PosterCanvas: React.FC<Props> = ({ parentWidth, parentHeight }) => {
+const PosterCanvas: React.FC<Props> = ({ parentDomRect }) => {
   const poster = usePoster();
   const [curBackgroundImage, setCurBackgroundImage] = useState('');
+  const [[curW, curH], setCurDims] = useState([0, 0]);
   const ref = useRef<HTMLCanvasElement>(null);
   const bgRef = useRef<HTMLCanvasElement>(null);
-  const { w, h } = calculatePosterDims(parentWidth || 0, parentHeight || 0);
-  poster.setPosterSize(w, h);
+  const { w: calculatedW, h: calculatedH } = calculatePosterDims(parentDomRect);
+  poster.setPosterSize(calculatedW, calculatedH);
 
   useEffect(() => {
     const can = ref.current;
     if (!can) throw new Error('Unable to retreive poster canvas element');
     poster.draw(can, false);
-  }, [poster]);
+  });
 
   useEffect(() => {
     const { backgroundImage } = poster.theme;
-    if (!parentWidth || !parentHeight) return;
-    if (backgroundImage === curBackgroundImage) return;
+    if (calculatedW === 0 || calculatedH === 0) return;
+    if (
+      backgroundImage === curBackgroundImage &&
+      calculatedW === curW &&
+      calculatedH === curH
+    )
+      return;
 
     const bgcan = bgRef.current;
     if (!bgcan)
       throw new Error('Unable to retreive poster background canvas element');
 
-    setCurBackgroundImage(backgroundImage);
     poster.drawBackground(bgcan);
-  }, [curBackgroundImage, parentHeight, parentWidth, poster]);
+    setCurBackgroundImage(backgroundImage);
+    setCurDims([calculatedW, calculatedH]);
+  }, [calculatedH, calculatedW, curBackgroundImage, curH, curW, poster]);
 
   const canvasStyle = (): React.CSSProperties => {
     return {
@@ -57,7 +63,7 @@ const PosterCanvas: React.FC<Props> = ({ parentWidth, parentHeight }) => {
 
   return (
     <>
-      <canvas id='poster-bg' ref={bgRef} style={{ position: 'relative' }}>
+      <canvas id='poster-bg' ref={bgRef} style={{ position: 'absolute' }}>
         Poster BackGround
       </canvas>
       <canvas ref={ref} id={POSTER_CANVAS_ID} style={canvasStyle()}>

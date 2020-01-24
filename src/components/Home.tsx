@@ -29,8 +29,6 @@ const Home: React.FC<Props> = () => {
   const [navActive, setNavActive] = useState(false);
   const toggleNav = () => setNavActive(!navActive);
   const [rect, ref] = useBoundingRectangle<HTMLDivElement>();
-  const canvasParentWidth = rect?.width;
-  const canvasParentHeight = rect?.height;
 
   return (
     <div className='home h-100'>
@@ -48,12 +46,9 @@ const Home: React.FC<Props> = () => {
       <Options />
       <div ref={ref} className='h-100'>
         <Container className='h-100'>
-          <Row>
-            <Col className='d-flex justify-content-center'>
-              <PosterCanvas
-                parentWidth={canvasParentWidth}
-                parentHeight={canvasParentHeight}
-              />
+          <Row className='h-100'>
+            <Col className='d-flex justify-content-center h-100'>
+              <PosterCanvas parentDomRect={rect} />
             </Col>
           </Row>
         </Container>
