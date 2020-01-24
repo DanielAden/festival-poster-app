@@ -5,6 +5,7 @@ import { createHiDPICanvas } from './CanvasUtils';
 import { PosterTheme, usePosterTheme } from './PosterTheme';
 import { PosterTextLayout } from './PosterTextLayout';
 import { usePosterLayout } from './PosterTextLayout';
+import FontFaceObserver from 'fontfaceobserver';
 
 type Case = 'none' | 'upper';
 export abstract class Poster {
@@ -84,16 +85,25 @@ export abstract class Poster {
     this._postDrawCB = cb;
   }
 
-  public draw(can: HTMLCanvasElement, drawBackground = false) {
+  public async draw(can: HTMLCanvasElement, drawBackground = false) {
     this.canvasCtx = this.getContext(can);
     can.width = this.w;
     can.height = this.h;
     createHiDPICanvas(can, this.w, this.h);
+    const artistFont = new FontFaceObserver(this.theme.artistFont);
+    const nameFont = new FontFaceObserver(this.theme.festivalNameFont);
 
+    // TODO create more efficient way to load font and image
     const cb = () => {
       this._draw();
       if (this._postDrawCB) this._postDrawCB();
     };
+
+    try {
+      await Promise.all([artistFont.load(), nameFont.load()]);
+    } catch (e) {
+      console.error(e);
+    }
 
     if (!drawBackground) {
       this._draw();

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, RefObject } from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Nav } from 'reactstrap';
 import PosterCanvas from './Poster/PosterCanvas';
 import Options from './Options';

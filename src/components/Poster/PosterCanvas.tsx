@@ -29,7 +29,6 @@ const PosterCanvas: React.FC<Props> = ({ parentWidth, parentHeight }) => {
   const bgRef = useRef<HTMLCanvasElement>(null);
   const { w, h } = calculatePosterDims(parentWidth || 0, parentHeight || 0);
   poster.setPosterSize(w, h);
-  console.log(w, h);
 
   useEffect(() => {
     const can = ref.current;
