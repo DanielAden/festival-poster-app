@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import '../../style/Poster.css';
 import { usePoster } from './Poster';
 
@@ -24,7 +24,7 @@ interface Props {
 }
 const PosterCanvas: React.FC<Props> = ({ parentWidth, parentHeight }) => {
   const poster = usePoster();
-  // const [ww, wh] = useWindowSize();
+  const [curBackgroundImage, setCurBackgroundImage] = useState('');
   const ref = useRef<HTMLCanvasElement>(null);
   const bgRef = useRef<HTMLCanvasElement>(null);
   const { w, h } = calculatePosterDims(parentWidth || 0, parentHeight || 0);
@@ -34,14 +34,20 @@ const PosterCanvas: React.FC<Props> = ({ parentWidth, parentHeight }) => {
     const can = ref.current;
     if (!can) throw new Error('Unable to retreive poster canvas element');
     poster.draw(can, false);
-  });
+  }, [poster]);
 
   useEffect(() => {
+    const { backgroundImage } = poster.theme;
+    if (!parentWidth || !parentHeight) return;
+    if (backgroundImage === curBackgroundImage) return;
+
     const bgcan = bgRef.current;
     if (!bgcan)
       throw new Error('Unable to retreive poster background canvas element');
+
+    setCurBackgroundImage(backgroundImage);
     poster.drawBackground(bgcan);
-  }, [poster]);
+  }, [curBackgroundImage, parentHeight, parentWidth, poster]);
 
   const canvasStyle = (): React.CSSProperties => {
     return {

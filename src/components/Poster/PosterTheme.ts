@@ -6,6 +6,7 @@ import {
 } from '../../images';
 import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
+import { useMemo } from 'react';
 
 export abstract class PosterTheme {
   public backgroundImage: string = DEFAULT_BACKGROUND_IMAGE;
@@ -48,19 +49,17 @@ export class DesertTheme extends PosterTheme {
 
 export const usePosterTheme = (): PosterTheme => {
   const themeType = useTypedSelector(s => s.poster.themeType);
-  let theme;
-  switch (themeType) {
-    case 'theme1':
-      theme = new Theme1();
-      break;
-    case 'theme2':
-      theme = new Theme2();
-      break;
-    case 'desert':
-      theme = new DesertTheme();
-      break;
-    default:
-      throw new AppError(`Invalid theme ${themeType}`);
-  }
-  return theme;
+  const themeMemo = useMemo(() => {
+    switch (themeType) {
+      case 'theme1':
+        return new Theme1();
+      case 'theme2':
+        return new Theme2();
+      case 'desert':
+        return new DesertTheme();
+      default:
+        throw new AppError(`Invalid theme ${themeType}`);
+    }
+  }, [themeType]);
+  return themeMemo;
 };

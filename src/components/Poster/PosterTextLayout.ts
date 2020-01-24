@@ -1,21 +1,21 @@
 import { Poster } from './Poster';
 import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
+import { useMemo } from 'react';
 
 export const usePosterLayout = (): PosterTextLayout => {
   const layoutType = useTypedSelector(s => s.poster.layoutType);
-  let layout;
-  switch (layoutType) {
-    case 'basic':
-      layout = new BasicLayout();
-      break;
-    case 'weekend':
-      layout = new WeekendLayout();
-      break;
-    default:
-      throw new AppError(`Invalid theme ${layoutType}`);
-  }
-  return layout;
+  const layoutMeme = useMemo(() => {
+    switch (layoutType) {
+      case 'basic':
+        return new BasicLayout();
+      case 'weekend':
+        return new WeekendLayout();
+      default:
+        throw new AppError(`Invalid theme ${layoutType}`);
+    }
+  }, [layoutType]);
+  return layoutMeme;
 };
 
 export abstract class PosterTextLayout {

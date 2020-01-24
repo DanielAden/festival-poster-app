@@ -6,6 +6,7 @@ import { PosterTheme, usePosterTheme } from './PosterTheme';
 import { PosterTextLayout } from './PosterTextLayout';
 import { usePosterLayout } from './PosterTextLayout';
 import FontFaceObserver from 'fontfaceobserver';
+import { useMemo, useState } from 'react';
 
 type Case = 'none' | 'upper';
 export abstract class Poster {
@@ -139,6 +140,11 @@ export const usePoster = (): Poster => {
   const theme = usePosterTheme();
   const layout = usePosterLayout();
   const ps = useTypedSelector(s => s.poster);
-  const poster = new BasicPoster(ps, theme, layout);
-  return poster;
+
+  const posterMemo = useMemo(() => {
+    const poster = new BasicPoster(ps, theme, layout);
+    return poster;
+  }, [ps, theme, layout]);
+
+  return posterMemo;
 };
