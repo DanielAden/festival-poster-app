@@ -11,6 +11,7 @@ const useCreateImage = () => {
   const poster = usePoster();
   const createImage = useCallback(async () => {
     const can = document.createElement('canvas');
+    poster.setPosterSize(1600, 2000);
     await poster.draw(can);
     const dataURL = can.toDataURL('png', 1.0);
     const w = window.open('_blank');

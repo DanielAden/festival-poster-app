@@ -6,19 +6,19 @@ import useTypedSelector from '../store/rootReducer';
 interface SpotifyAuthRefreshModalProps extends ModalProps {
   toggle: () => void;
 }
-const SpotifyAuthRefreshModal: React.FC<SpotifyAuthRefreshModalProps> = props => {
-  const { toggle } = props;
-  return (
-    <Modal {...props} className='spotify-auth-refresh-modal'>
-      <ModalHeader toggle={toggle}>
-        Spotify Is Asking To Be Authorized
-      </ModalHeader>
-      <ModalBody>
-        <a href={constructSpotifyAuthURL()}>Authorize Spotify</a>
-      </ModalBody>
-    </Modal>
-  );
-};
+// const SpotifyAuthRefreshModal: React.FC<SpotifyAuthRefreshModalProps> = props => {
+//   const { toggle } = props;
+//   return (
+//     <Modal {...props} className='spotify-auth-refresh-modal'>
+//       <ModalHeader toggle={toggle}>
+//         Spotify Is Asking To Be Authorized
+//       </ModalHeader>
+//       <ModalBody>
+//         <a href={constructSpotifyAuthURL()}>Authorize Spotify</a>
+//       </ModalBody>
+//     </Modal>
+//   );
+// };
 
 interface Props {}
 const GlobalError: React.FC<Props> = ({ children }) => {
