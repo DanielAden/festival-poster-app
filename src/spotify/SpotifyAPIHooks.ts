@@ -10,6 +10,7 @@ import useTypedSelector from '../store/rootReducer';
 import {
   updateArtistList,
   topArtistsTimeRangeUpdated,
+  updateMeData,
 } from '../store/Poster/posterSlice';
 import { createNewListItem, ListItems } from '../components/List/List';
 import { useErrorLog, useAppLog } from '../AppLog';
@@ -76,6 +77,7 @@ export const useSpotifyTopArtists = () => {
       } catch (e) {
         elog(e, 'NoSpotifyAccess');
       } finally {
+        // TODO this logic probably shouldn't be in a finally block, look into removing
         if (!topArtistsData) throw new AppError('Expected top artists data');
         if (topArtistsData instanceof Error) {
           elog(topArtistsData);
@@ -90,4 +92,34 @@ export const useSpotifyTopArtists = () => {
   }, [dispatch, log, elog, api, timeRange]);
 
   return { topArtists, setTopArtistsTimeRange };
+};
+
+export const useMe = () => {
+  const me = useTypedSelector(s => s.poster.me);
+  const api = useSpotifyAPI();
+  const dispatch = useDispatch();
+  const log = useAppLog();
+  const elog = useErrorLog();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!api) throw new Error('Expected api');
+      log('Using spotify api to fetch me data');
+      let meData;
+      try {
+        meData = await api.me();
+      } catch (e) {
+        elog(e);
+        return;
+      }
+      if (!meData) throw new Error('Expected me data');
+      if (meData instanceof Error)
+        throw new Error('Expected error to be caught');
+      dispatch(updateMeData(meData));
+    };
+    if (!api) return;
+    fetchData();
+  }, [api, dispatch, elog, log]);
+
+  return me;
 };
