@@ -26,12 +26,12 @@ const themeOptions: SelectOption[] = [
     value: 'desert',
   },
   {
-    text: 'Theme 1',
-    value: 'theme1',
+    text: 'Punk',
+    value: 'punk',
   },
   {
-    text: 'Theme 2',
-    value: 'theme2',
+    text: 'Metal',
+    value: 'metal',
   },
 ];
 
