@@ -35,11 +35,12 @@ export class PunkTheme extends PosterTheme {
 
 export class MetalTheme extends PosterTheme {
   backgroundImage = images.metal;
-  festivalNameColor = 'lime';
+  festivalNameColor = '#7C7170';
   festivalNameFont = 'TexasTango';
+  textMargin = 35;
 
   artistFont = 'WesternBangBang';
-  artistColor = 'lime';
+  artistColor = '#7C7170';
 }
 
 export const usePosterTheme = (): PosterTheme => {
