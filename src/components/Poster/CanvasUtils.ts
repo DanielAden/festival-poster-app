@@ -10,7 +10,9 @@ export const pixelRatio = (ctx: CanvasRenderingContext2D) => {
     (ctx as any).oBackingStorePixelRatio ||
     (ctx as any).backingStorePixelRatio ||
     1;
-  return dpr / bsr;
+  console.log(dpr, bsr, dpr / bsr);
+  // return Math.ceil(dpr / bsr);
+  return 2;
 };
 
 export const createHiDPICanvas = function(

@@ -94,13 +94,10 @@ export abstract class Poster {
   }
 
   public async draw(can: HTMLCanvasElement, drawBackground = true) {
+    createHiDPICanvas(can, this.w, this.h);
     await this.load(can, drawBackground);
 
     this.canvasCtx = Poster.getContext(can);
-    can.width = this.w;
-    can.height = this.h;
-    createHiDPICanvas(can, this.w, this.h);
-
     this.layout.poster = this;
     if (drawBackground) await this.drawBackground(can);
     this.layout.drawFestivalName();
@@ -111,13 +108,14 @@ export abstract class Poster {
     can: HTMLCanvasElement,
     backgroundCanvas?: HTMLCanvasElement,
   ) {
+    createHiDPICanvas(can, this.w, this.h);
     if (backgroundCanvas) await this.drawBackground(backgroundCanvas);
     await this.draw(can, false);
     return;
   }
 
-  public async loadImage(): Promise<void> {
-    this.img = new Image(this.w, this.h);
+  public async loadImage(imgWidth?: number, imgHeight?: number): Promise<void> {
+    this.img = new Image(imgWidth, imgHeight);
     return new Promise(resolve => {
       this.img.onload = () => {
         resolve();
@@ -127,20 +125,12 @@ export abstract class Poster {
   }
 
   public async drawBackground(can: HTMLCanvasElement): Promise<void> {
+    createHiDPICanvas(can, this.w, this.h);
     await this.loadImage();
-    const scale = Math.max(this.w / this.img.width, this.h / this.img.height);
-    const x = this.w / 2 - (this.img.width / 2) * scale;
-    const y = this.h / 2 - (this.img.height / 2) * scale;
-    can.width = this.w;
-    can.height = this.h;
+    const imgWidth = this.img.naturalWidth;
+    const imgHeight = this.img.naturalHeight;
     const ctx = Poster.getContext(can);
-    ctx.drawImage(
-      this.img,
-      x,
-      y,
-      this.img.width * scale,
-      this.img.height * scale,
-    );
+    ctx.drawImage(this.img, 0, 0, imgWidth, imgHeight, 0, 0, this.w, this.h);
   }
 }
 
