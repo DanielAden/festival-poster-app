@@ -3,22 +3,18 @@ import { Form, Row, Col } from 'reactstrap';
 import AppSelect, { useAppSelect, SelectOption } from './AppSelect/AppSelect';
 import AppButton from './AppButton';
 import { usePoster } from './Poster/Poster';
-import { POSTER_CANVAS_ID } from './Poster/PosterCanvas';
 import { changeThemeType, changeLayoutType } from '../store/Poster/posterSlice';
 import { useDispatch } from 'react-redux';
 import useAppSelector from '../store/rootReducer';
 
 const useCreateImage = () => {
   const poster = usePoster();
-  const createImage = useCallback(() => {
-    const can = document.getElementById(POSTER_CANVAS_ID) as HTMLCanvasElement;
-    if (!can) throw new Error('Expected canvas node');
-    poster.postDrawCB = () => {
-      const dataURL = can.toDataURL('image/jpeg', 1.0);
-      const w = window.open('_blank');
-      w?.document.write(`<img src="${dataURL}"></img>`);
-    };
-    poster.draw(can, true);
+  const createImage = useCallback(async () => {
+    const can = document.createElement('canvas');
+    await poster.draw(can);
+    const dataURL = can.toDataURL('png', 1.0);
+    const w = window.open('_blank');
+    w?.document.write(`<img src=${dataURL}></img>`);
   }, [poster]);
   return createImage;
 };

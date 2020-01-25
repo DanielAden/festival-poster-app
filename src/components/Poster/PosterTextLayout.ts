@@ -19,8 +19,8 @@ export const usePosterLayout = (): PosterTextLayout => {
 };
 
 export abstract class PosterTextLayout {
-  protected artistTopRatio = 0.5;
-  protected artistFontRatio: number = 0.025;
+  protected artistTopRatio = 0.4;
+  protected artistFontRatio: number = 0.03;
 
   protected festivalNameFontRatio: number = 0.1;
 
@@ -160,8 +160,8 @@ export abstract class PosterTextLayout {
 
 export class BasicLayout extends PosterTextLayout {}
 export class WeekendLayout extends PosterTextLayout {
-  artistTopRatio = 0.4;
-  artistFontRatio = 0.02;
+  artistTopRatio = 0.3;
+  artistFontRatio = 0.028;
 
   dayFont() {
     this.ctx.font = this.fontString(

@@ -6,7 +6,7 @@ export const POSTER_CANVAS_ID = 'poster-canvas';
 
 const aspectRatio = [4, 5]; // 4:5
 const getH = (w: number) => w * (aspectRatio[1] / aspectRatio[0]);
-const maxHeight = (top: number) => window.innerHeight - top;
+const maxHeight = (top: number) => document.documentElement.clientHeight; // window.innerHeight - top;
 const calculatePosterDims = (r?: DOMRect) => {
   if (!r) return { w: 0, h: 0 };
   let w = r.width;
@@ -31,6 +31,7 @@ const PosterCanvas: React.FC<Props> = ({ parentDomRect }) => {
   poster.setPosterSize(calculatedW, calculatedH);
 
   useEffect(() => {
+    if (calculatedW === 0 || calculatedH === 0) return;
     const can = ref.current;
     if (!can) throw new Error('Unable to retreive poster canvas element');
     poster.draw(can, false);
@@ -63,7 +64,7 @@ const PosterCanvas: React.FC<Props> = ({ parentDomRect }) => {
 
   return (
     <>
-      <canvas id='poster-bg' ref={bgRef} style={{ position: 'absolute' }}>
+      <canvas id='poster-bg' ref={bgRef} style={canvasStyle()}>
         Poster BackGround
       </canvas>
       <canvas ref={ref} id={POSTER_CANVAS_ID} style={canvasStyle()}>
