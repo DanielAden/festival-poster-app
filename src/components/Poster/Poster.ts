@@ -107,6 +107,15 @@ export abstract class Poster {
     this.layout.drawArtistBlock();
   }
 
+  public async drawMultiCanvas(
+    can: HTMLCanvasElement,
+    backgroundCanvas?: HTMLCanvasElement,
+  ) {
+    if (backgroundCanvas) await this.drawBackground(backgroundCanvas);
+    await this.draw(can, false);
+    return;
+  }
+
   public async loadImage(): Promise<void> {
     this.img = new Image(this.w, this.h);
     return new Promise(resolve => {

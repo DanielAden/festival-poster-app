@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import '../../style/Poster.css';
 import { usePoster } from './Poster';
+import { Spinner } from 'reactstrap';
 
 export const POSTER_CANVAS_ID = 'poster-canvas';
 
@@ -25,36 +26,34 @@ const PosterCanvas: React.FC<Props> = ({ parentDomRect }) => {
   const poster = usePoster();
   const [curBackgroundImage, setCurBackgroundImage] = useState('');
   const [[curW, curH], setCurDims] = useState([0, 0]);
+  const [isLoading, setisLoading] = useState(false);
   const ref = useRef<HTMLCanvasElement>(null);
   const bgRef = useRef<HTMLCanvasElement>(null);
   const { w: calculatedW, h: calculatedH } = calculatePosterDims(parentDomRect);
   poster.setPosterSize(calculatedW, calculatedH);
-
-  useEffect(() => {
-    if (calculatedW === 0 || calculatedH === 0) return;
-    const can = ref.current;
-    if (!can) throw new Error('Unable to retreive poster canvas element');
-    poster.draw(can, false);
-  });
+  console.log(isLoading);
 
   useEffect(() => {
     const { backgroundImage } = poster.theme;
-    if (calculatedW === 0 || calculatedH === 0) return;
-    if (
-      backgroundImage === curBackgroundImage &&
-      calculatedW === curW &&
-      calculatedH === curH
-    )
-      return;
 
-    const bgcan = bgRef.current;
-    if (!bgcan)
-      throw new Error('Unable to retreive poster background canvas element');
+    const drawPoster = async () => {
+      const can = ref.current;
+      if (!can) throw new Error('Unable to retreive poster canvas element');
 
-    poster.drawBackground(bgcan);
-    setCurBackgroundImage(backgroundImage);
-    setCurDims([calculatedW, calculatedH]);
-  }, [calculatedH, calculatedW, curBackgroundImage, curH, curW, poster]);
+      const bgcan = bgRef.current;
+      if (!bgcan)
+        throw new Error('Unable to retreive poster background canvas element');
+
+      const redrawBG = backgroundImage !== curBackgroundImage;
+      await poster.drawMultiCanvas(can, redrawBG ? bgcan : undefined);
+      setCurBackgroundImage(backgroundImage);
+      setCurDims([calculatedW, calculatedH]);
+      setisLoading(false);
+    };
+    // Only display loading if background is being updated
+    if (backgroundImage !== curBackgroundImage) setisLoading(true);
+    drawPoster();
+  }, [poster, calculatedW, curW, calculatedH, curH, curBackgroundImage]);
 
   const canvasStyle = (): React.CSSProperties => {
     return {
@@ -64,6 +63,7 @@ const PosterCanvas: React.FC<Props> = ({ parentDomRect }) => {
 
   return (
     <>
+      {isLoading && <Spinner style={{ width: '3rem', height: '3rem' }} />}
       <canvas id='poster-bg' ref={bgRef} style={canvasStyle()}>
         Poster BackGround
       </canvas>
