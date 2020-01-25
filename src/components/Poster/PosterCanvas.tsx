@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import '../../style/Poster.css';
 import { usePoster } from './Poster';
 import { Spinner } from 'reactstrap';
@@ -25,17 +25,37 @@ interface Props {
 const PosterCanvas: React.FC<Props> = ({ parentDomRect }) => {
   const poster = usePoster();
   const [curBackgroundImage, setCurBackgroundImage] = useState('');
-  const [[curW, curH], setCurDims] = useState([0, 0]);
+  const [curW, setCurW] = useState(0);
+  const [curH, setCurH] = useState(0);
   const [isLoading, setisLoading] = useState(false);
   const ref = useRef<HTMLCanvasElement>(null);
   const bgRef = useRef<HTMLCanvasElement>(null);
+
   const { w: calculatedW, h: calculatedH } = calculatePosterDims(parentDomRect);
+  const { backgroundImage } = poster.theme;
   poster.setPosterSize(calculatedW, calculatedH);
-  console.log(isLoading);
+
+  const needBackgroundImageUpdate = useCallback(() => {
+    return (
+      backgroundImage !== curBackgroundImage ||
+      curW !== calculatedW ||
+      curH !== calculatedH
+    );
+  }, [
+    backgroundImage,
+    calculatedH,
+    calculatedW,
+    curBackgroundImage,
+    curH,
+    curW,
+  ]);
+
+  const needPosterUpdate = useCallback(() => {
+    if (calculatedW === 0 || calculatedH === 0) return false;
+    return true;
+  }, [calculatedH, calculatedW]);
 
   useEffect(() => {
-    const { backgroundImage } = poster.theme;
-
     const drawPoster = async () => {
       const can = ref.current;
       if (!can) throw new Error('Unable to retreive poster canvas element');
@@ -44,16 +64,27 @@ const PosterCanvas: React.FC<Props> = ({ parentDomRect }) => {
       if (!bgcan)
         throw new Error('Unable to retreive poster background canvas element');
 
-      const redrawBG = backgroundImage !== curBackgroundImage;
+      const redrawBG = needBackgroundImageUpdate();
+      if (redrawBG) {
+        setCurBackgroundImage(backgroundImage);
+        setCurW(calculatedW);
+        setCurH(calculatedH);
+      }
       await poster.drawMultiCanvas(can, redrawBG ? bgcan : undefined);
-      setCurBackgroundImage(backgroundImage);
-      setCurDims([calculatedW, calculatedH]);
       setisLoading(false);
     };
     // Only display loading if background is being updated
-    if (backgroundImage !== curBackgroundImage) setisLoading(true);
-    drawPoster();
-  }, [poster, calculatedW, curW, calculatedH, curH, curBackgroundImage]);
+    if (needBackgroundImageUpdate()) setisLoading(true);
+    if (needPosterUpdate()) drawPoster();
+  }, [
+    poster,
+    backgroundImage,
+    needBackgroundImageUpdate,
+    isLoading,
+    calculatedW,
+    calculatedH,
+    needPosterUpdate,
+  ]);
 
   const canvasStyle = (): React.CSSProperties => {
     return {
