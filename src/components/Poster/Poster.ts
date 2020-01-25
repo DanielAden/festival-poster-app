@@ -34,8 +34,8 @@ export abstract class Poster {
   }
 
   public setPosterSize(w: number, h: number) {
-    this._w = w;
-    this._h = h;
+    this._w = Math.floor(w);
+    this._h = Math.floor(h);
   }
 
   public get w() {
