@@ -24,7 +24,7 @@ const initialState: PosterState = {
   artists: [],
   topArtistsTimeRange: 'medium_term',
   layoutType: 'basic',
-  themeType: 'theme1',
+  themeType: 'desert',
   width,
   height,
 };

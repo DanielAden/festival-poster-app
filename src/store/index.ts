@@ -1,6 +1,22 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { rootReducer } from './rootReducer';
 
+// TODO this is only for development but still need to figure out a better way
+// to do this
+const VERSION = 3;
+const key = 'version';
+const versionStr = window.localStorage.getItem(key);
+if (!versionStr) {
+  window.localStorage.clear();
+  window.localStorage.setItem(key, VERSION.toString());
+} else {
+  const version = parseInt(versionStr, 10);
+  if (version < VERSION) {
+    window.localStorage.clear();
+    window.localStorage.setItem(key, VERSION.toString());
+  }
+}
+
 // TODO look into other options to replicate this functionality.
 // works for now but obviously not very efficient
 export const REDUX_LOCAL_STORAGE_KEY = '__REDUX_LOCAL_STORAGE_KEY';

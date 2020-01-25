@@ -6,7 +6,7 @@ export const POSTER_CANVAS_ID = 'poster-canvas';
 
 const aspectRatio = [4, 5]; // 4:5
 const getH = (w: number) => w * (aspectRatio[1] / aspectRatio[0]);
-const maxHeight = (top: number) => document.documentElement.clientHeight; // window.innerHeight - top;
+const maxHeight = (top: number) => document.documentElement.clientHeight - top;
 const calculatePosterDims = (r?: DOMRect) => {
   if (!r) return { w: 0, h: 0 };
   let w = r.width;
