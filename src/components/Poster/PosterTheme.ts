@@ -33,6 +33,8 @@ export abstract class PosterTheme {
     offsetX: 0,
     offsetY: 0,
   };
+
+  public skewText: boolean = false;
 }
 
 export class DesertTheme extends PosterTheme {
@@ -91,25 +93,27 @@ export class TestTheme extends PosterTheme {
   festivalNameFont = 'Cocogoose';
 
   artistFont = 'Monteral';
-  artistColor = 'white';
+  artistColor = 'lime';
 
   sideMarginRatio = 0.055;
   artistFontRatio = 0.02;
 
   strokeInfo = [
     {
-      strokeStyle: 'blue',
-      lineWidth: 2,
-      offsetX: -2,
-      offsetY: -2,
+      strokeStyle: 'yellow',
+      lineWidth: 10,
+      offsetX: 0,
+      offsetY: 0,
     },
     {
-      strokeStyle: 'yellow',
-      lineWidth: 2,
-      offsetX: -4,
-      offsetY: -4,
+      strokeStyle: 'blue',
+      lineWidth: 5,
+      offsetX: 0,
+      offsetY: 0,
     },
   ];
+
+  skewText = true;
 }
 
 export const usePosterTheme = (): PosterTheme => {

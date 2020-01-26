@@ -136,6 +136,10 @@ export abstract class PosterTextLayout {
     };
   }
 
+  public clearTransform() {
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
+
   public stroke(str: string, x: number, y: number, maxWidth?: number) {
     const { strokeInfo } = this.theme;
     if (!strokeInfo) return;
@@ -153,6 +157,10 @@ export abstract class PosterTextLayout {
 
     ctx.lineWidth = lineWidth;
     ctx.fillStyle = fillStyle;
+  }
+
+  public setSkew() {
+    if (this.theme.skewText) this.ctx.transform(1, 0.06, 0.06, 1, -20, 0);
   }
 
   public printCenter(str: string, top: number) {
@@ -218,6 +226,7 @@ export class WeekendLayout extends PosterTextLayout {
   }
 
   drawArtistBlock(artistTopOverride?: number): ArtistBlockMetrics {
+    this.setSkew();
     const lines = this.artistLines();
     const oneThird = Math.ceil(lines.length / 3);
     const day1Lines = lines.slice(0, oneThird);
@@ -262,6 +271,8 @@ export class WeekendLayout extends PosterTextLayout {
       movingTop += fh;
       this.printLeft(line, movingTop);
     });
+
+    this.clearTransform();
     return {
       top: actualTop,
       bottom: movingTop,
