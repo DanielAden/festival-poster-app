@@ -1,26 +1,27 @@
 {
   "files": {
-    "main.css": "/festival-poster-app/static/css/main.62635ff3.chunk.css",
-    "main.js": "/festival-poster-app/static/js/main.bf6ea500.chunk.js",
-    "main.js.map": "/festival-poster-app/static/js/main.bf6ea500.chunk.js.map",
+    "main.css": "/festival-poster-app/static/css/main.30b474b2.chunk.css",
+    "main.js": "/festival-poster-app/static/js/main.29dfc877.chunk.js",
+    "main.js.map": "/festival-poster-app/static/js/main.29dfc877.chunk.js.map",
     "runtime-main.js": "/festival-poster-app/static/js/runtime-main.81049c0c.js",
     "runtime-main.js.map": "/festival-poster-app/static/js/runtime-main.81049c0c.js.map",
-    "static/js/2.b0f43672.chunk.js": "/festival-poster-app/static/js/2.b0f43672.chunk.js",
-    "static/js/2.b0f43672.chunk.js.map": "/festival-poster-app/static/js/2.b0f43672.chunk.js.map",
+    "static/js/2.6ac4aaec.chunk.js": "/festival-poster-app/static/js/2.6ac4aaec.chunk.js",
+    "static/js/2.6ac4aaec.chunk.js.map": "/festival-poster-app/static/js/2.6ac4aaec.chunk.js.map",
     "index.html": "/festival-poster-app/index.html",
-    "precache-manifest.fa390c601e0d19ce0495bcbeda6acd77.js": "/festival-poster-app/precache-manifest.fa390c601e0d19ce0495bcbeda6acd77.js",
+    "precache-manifest.17960bcc7602b91195ea3c54326e62af.js": "/festival-poster-app/precache-manifest.17960bcc7602b91195ea3c54326e62af.js",
     "service-worker.js": "/festival-poster-app/service-worker.js",
-    "static/css/main.62635ff3.chunk.css.map": "/festival-poster-app/static/css/main.62635ff3.chunk.css.map",
-    "static/js/2.b0f43672.chunk.js.LICENSE": "/festival-poster-app/static/js/2.b0f43672.chunk.js.LICENSE",
-    "static/media/city.jpg": "/festival-poster-app/static/media/city.7878fa91.jpg",
+    "static/css/main.30b474b2.chunk.css.map": "/festival-poster-app/static/css/main.30b474b2.chunk.css.map",
+    "static/js/2.6ac4aaec.chunk.js.LICENSE": "/festival-poster-app/static/js/2.6ac4aaec.chunk.js.LICENSE",
+    "static/media/fonts.css": "/festival-poster-app/static/media/western_bang_bang.92c70263.otf",
     "static/media/desert.png": "/festival-poster-app/static/media/desert.1f4ebc63.png",
-    "static/media/fireworks.jpg": "/festival-poster-app/static/media/fireworks.c1f1ed0c.jpg",
-    "static/media/fonts.css": "/festival-poster-app/static/media/western_bang_bang.92c70263.otf"
+    "static/media/galaxy.png": "/festival-poster-app/static/media/galaxy.5fd0b3a6.png",
+    "static/media/metal.png": "/festival-poster-app/static/media/metal.78fbcaff.png",
+    "static/media/punk.png": "/festival-poster-app/static/media/punk.ae35ea3b.png"
   },
   "entrypoints": [
     "static/js/runtime-main.81049c0c.js",
-    "static/js/2.b0f43672.chunk.js",
-    "static/css/main.62635ff3.chunk.css",
-    "static/js/main.bf6ea500.chunk.js"
+    "static/js/2.6ac4aaec.chunk.js",
+    "static/css/main.30b474b2.chunk.css",
+    "static/js/main.29dfc877.chunk.js"
   ]
 }
