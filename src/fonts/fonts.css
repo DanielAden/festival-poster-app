@@ -7,3 +7,23 @@
   font-family: 'WesternBangBang';
   src: local('WesternBangBang'), url(./western_bang_bang/western_bang_bang.otf) format('opentype');
 }
+
+@font-face {
+  font-family: 'MadridGrunge';
+  src: local('MadridGrunge'), url(./madrid_grunge/madrid_grunge.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'PunkrockerStamp';
+  src: local('PunkrockerStamp'), url(./punkrocker_stamp/punkrocker_stamp.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'Monteral';
+  src: local('Monteral'), url(./ff_monteral_two/ff_monteral_two.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'Cocogoose';
+  src: local('Cocogoose'), url(./cocogoose/cocogoose_pro_thin_trial.ttf) format('truetype');
+}

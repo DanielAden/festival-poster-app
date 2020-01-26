@@ -30,8 +30,12 @@ const themeOptions: SelectOption[] = [
     value: 'punk',
   },
   {
-    text: 'Metal',
-    value: 'metal',
+    text: 'Rock',
+    value: 'rock',
+  },
+  {
+    text: 'Galaxy',
+    value: 'galaxy',
   },
 ];
 

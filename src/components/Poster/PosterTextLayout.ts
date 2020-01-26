@@ -22,7 +22,7 @@ export abstract class PosterTextLayout {
   protected artistTopRatio = 0.4;
   protected artistFontRatio: number = 0.03;
 
-  protected festivalNameFontRatio: number = 0.1;
+  protected festivalNameFontRatio: number = 0.12;
 
   constructor(private _poster?: Poster) {}
 
@@ -154,7 +154,7 @@ export abstract class PosterTextLayout {
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 2;
 
-    this.printCenter(this.poster.festivalName, 30);
+    this.printCenter(this.poster.festivalName, 50);
   }
 }
 

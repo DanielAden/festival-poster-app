@@ -33,14 +33,24 @@ export class PunkTheme extends PosterTheme {
   artistColor = '#37C3E1';
 }
 
-export class MetalTheme extends PosterTheme {
+export class RockTheme extends PosterTheme {
   backgroundImage = images.metal;
   festivalNameColor = '#7C7170';
-  festivalNameFont = 'TexasTango';
+  festivalNameFont = 'MadridGrunge';
   textMargin = 35;
 
-  artistFont = 'WesternBangBang';
+  artistFont = 'PunkrockerStamp';
   artistColor = '#7C7170';
+}
+
+export class GalaxyTheme extends PosterTheme {
+  backgroundImage = images.galaxy;
+  festivalNameColor = 'white';
+  festivalNameFont = 'Cocogoose';
+  textMargin = 50;
+
+  artistFont = 'Monteral';
+  artistColor = 'white';
 }
 
 export const usePosterTheme = (): PosterTheme => {
@@ -49,10 +59,12 @@ export const usePosterTheme = (): PosterTheme => {
     switch (themeType) {
       case 'punk':
         return new PunkTheme();
-      case 'metal':
-        return new MetalTheme();
+      case 'rock':
+        return new RockTheme();
       case 'desert':
         return new DesertTheme();
+      case 'galaxy':
+        return new GalaxyTheme();
       default:
         throw new AppError(`Invalid theme ${themeType}`);
     }
