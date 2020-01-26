@@ -3,27 +3,7 @@ import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
 import { useMemo } from 'react';
 
-export const usePosterLayout = (): PosterTextLayout => {
-  const layoutType = useTypedSelector(s => s.poster.layoutType);
-  const layoutMeme = useMemo(() => {
-    switch (layoutType) {
-      case 'basic':
-        return new BasicLayout();
-      case 'weekend':
-        return new WeekendLayout();
-      default:
-        throw new AppError(`Invalid theme ${layoutType}`);
-    }
-  }, [layoutType]);
-  return layoutMeme;
-};
-
 export abstract class PosterTextLayout {
-  protected artistTopRatio = 0.4;
-  protected artistFontRatio: number = 0.03;
-
-  protected festivalNameFontRatio: number = 0.12;
-
   constructor(private _poster?: Poster) {}
 
   public set poster(poster: Poster) {
@@ -69,17 +49,21 @@ export abstract class PosterTextLayout {
   }
 
   protected get maxPosterWidth() {
-    return this.posterWidth - this.theme.textMargin * 2;
+    return this.posterWidth - this.sideMargin * 2;
   }
 
   protected get posterHeight() {
     return this.poster.h;
   }
 
+  protected get sideMargin() {
+    return Math.ceil(this.theme.sideMarginRatio * this.posterWidth);
+  }
+
   protected calculateTextWidth(...text: string[]) {
     const fullText = text.reduce((prev, cur) => prev + cur, '');
     const metrics = this.ctx.measureText(fullText);
-    const marginWidth = this.theme.textMargin * 2;
+    const marginWidth = this.sideMargin * 2;
     return Math.ceil(metrics.width) + marginWidth;
   }
 
@@ -87,7 +71,7 @@ export abstract class PosterTextLayout {
     const lines: string[] = [];
     const poster = this.poster;
     this.ctx.font = this.fontString(
-      this.artistFontRatio,
+      this.theme.artistFontRatio,
       this.theme.artistFont,
     );
     let currentLine = '';
@@ -106,14 +90,14 @@ export abstract class PosterTextLayout {
 
   public drawArtistBlock() {
     const ctx = this.poster.canvasCtx;
-    const baseTop = this.posterHeight * this.artistTopRatio;
+    const baseTop = this.posterHeight * this.theme.artistTopRatio;
     const lines = this.artistLines();
 
     ctx.textBaseline = 'top';
     ctx.textAlign = 'center';
     ctx.fillStyle = this.theme.artistColor;
 
-    const fh = this.fontHeight(this.artistFontRatio);
+    const fh = this.fontHeight(this.theme.artistFontRatio);
     lines.forEach((line, i) => {
       const top = baseTop + (i + 1) * fh;
       this.printCenter(line, top);
@@ -129,14 +113,14 @@ export abstract class PosterTextLayout {
   public printLeft(str: string, top: number) {
     const ctx = this.ctx;
     ctx.textAlign = 'left';
-    ctx.fillText(str, this.theme.textMargin, top, this.maxPosterWidth);
+    ctx.fillText(str, this.sideMargin, top, this.maxPosterWidth);
   }
 
   public printRight(str: string, top: number) {
     this.ctx.textAlign = 'right';
     this.ctx.fillText(
       str,
-      this.posterWidth - this.theme.textMargin,
+      this.posterWidth - this.sideMargin,
       top,
       this.maxPosterWidth,
     );
@@ -145,7 +129,7 @@ export abstract class PosterTextLayout {
   public drawFestivalName() {
     const ctx = this.poster.canvasCtx;
     ctx.font = this.fontString(
-      this.festivalNameFontRatio,
+      this.theme.festivalNameFontRatio,
       this.theme.festivalNameFont,
     );
     ctx.fillStyle = this.theme.festivalNameColor;
@@ -160,19 +144,16 @@ export abstract class PosterTextLayout {
 
 export class BasicLayout extends PosterTextLayout {}
 export class WeekendLayout extends PosterTextLayout {
-  artistTopRatio = 0.3;
-  artistFontRatio = 0.028;
-
   dayFont() {
     this.ctx.font = this.fontString(
-      this.artistFontRatio * 2,
+      this.theme.artistFontRatio * 2,
       this.theme.artistFont,
     );
   }
 
   artistFont() {
     this.ctx.font = this.fontString(
-      this.artistFontRatio,
+      this.theme.artistFontRatio,
       this.theme.artistFont,
     );
   }
@@ -187,8 +168,8 @@ export class WeekendLayout extends PosterTextLayout {
     this.ctx.textBaseline = 'bottom';
     this.ctx.fillStyle = this.theme.artistColor;
 
-    let top = this.posterHeight * this.artistTopRatio;
-    const fh = this.fontHeight(this.artistFontRatio);
+    let top = this.posterHeight * this.theme.artistTopRatio;
+    const fh = this.fontHeight(this.theme.artistFontRatio);
 
     this.dayFont();
     this.printLeft('FRIDAY', top);
@@ -222,3 +203,18 @@ export class WeekendLayout extends PosterTextLayout {
     });
   }
 }
+
+export const usePosterLayout = (): PosterTextLayout => {
+  const layoutType = useTypedSelector(s => s.poster.layoutType);
+  const layoutMeme = useMemo(() => {
+    switch (layoutType) {
+      case 'basic':
+        return new BasicLayout();
+      case 'weekend':
+        return new WeekendLayout();
+      default:
+        throw new AppError(`Invalid theme ${layoutType}`);
+    }
+  }, [layoutType]);
+  return layoutMeme;
+};

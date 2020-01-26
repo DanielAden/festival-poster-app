@@ -8,9 +8,15 @@ export abstract class PosterTheme {
   public festivalNameColor: string = 'TexasTango';
   public festivalNameFont: string = 'serif';
 
+  public sideMarginRatio: number = 0;
+
   public artistFont: string = 'WesternBangBang';
   public artistColor: string = 'white';
-  public textMargin: number = 0;
+
+  public artistTopRatio = 0.4;
+  public artistFontRatio: number = 0.03;
+
+  public festivalNameFontRatio: number = 0.12;
 }
 
 export class DesertTheme extends PosterTheme {
@@ -21,7 +27,7 @@ export class DesertTheme extends PosterTheme {
   artistFont = 'WesternBangBang';
   artistColor = 'orange';
 
-  textMargin = 25;
+  sideMarginRatio = 0.03;
 }
 
 export class PunkTheme extends PosterTheme {
@@ -37,20 +43,23 @@ export class RockTheme extends PosterTheme {
   backgroundImage = images.metal;
   festivalNameColor = '#7C7170';
   festivalNameFont = 'MadridGrunge';
-  textMargin = 35;
+  sideMarginRatio = 0.035;
 
   artistFont = 'PunkrockerStamp';
   artistColor = '#7C7170';
+  artistFontRatio = 0.035;
 }
 
 export class GalaxyTheme extends PosterTheme {
   backgroundImage = images.galaxy;
   festivalNameColor = 'white';
   festivalNameFont = 'Cocogoose';
-  textMargin = 50;
 
   artistFont = 'Monteral';
   artistColor = 'white';
+
+  sideMarginRatio = 0.055;
+  artistFontRatio = 0.025;
 }
 
 export const usePosterTheme = (): PosterTheme => {
