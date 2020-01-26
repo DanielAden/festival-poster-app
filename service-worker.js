@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/festival-poster-app/precache-manifest.e0ad1f6ab2ea1534e06aed4334a882e9.js"
+  "/festival-poster-app/precache-manifest.33b4c141c17ba928dfb8b7428b6fdc08.js"
 );
 
 self.addEventListener('message', (event) => {
