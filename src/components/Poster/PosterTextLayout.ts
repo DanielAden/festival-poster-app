@@ -85,13 +85,18 @@ export abstract class PosterTextLayout {
     return Math.ceil(metrics.width) + marginWidth;
   }
 
-  protected artistLines() {
-    const lines: string[] = [];
-    const poster = this.poster;
+  protected setArtistFont() {
     this.ctx.font = this.fontString(
       this.theme.artistFontRatio,
       this.theme.artistFont,
     );
+  }
+
+  protected artistLines() {
+    const lines: string[] = [];
+    const poster = this.poster;
+    this.setArtistFont();
+
     let currentLine = '';
     for (let artist of this.poster.artistNames) {
       const lineWidth = this.calculateTextWidth(currentLine, artist);
@@ -131,20 +136,43 @@ export abstract class PosterTextLayout {
     };
   }
 
+  public stroke(str: string, x: number, y: number, maxWidth?: number) {
+    const { strokeStyle } = this.theme;
+    if (!strokeStyle) return;
+    const ctx = this.ctx;
+    const fillStyle = ctx.fillStyle;
+    const lineWidth = ctx.lineWidth;
+
+    ctx.fillStyle = strokeStyle.fillStyle;
+    ctx.lineWidth = strokeStyle.lineWidth;
+    ctx.strokeText(str, x, y, maxWidth);
+
+    ctx.lineWidth = lineWidth;
+    ctx.fillStyle = fillStyle;
+  }
+
   public printCenter(str: string, top: number) {
     const ctx = this.ctx;
     ctx.textAlign = 'center';
+    this.stroke(str, this.midX, top, this.maxPosterWidth);
     ctx.fillText(str, this.midX, top, this.maxPosterWidth);
   }
 
   public printLeft(str: string, top: number) {
     const ctx = this.ctx;
     ctx.textAlign = 'left';
+    this.stroke(str, this.sideMargin, top, this.maxPosterWidth);
     ctx.fillText(str, this.sideMargin, top, this.maxPosterWidth);
   }
 
   public printRight(str: string, top: number) {
     this.ctx.textAlign = 'right';
+    this.stroke(
+      str,
+      this.posterWidth - this.sideMargin,
+      top,
+      this.maxPosterWidth,
+    );
     this.ctx.fillText(
       str,
       this.posterWidth - this.sideMargin,

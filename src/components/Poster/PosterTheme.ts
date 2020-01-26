@@ -3,6 +3,11 @@ import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
 import { useMemo } from 'react';
 
+export interface PosterTextStrokeStyle {
+  fillStyle: string;
+  lineWidth: number;
+}
+
 export abstract class PosterTheme {
   public backgroundImage: string = '';
 
@@ -19,6 +24,11 @@ export abstract class PosterTheme {
   public artistFontRatio: number = 0.03;
 
   public festivalNameFontRatio: number = 0.12;
+
+  public strokeStyle: PosterTextStrokeStyle | null = {
+    fillStyle: 'black',
+    lineWidth: 8,
+  };
 }
 
 export class DesertTheme extends PosterTheme {
