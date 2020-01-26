@@ -37,6 +37,10 @@ const themeOptions: SelectOption[] = [
     text: 'Galaxy',
     value: 'galaxy',
   },
+  {
+    text: 'TEST',
+    value: 'test',
+  },
 ];
 
 const layoutOptions: SelectOption[] = [

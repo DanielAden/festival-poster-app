@@ -137,15 +137,19 @@ export abstract class PosterTextLayout {
   }
 
   public stroke(str: string, x: number, y: number, maxWidth?: number) {
-    const { strokeStyle } = this.theme;
-    if (!strokeStyle) return;
+    const { strokeInfo } = this.theme;
+    if (!strokeInfo) return;
     const ctx = this.ctx;
     const fillStyle = ctx.fillStyle;
     const lineWidth = ctx.lineWidth;
 
-    ctx.fillStyle = strokeStyle.fillStyle;
-    ctx.lineWidth = strokeStyle.lineWidth;
-    ctx.strokeText(str, x, y, maxWidth);
+    const strokeList = Array.isArray(strokeInfo) ? strokeInfo : [strokeInfo];
+
+    strokeList.forEach(ss => {
+      ctx.strokeStyle = ss.strokeStyle;
+      ctx.lineWidth = ss.lineWidth;
+      ctx.strokeText(str, x + ss.offsetX, y + ss.offsetY, maxWidth);
+    });
 
     ctx.lineWidth = lineWidth;
     ctx.fillStyle = fillStyle;

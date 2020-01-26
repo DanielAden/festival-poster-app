@@ -3,8 +3,8 @@ import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
 import { useMemo } from 'react';
 
-export interface PosterTextStrokeStyle {
-  fillStyle: string;
+export interface PosterTextStrokeInfo {
+  strokeStyle: string;
   lineWidth: number;
   offsetX: number;
   offsetY: number;
@@ -27,8 +27,8 @@ export abstract class PosterTheme {
 
   public festivalNameFontRatio: number = 0.12;
 
-  public strokeStyle: PosterTextStrokeStyle | null = {
-    fillStyle: 'black',
+  public strokeInfo: PosterTextStrokeInfo | PosterTextStrokeInfo[] | null = {
+    strokeStyle: 'black',
     lineWidth: 7,
     offsetX: 0,
     offsetY: 0,
@@ -83,6 +83,35 @@ export class GalaxyTheme extends PosterTheme {
   artistFontRatio = 0.02;
 }
 
+export class TestTheme extends PosterTheme {
+  backgroundImage = images.galaxy;
+
+  festivalNameTopRatio = 0.05;
+  festivalNameColor = 'white';
+  festivalNameFont = 'Cocogoose';
+
+  artistFont = 'Monteral';
+  artistColor = 'white';
+
+  sideMarginRatio = 0.055;
+  artistFontRatio = 0.02;
+
+  strokeInfo = [
+    {
+      strokeStyle: 'blue',
+      lineWidth: 2,
+      offsetX: -2,
+      offsetY: -2,
+    },
+    {
+      strokeStyle: 'yellow',
+      lineWidth: 2,
+      offsetX: -4,
+      offsetY: -4,
+    },
+  ];
+}
+
 export const usePosterTheme = (): PosterTheme => {
   const themeType = useTypedSelector(s => s.poster.themeType);
   const themeMemo = useMemo(() => {
@@ -95,6 +124,8 @@ export const usePosterTheme = (): PosterTheme => {
         return new DesertTheme();
       case 'galaxy':
         return new GalaxyTheme();
+      case 'test':
+        return new TestTheme();
       default:
         throw new AppError(`Invalid theme ${themeType}`);
     }
