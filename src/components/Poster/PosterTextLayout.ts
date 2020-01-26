@@ -28,8 +28,8 @@ export abstract class PosterTextLayout {
     return `${this.fontHeight(fontRatio)}px ${font}`;
   }
 
-  protected fontHeight(size: number) {
-    return Math.floor(size * this.poster.h);
+  protected fontHeight(fontSizeRatio: number) {
+    return Math.floor(fontSizeRatio * this.poster.h);
   }
 
   protected cutTrailingChar(s: string) {
@@ -81,7 +81,7 @@ export abstract class PosterTextLayout {
     let currentLine = '';
     for (let artist of this.poster.artistNames) {
       const lineWidth = this.calculateTextWidth(currentLine, artist);
-      if (lineWidth > this.posterWidth) {
+      if (lineWidth > this.maxPosterWidth) {
         lines.push(this.cutTrailingChar(currentLine));
         currentLine = artist + poster.artistSeperator;
         continue;

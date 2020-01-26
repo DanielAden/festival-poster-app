@@ -65,7 +65,7 @@ export class GalaxyTheme extends PosterTheme {
   artistColor = 'white';
 
   sideMarginRatio = 0.055;
-  artistFontRatio = 0.025;
+  artistFontRatio = 0.02;
 }
 
 export const usePosterTheme = (): PosterTheme => {
