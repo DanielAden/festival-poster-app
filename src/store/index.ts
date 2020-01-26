@@ -3,7 +3,7 @@ import { rootReducer } from './rootReducer';
 
 // TODO this is only for development but still need to figure out a better way
 // to do this
-const VERSION = 3;
+const VERSION = 4;
 const key = 'version';
 const versionStr = window.localStorage.getItem(key);
 if (!versionStr) {
