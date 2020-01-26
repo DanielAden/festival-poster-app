@@ -6,6 +6,8 @@ import { useMemo } from 'react';
 export interface PosterTextStrokeStyle {
   fillStyle: string;
   lineWidth: number;
+  offsetX: number;
+  offsetY: number;
 }
 
 export abstract class PosterTheme {
@@ -27,7 +29,9 @@ export abstract class PosterTheme {
 
   public strokeStyle: PosterTextStrokeStyle | null = {
     fillStyle: 'black',
-    lineWidth: 8,
+    lineWidth: 7,
+    offsetX: 0,
+    offsetY: 0,
   };
 }
 
@@ -45,7 +49,7 @@ export class DesertTheme extends PosterTheme {
 export class PunkTheme extends PosterTheme {
   backgroundImage = images.punk;
   festivalNameColor = '#37C3E1';
-  festivalNameFont = 'TexasTango';
+  festivalNameFont = 'WesternBangBang';
 
   artistFont = 'WesternBangBang';
   artistColor = '#37C3E1';
