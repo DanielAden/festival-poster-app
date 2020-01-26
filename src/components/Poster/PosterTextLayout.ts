@@ -60,6 +60,10 @@ export abstract class PosterTextLayout {
     return Math.ceil(this.theme.sideMarginRatio * this.posterWidth);
   }
 
+  protected get festivalNameTop() {
+    return Math.floor(this.theme.festivalNameTopRatio * this.posterHeight);
+  }
+
   protected calculateTextWidth(...text: string[]) {
     const fullText = text.reduce((prev, cur) => prev + cur, '');
     const metrics = this.ctx.measureText(fullText);
@@ -138,7 +142,7 @@ export abstract class PosterTextLayout {
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 2;
 
-    this.printCenter(this.poster.festivalName, 50);
+    this.printCenter(this.poster.festivalName, this.festivalNameTop);
   }
 }
 

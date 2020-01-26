@@ -5,6 +5,8 @@ import { useMemo } from 'react';
 
 export abstract class PosterTheme {
   public backgroundImage: string = '';
+
+  public festivalNameTopRatio: number = 0.03;
   public festivalNameColor: string = 'TexasTango';
   public festivalNameFont: string = 'serif';
 
@@ -41,6 +43,8 @@ export class PunkTheme extends PosterTheme {
 
 export class RockTheme extends PosterTheme {
   backgroundImage = images.metal;
+
+  festivalNameTopRatio = 0.05;
   festivalNameColor = '#7C7170';
   festivalNameFont = 'MadridGrunge';
   sideMarginRatio = 0.035;
@@ -52,6 +56,8 @@ export class RockTheme extends PosterTheme {
 
 export class GalaxyTheme extends PosterTheme {
   backgroundImage = images.galaxy;
+
+  festivalNameTopRatio = 0.05;
   festivalNameColor = 'white';
   festivalNameFont = 'Cocogoose';
 
