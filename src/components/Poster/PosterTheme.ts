@@ -39,6 +39,7 @@ export class PunkTheme extends PosterTheme {
 
   artistFont = 'WesternBangBang';
   artistColor = '#37C3E1';
+  artistFontRatio = 0.037;
 }
 
 export class RockTheme extends PosterTheme {

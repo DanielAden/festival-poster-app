@@ -19,6 +19,7 @@ export abstract class Poster {
   protected _w: number = 0;
   protected _h: number = 0;
   public img!: HTMLImageElement;
+  protected _drawBackground: boolean = true;
 
   protected festivalNameText: string = DEFAULT_FESTIVAL_NAME;
   protected festivalNameCase: Case = 'upper';
@@ -97,11 +98,36 @@ export abstract class Poster {
     createHiDPICanvas(can, this.w, this.h);
     await this.load(can, drawBackground);
 
-    this.canvasCtx = Poster.getContext(can);
+    this._drawBackground = drawBackground;
+    this.canvas = can;
+    this.canvasCtx = Poster.getContext(this.canvas);
     this.layout.poster = this;
-    if (drawBackground) await this.drawBackground(can);
-    this.layout.drawFestivalName();
-    this.layout.drawArtistBlock();
+    await this._draw();
+  }
+
+  protected async _draw({
+    drawBackground = true,
+    drawArtistBlock = true,
+    drawFestivalName = true,
+  } = {}) {
+    this.clear();
+    if (drawBackground && this._drawBackground)
+      await this.drawBackground(this.canvas);
+    if (drawFestivalName) this.layout.drawFestivalName();
+    if (drawArtistBlock) await this.drawArtistBlock();
+  }
+
+  protected async drawArtistBlock() {
+    const { bottom } = this.layout.drawArtistBlock();
+    const { maxPosterHeight } = this.layout;
+    if (bottom <= maxPosterHeight) return;
+    const newTop = this.layout.artistTop - (bottom - maxPosterHeight);
+    await this._draw({ drawArtistBlock: false });
+    this.layout.drawArtistBlock(newTop);
+  }
+
+  public clear() {
+    this.canvasCtx.clearRect(0, 0, this.w, this.h);
   }
 
   public async drawMultiCanvas(

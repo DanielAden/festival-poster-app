@@ -3,6 +3,12 @@ import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
 import { useMemo } from 'react';
 
+interface ArtistBlockMetrics {
+  top: number;
+  bottom: number;
+  height: number;
+}
+
 export abstract class PosterTextLayout {
   constructor(private _poster?: Poster) {}
 
@@ -56,12 +62,20 @@ export abstract class PosterTextLayout {
     return this.poster.h;
   }
 
+  public get maxPosterHeight() {
+    return this.posterHeight;
+  }
+
   protected get sideMargin() {
     return Math.ceil(this.theme.sideMarginRatio * this.posterWidth);
   }
 
   protected get festivalNameTop() {
     return Math.floor(this.theme.festivalNameTopRatio * this.posterHeight);
+  }
+
+  public get artistTop() {
+    return this.posterHeight * this.theme.artistTopRatio;
   }
 
   protected calculateTextWidth(...text: string[]) {
@@ -92,9 +106,9 @@ export abstract class PosterTextLayout {
     return lines;
   }
 
-  public drawArtistBlock() {
+  public drawArtistBlock(artistTopOverride?: number): ArtistBlockMetrics {
     const ctx = this.poster.canvasCtx;
-    const baseTop = this.posterHeight * this.theme.artistTopRatio;
+    const baseTop = artistTopOverride || this.artistTop;
     const lines = this.artistLines();
 
     ctx.textBaseline = 'top';
@@ -102,10 +116,19 @@ export abstract class PosterTextLayout {
     ctx.fillStyle = this.theme.artistColor;
 
     const fh = this.fontHeight(this.theme.artistFontRatio);
+    let movingTop: number = 0;
     lines.forEach((line, i) => {
-      const top = baseTop + (i + 1) * fh;
-      this.printCenter(line, top);
+      movingTop = baseTop + (i + 1) * fh;
+      this.printCenter(line, movingTop);
     });
+
+    const bottom = movingTop + fh;
+
+    return {
+      top: baseTop,
+      bottom,
+      height: bottom - baseTop,
+    };
   }
 
   public printCenter(str: string, top: number) {
@@ -162,7 +185,7 @@ export class WeekendLayout extends PosterTextLayout {
     );
   }
 
-  drawArtistBlock() {
+  drawArtistBlock(artistTopOverride?: number): ArtistBlockMetrics {
     const lines = this.artistLines();
     const oneThird = Math.ceil(lines.length / 3);
     const day1Lines = lines.slice(0, oneThird);
@@ -172,39 +195,46 @@ export class WeekendLayout extends PosterTextLayout {
     this.ctx.textBaseline = 'bottom';
     this.ctx.fillStyle = this.theme.artistColor;
 
-    let top = this.posterHeight * this.theme.artistTopRatio;
     const fh = this.fontHeight(this.theme.artistFontRatio);
+    const startTop = artistTopOverride || this.artistTop;
+    const actualTop = startTop - fh;
+    let movingTop = startTop;
 
     this.dayFont();
-    this.printLeft('FRIDAY', top);
+    this.printLeft('FRIDAY', movingTop);
     this.artistFont();
 
     day1Lines.forEach((line, i) => {
-      top += fh;
-      this.printLeft(line, top);
+      movingTop += fh;
+      this.printLeft(line, movingTop);
     });
 
-    top = top + fh * 3;
+    movingTop = movingTop + fh * 3;
 
     this.dayFont();
-    this.printRight('SATURDAY', top);
+    this.printRight('SATURDAY', movingTop);
     this.artistFont();
 
     day2Lines.forEach((line, i) => {
-      top += fh;
-      this.printRight(line, top);
+      movingTop += fh;
+      this.printRight(line, movingTop);
     });
 
-    top = top + fh * 3;
+    movingTop = movingTop + fh * 3;
     this.ctx.textAlign = 'left';
 
     this.dayFont();
-    this.printLeft('SUNDAY', top);
+    this.printLeft('SUNDAY', movingTop);
     this.artistFont();
-    day3Lines.forEach((line, i) => {
-      top += fh;
-      this.printLeft(line, top);
+    day3Lines.forEach(line => {
+      movingTop += fh;
+      this.printLeft(line, movingTop);
     });
+    return {
+      top: actualTop,
+      bottom: movingTop,
+      height: movingTop - actualTop,
+    };
   }
 }
 
