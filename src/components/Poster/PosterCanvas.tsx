@@ -16,6 +16,8 @@ const calculatePosterDims = (r?: DOMRect) => {
     w = w - 5;
     h = getH(w);
   }
+  w = Math.floor(w);
+  h = Math.floor(h);
   return { w, h };
 };
 
@@ -65,26 +67,18 @@ const PosterCanvas: React.FC<Props> = ({ parentDomRect }) => {
         throw new Error('Unable to retreive poster background canvas element');
 
       const redrawBG = needBackgroundImageUpdate();
-      if (redrawBG) {
-        setCurBackgroundImage(backgroundImage);
-        setCurW(calculatedW);
-        setCurH(calculatedH);
-      }
+      console.log(redrawBG);
+      if (redrawBG) setisLoading(true);
       await poster.drawMultiCanvas(can, redrawBG ? bgcan : undefined);
       setisLoading(false);
+      setCurBackgroundImage(poster.theme.backgroundImage);
+      setCurW(poster.w);
+      setCurH(poster.h);
     };
-    // Only display loading if background is being updated
-    if (needBackgroundImageUpdate()) setisLoading(true);
-    if (needPosterUpdate()) drawPoster();
-  }, [
-    poster,
-    backgroundImage,
-    needBackgroundImageUpdate,
-    isLoading,
-    calculatedW,
-    calculatedH,
-    needPosterUpdate,
-  ]);
+    if (needPosterUpdate()) {
+      drawPoster();
+    }
+  }, [needPosterUpdate, needBackgroundImageUpdate, poster]);
 
   const canvasStyle = (): React.CSSProperties => {
     return {
@@ -94,7 +88,9 @@ const PosterCanvas: React.FC<Props> = ({ parentDomRect }) => {
 
   return (
     <>
-      {isLoading && <Spinner style={{ width: '3rem', height: '3rem' }} />}
+      {isLoading && (
+        <Spinner style={{ width: '3rem', height: '3rem', zIndex: 99 }} />
+      )}
       <canvas id='poster-bg' ref={bgRef} style={canvasStyle()}>
         Poster BackGround
       </canvas>
