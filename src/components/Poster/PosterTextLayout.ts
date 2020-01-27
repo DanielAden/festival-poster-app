@@ -34,7 +34,7 @@ export abstract class PosterTextLayout {
   public fontPkg(type: 'artist' | 'name') {
     switch (type) {
       case 'artist':
-        return this.theme.artistFontPackage;
+        return this.theme.artistFontPkg;
       case 'name':
         return this.theme.nameFontPackage;
     }
@@ -117,7 +117,6 @@ export abstract class PosterTextLayout {
 
     ctx.textBaseline = 'top';
     ctx.textAlign = 'center';
-    ctx.fillStyle = this.fontPkg('artist').fontColor;
 
     const lineHeight = this.fontPkg('artist').lineHeight(this.posterHeight);
     console.log(lineHeight);
@@ -186,7 +185,6 @@ export abstract class PosterTextLayout {
     const { nameFontPackage } = this.theme;
     ctx.save();
     ctx.font = nameFontPackage.fontString(this.posterHeight);
-    ctx.fillStyle = nameFontPackage.fontColor;
     ctx.textBaseline = 'top';
     ctx.textAlign = 'center';
     ctx.strokeStyle = 'black';
@@ -200,16 +198,93 @@ export abstract class PosterTextLayout {
 }
 
 export class BasicLayout extends PosterTextLayout {}
+
+export class CoachellaLayout extends PosterTextLayout {
+  private textScaleDelta: number = 0.9;
+  private currentArtistFontSize = 0;
+
+  setArtistFont() {
+    const { artistFontPkg: afp } = this.theme;
+    this.currentArtistFontSize = afp.fontHeight(this.posterHeight);
+    this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight);
+  }
+
+  scaleDownArtistFont() {
+    const { artistFontPkg: afp } = this.theme;
+    this.currentArtistFontSize =
+      this.currentArtistFontSize * this.textScaleDelta;
+    this.ctx.font = `${this.currentArtistFontSize}px ${afp.fontType}`;
+    console.log(this.ctx.font);
+  }
+
+  setHeadlinerFont() {
+    this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight, 2);
+  }
+
+  private get headliners() {
+    return this.poster.artistNames.slice(0, 3);
+  }
+
+  private get artistNames() {
+    const headliners = this.headliners;
+    return this.poster.artistNames.filter(a => !headliners.includes(a));
+  }
+
+  protected artistLines() {
+    const lines: string[] = [];
+    const poster = this.poster;
+    const afp = this.fontPkg('artist');
+
+    this.setArtistFont();
+    let currentLine = '';
+    for (let artist of this.artistNames) {
+      const lineWidth = this.calculateTextWidth(afp, currentLine, artist);
+      if (lineWidth > this.maxPosterWidth) {
+        lines.push(this.cutTrailingChar(currentLine));
+        currentLine = artist + poster.artistSeperator;
+        this.scaleDownArtistFont();
+        continue;
+      }
+      currentLine = currentLine + artist + poster.artistSeperator;
+    }
+    if (currentLine !== '') lines.push(this.cutTrailingChar(currentLine));
+    return lines;
+  }
+
+  drawArtistBlock(artistTopOverride?: number): ArtistBlockMetrics {
+    const { ctx } = this;
+    ctx.save();
+    ctx.textBaseline = 'bottom';
+
+    const { artistFontPkg: afp } = this.theme;
+    const lineHeight = afp.lineHeight(this.posterHeight);
+    const startTop = artistTopOverride || this.artistTop;
+    const artistLines = this.artistLines();
+    let movingTop = startTop;
+
+    this.setHeadlinerFont();
+    this.printLeft(this.headliners[0], movingTop, afp);
+    this.setArtistFont();
+    this.printRight('FRIDAY', movingTop, this.theme.artistFontPkg);
+
+    artistLines.forEach((l, i) => {
+      movingTop = movingTop + lineHeight;
+      this.printLeft(l, movingTop, afp);
+      this.scaleDownArtistFont();
+    });
+
+    ctx.restore();
+    return { bottom: 0, top: startTop, height: 0 };
+  }
+}
+
 export class WeekendLayout extends PosterTextLayout {
   dayFont() {
-    this.ctx.font = this.theme.artistFontPackage.fontString(
-      this.posterHeight,
-      2,
-    );
+    this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight, 2);
   }
 
   artistFont() {
-    this.ctx.font = this.theme.artistFontPackage.fontString(this.posterHeight);
+    this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight);
   }
 
   drawArtistBlock(artistTopOverride?: number): ArtistBlockMetrics {
@@ -219,11 +294,10 @@ export class WeekendLayout extends PosterTextLayout {
     const day2Lines = lines.slice(oneThird, oneThird * 2);
     const day3Lines = lines.slice(oneThird * 2);
     const { ctx } = this;
-    const { artistFontPackage: afp } = this.theme;
+    const { artistFontPkg: afp } = this.theme;
     ctx.save();
 
     ctx.textBaseline = 'bottom';
-    ctx.fillStyle = afp.fontColor;
 
     const lineHeight = afp.lineHeight(this.posterHeight);
     const startTop = artistTopOverride || this.artistTop;
@@ -278,6 +352,8 @@ export const usePosterLayout = (): PosterTextLayout => {
         return new BasicLayout();
       case 'weekend':
         return new WeekendLayout();
+      case 'coachella':
+        return new CoachellaLayout();
       default:
         throw new AppError(`Invalid theme ${layoutType}`);
     }

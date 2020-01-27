@@ -33,7 +33,7 @@ export abstract class Poster {
   ) {}
 
   protected get artistFontPkg() {
-    return this.theme.artistFontPackage;
+    return this.theme.artistFontPkg;
   }
 
   protected get festivalNameFontPkg() {

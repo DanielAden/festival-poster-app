@@ -11,7 +11,7 @@ export abstract class PosterTheme {
   public artistTopRatio = 0.4;
   public skewText: boolean = false;
   public abstract nameFontPackage: FontPkg;
-  public abstract artistFontPackage: FontPkg;
+  public abstract artistFontPkg: FontPkg;
 }
 
 export class DesertTheme extends PosterTheme {
@@ -20,13 +20,13 @@ export class DesertTheme extends PosterTheme {
   artistTopRatio = 0.3;
 
   nameFontPackage = new BasicFontPkg('TexasTango', 'orange', 0.08);
-  artistFontPackage = new BasicFontPkg('WesternBangBang', 'orange', 0.032);
+  artistFontPkg = new BasicFontPkg('WesternBangBang', 'orange', 0.032);
 }
 
 export class PunkTheme extends PosterTheme {
   backgroundImage = images.punk;
   nameFontPackage = new BasicFontPkg('WesternBangBang', '#37C3E1', 0.1);
-  artistFontPackage = new BasicFontPkg('WesternBangBang', '#37C3E1', 0.033);
+  artistFontPkg = new BasicFontPkg('WesternBangBang', '#37C3E1', 0.033);
 }
 
 export class RockTheme extends PosterTheme {
@@ -34,7 +34,7 @@ export class RockTheme extends PosterTheme {
   sideMarginRatio = 0.035;
 
   nameFontPackage = new BasicFontPkg('MadridGrunge', '#7C7170', 0.1);
-  artistFontPackage = new BasicFontPkg('PunkrockerStamp', '#7C7170', 0.032);
+  artistFontPkg = new BasicFontPkg('PunkrockerStamp', '#7C7170', 0.032);
 }
 
 export class GalaxyTheme extends PosterTheme {
@@ -50,7 +50,7 @@ export class GalaxyTheme extends PosterTheme {
     offsetY: 0,
     strokeStyle: 'black',
   });
-  artistFontPackage = new BasicFontPkg('Monteral', 'white', 0.02);
+  artistFontPkg = new BasicFontPkg('Monteral', 'white', 0.02);
 
   sideMarginRatio = 0.055;
 }
@@ -62,7 +62,7 @@ export class TestTheme extends PosterTheme {
   sideMarginRatio = 0.055;
 
   nameFontPackage = new BasicFontPkg('Cocogoose', 'white', 0.1);
-  artistFontPackage = new BasicFontPkg('Monteral', 'lime', 0.02, [
+  artistFontPkg = new BasicFontPkg('Monteral', 'lime', 0.02, [
     {
       strokeStyle: 'yellow',
       widthRatio: 0.4,

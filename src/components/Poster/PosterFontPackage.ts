@@ -35,7 +35,7 @@ export default class FontPkg {
   }
 
   protected setTextCtx(ctx: CanvasRenderingContext2D) {
-    ctx.strokeStyle = this.fontColor;
+    ctx.fillStyle = this.fontColor;
   }
 
   public draw(
