@@ -21,7 +21,7 @@ export const ModalGroup: React.FC<Props> = ({
     const submits = Array.isArray(submit) ? submit : [submit];
     return submits.map(s => (
       <Button
-        color='success'
+        color={s.color || 'success'}
         onClick={() => {
           s.submitFN();
           toggle();

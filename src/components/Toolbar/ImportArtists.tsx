@@ -16,7 +16,8 @@ const ImportArtists: React.FC<Props> = () => {
 
   const [page, setPage] = useState(0);
   const [showModal, setShowModal] = useState(false);
-  const [artists, setArtists] = useState<ListItems<SpotifyArtistObject>>();
+  const [artists, setArtists] = useState<ListItems<SpotifyArtistObject>>([]);
+  const dispatch = useDispatch();
   const toggle = () => setShowModal(!showModal);
 
   const renderButtons = () => {
@@ -48,8 +49,7 @@ const ImportArtists: React.FC<Props> = () => {
           submit={[
             {
               text: 'Replace Existing Artists',
-              color: 'success',
-              submitFN: () => {},
+              submitFN: () => dispatch(updateArtistList(artists)),
             },
             { text: 'Merge with Existing Artists', submitFN: () => {} },
           ]}
