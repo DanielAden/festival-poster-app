@@ -7,17 +7,9 @@
     {
       "type": "chrome",
       "request": "launch",
-      "name": "Launch Chrome (Default User)",
-      "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}",
-      "userDataDir": false,
-    },
-    {
-      "type": "chrome",
-      "request": "launch",
       "name": "Launch Chrome (New User)",
-      "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}",
+      "url": "http://localhost:3000/",
+      "webRoot": "",
       "userDataDir": true,
     }
   ]

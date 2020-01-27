@@ -113,8 +113,7 @@ export const useMe = () => {
         return;
       }
       if (!meData) throw new Error('Expected me data');
-      if (meData instanceof Error)
-        throw new Error('Expected error to be caught');
+      if (meData instanceof Error) return;
       dispatch(updateMeData(meData));
     };
     if (!api) return;
