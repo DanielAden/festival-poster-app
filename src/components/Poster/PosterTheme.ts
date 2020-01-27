@@ -2,7 +2,7 @@ import * as images from '../../images';
 import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
 import { useMemo } from 'react';
-import { PosterFontPackage } from './PosterFontPackage';
+import FontPkg, { BasicFontPkg } from './PosterFontPackage';
 
 export abstract class PosterTheme {
   public backgroundImage: string = '';
@@ -10,16 +10,8 @@ export abstract class PosterTheme {
   public festivalNameTopRatio = 0.05;
   public artistTopRatio = 0.4;
   public skewText: boolean = false;
-  public nameFontPackage: PosterFontPackage = new PosterFontPackage(
-    'TexasTango',
-    'white',
-    0.03,
-  );
-  public artistFontPackage: PosterFontPackage = new PosterFontPackage(
-    'WesternBangBang',
-    'white',
-    0.04,
-  );
+  public abstract nameFontPackage: FontPkg;
+  public abstract artistFontPackage: FontPkg;
 }
 
 export class DesertTheme extends PosterTheme {
@@ -27,30 +19,22 @@ export class DesertTheme extends PosterTheme {
   sideMarginRatio = 0.03;
   artistTopRatio = 0.3;
 
-  nameFontPackage = new PosterFontPackage('TexasTango', 'orange', 0.08);
-  artistFontPackage = new PosterFontPackage('WesternBangBang', 'orange', 0.032);
+  nameFontPackage = new BasicFontPkg('TexasTango', 'orange', 0.08);
+  artistFontPackage = new BasicFontPkg('WesternBangBang', 'orange', 0.032);
 }
 
 export class PunkTheme extends PosterTheme {
   backgroundImage = images.punk;
-  nameFontPackage = new PosterFontPackage('WesternBangBang', '#37C3E1', 0.1);
-  artistFontPackage = new PosterFontPackage(
-    'WesternBangBang',
-    '#37C3E1',
-    0.033,
-  );
+  nameFontPackage = new BasicFontPkg('WesternBangBang', '#37C3E1', 0.1);
+  artistFontPackage = new BasicFontPkg('WesternBangBang', '#37C3E1', 0.033);
 }
 
 export class RockTheme extends PosterTheme {
   backgroundImage = images.metal;
   sideMarginRatio = 0.035;
 
-  nameFontPackage = new PosterFontPackage('MadridGrunge', '#7C7170', 0.1);
-  artistFontPackage = new PosterFontPackage(
-    'PunkrockerStamp',
-    '#7C7170',
-    0.032,
-  );
+  nameFontPackage = new BasicFontPkg('MadridGrunge', '#7C7170', 0.1);
+  artistFontPackage = new BasicFontPkg('PunkrockerStamp', '#7C7170', 0.032);
 }
 
 export class GalaxyTheme extends PosterTheme {
@@ -60,13 +44,13 @@ export class GalaxyTheme extends PosterTheme {
   artistFont = 'Monteral';
   artistColor = 'white';
 
-  nameFontPackage = new PosterFontPackage('Cocogoose', 'white', 0.1, {
+  nameFontPackage = new BasicFontPkg('Cocogoose', 'white', 0.1, {
     widthRatio: 0.1,
     offsetX: 0,
     offsetY: 0,
     strokeStyle: 'black',
   });
-  artistFontPackage = new PosterFontPackage('Monteral', 'white', 0.02);
+  artistFontPackage = new BasicFontPkg('Monteral', 'white', 0.02);
 
   sideMarginRatio = 0.055;
 }
@@ -77,8 +61,8 @@ export class TestTheme extends PosterTheme {
   festivalNameTopRatio = 0.05;
   sideMarginRatio = 0.055;
 
-  nameFontPackage = new PosterFontPackage('Cocogoose', 'white', 0.1);
-  artistFontPackage = new PosterFontPackage('Monteral', 'lime', 0.02, [
+  nameFontPackage = new BasicFontPkg('Cocogoose', 'white', 0.1);
+  artistFontPackage = new BasicFontPkg('Monteral', 'lime', 0.02, [
     {
       strokeStyle: 'yellow',
       widthRatio: 0.4,

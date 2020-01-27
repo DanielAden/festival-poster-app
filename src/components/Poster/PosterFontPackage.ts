@@ -6,8 +6,8 @@ export interface PosterTextStrokeInfo {
 }
 
 type StrokeInfo = PosterTextStrokeInfo | PosterTextStrokeInfo[];
-export class PosterFontPackage {
-  public strokeInfo: StrokeInfo;
+export default class FontPkg {
+  protected strokeInfo: StrokeInfo;
 
   constructor(
     public fontType: string,
@@ -99,3 +99,5 @@ export class PosterFontPackage {
     return fontHeight + this.maxStrokeSize(totalHeight);
   }
 }
+
+export class BasicFontPkg extends FontPkg {}

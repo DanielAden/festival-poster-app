@@ -2,7 +2,7 @@ import { Poster } from './Poster';
 import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
 import { useMemo } from 'react';
-import { PosterFontPackage } from './PosterFontPackage';
+import FontPkg from './PosterFontPackage';
 
 interface ArtistBlockMetrics {
   top: number;
@@ -80,7 +80,7 @@ export abstract class PosterTextLayout {
     return this.posterHeight * this.theme.artistTopRatio;
   }
 
-  protected calculateTextWidth(fp: PosterFontPackage, ...text: string[]) {
+  protected calculateTextWidth(fp: FontPkg, ...text: string[]) {
     const fullText = text.reduce((prev, cur) => prev + cur, '');
     const metrics = this.ctx.measureText(fullText);
     return Math.ceil(metrics.width + fp.maxStrokeSize(this.posterHeight) * 2);
@@ -144,7 +144,7 @@ export abstract class PosterTextLayout {
     if (this.theme.skewText) this.ctx.transform(1, 0.06, 0.06, 1, -20, 0);
   }
 
-  public printCenter(str: string, top: number, fp: PosterFontPackage) {
+  public printCenter(str: string, top: number, fp: FontPkg) {
     const ctx = this.ctx;
     ctx.save();
     ctx.textAlign = 'center';
@@ -152,7 +152,7 @@ export abstract class PosterTextLayout {
     ctx.restore();
   }
 
-  public printLeft(str: string, top: number, fp: PosterFontPackage) {
+  public printLeft(str: string, top: number, fp: FontPkg) {
     const ctx = this.ctx;
     ctx.save();
     ctx.textAlign = 'left';
@@ -160,7 +160,7 @@ export abstract class PosterTextLayout {
     ctx.restore();
   }
 
-  public printRight(str: string, top: number, fp: PosterFontPackage) {
+  public printRight(str: string, top: number, fp: FontPkg) {
     this.ctx.save();
     this.ctx.textAlign = 'right';
     fp.draw(str, this.midX, top, this.maxPosterWidth, this.ctx);
