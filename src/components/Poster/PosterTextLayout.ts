@@ -148,7 +148,7 @@ export abstract class PosterTextLayout {
     const ctx = this.ctx;
     ctx.save();
     ctx.textAlign = 'center';
-    fp.draw(str, this.midX, top, this.maxPosterWidth, ctx);
+    fp.draw(str, this.midX, top, this.maxPosterWidth, ctx, this.posterHeight);
     ctx.restore();
   }
 
@@ -156,14 +156,21 @@ export abstract class PosterTextLayout {
     const ctx = this.ctx;
     ctx.save();
     ctx.textAlign = 'left';
-    fp.draw(str, this.midX, top, this.maxPosterWidth, ctx);
+    fp.draw(str, this.midX, top, this.maxPosterWidth, ctx, this.posterHeight);
     ctx.restore();
   }
 
   public printRight(str: string, top: number, fp: FontPkg) {
     this.ctx.save();
     this.ctx.textAlign = 'right';
-    fp.draw(str, this.midX, top, this.maxPosterWidth, this.ctx);
+    fp.draw(
+      str,
+      this.midX,
+      top,
+      this.maxPosterWidth,
+      this.ctx,
+      this.posterHeight,
+    );
     this.ctx.restore();
   }
 
