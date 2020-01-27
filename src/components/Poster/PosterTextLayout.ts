@@ -2,7 +2,7 @@ import { Poster } from './Poster';
 import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
 import { useMemo } from 'react';
-import { PosterFontPackage } from './PosterTheme';
+import { PosterFontPackage } from './PosterFontPackage';
 
 interface ArtistBlockMetrics {
   top: number;
