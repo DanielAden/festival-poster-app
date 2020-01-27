@@ -7,7 +7,10 @@ import { useSpotifyTopArtists } from '../../spotify/SpotifyAPIHooks';
 import List, { useList, ListItems } from '../List/List';
 import { SpotifyArtistObject } from '../../spotify/SpotifyAPI';
 import { useDispatch } from 'react-redux';
-import { updateArtistList } from '../../store/Poster/posterSlice';
+import {
+  updateArtistList,
+  mergeArtistList,
+} from '../../store/Poster/posterSlice';
 
 interface Props {}
 const ImportArtists: React.FC<Props> = () => {
@@ -49,9 +52,18 @@ const ImportArtists: React.FC<Props> = () => {
           submit={[
             {
               text: 'Replace Existing Artists',
-              submitFN: () => dispatch(updateArtistList(artists)),
+              submitFN: () => {
+                const selected = artists.filter(a => a.isSelected);
+                dispatch(updateArtistList(selected));
+              },
             },
-            { text: 'Merge with Existing Artists', submitFN: () => {} },
+            {
+              text: 'Merge with Existing Artists',
+              submitFN: () => {
+                const selected = artists.filter(a => a.isSelected);
+                dispatch(mergeArtistList(selected));
+              },
+            },
           ]}
         >
           <SpotifyArtists
