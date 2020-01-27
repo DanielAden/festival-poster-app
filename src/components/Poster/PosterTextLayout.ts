@@ -2,6 +2,7 @@ import { Poster } from './Poster';
 import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
 import { useMemo } from 'react';
+import { PosterFontPackage } from './PosterTheme';
 
 interface ArtistBlockMetrics {
   top: number;
@@ -30,12 +31,13 @@ export abstract class PosterTextLayout {
     return this.poster.theme;
   }
 
-  protected fontString(fontRatio: number, font: string) {
-    return `${this.fontHeight(fontRatio)}px ${font}`;
-  }
-
-  protected fontHeight(fontSizeRatio: number) {
-    return Math.floor(fontSizeRatio * this.poster.h);
+  public fontPkg(type: 'artist' | 'name') {
+    switch (type) {
+      case 'artist':
+        return this.theme.artistFontPackage;
+      case 'name':
+        return this.theme.nameFontPackage;
+    }
   }
 
   protected cutTrailingChar(s: string) {
@@ -78,28 +80,25 @@ export abstract class PosterTextLayout {
     return this.posterHeight * this.theme.artistTopRatio;
   }
 
-  protected calculateTextWidth(...text: string[]) {
+  protected calculateTextWidth(fp: PosterFontPackage, ...text: string[]) {
     const fullText = text.reduce((prev, cur) => prev + cur, '');
     const metrics = this.ctx.measureText(fullText);
-    const marginWidth = this.sideMargin * 2;
-    return Math.ceil(metrics.width) + marginWidth;
+    return Math.ceil(metrics.width + fp.maxStrokeSize(this.posterHeight) * 2);
   }
 
   protected setArtistFont() {
-    this.ctx.font = this.fontString(
-      this.theme.artistFontRatio,
-      this.theme.artistFont,
-    );
+    this.ctx.font = this.fontPkg('artist').fontString(this.posterHeight);
   }
 
   protected artistLines() {
     const lines: string[] = [];
     const poster = this.poster;
-    this.setArtistFont();
+    const afp = this.fontPkg('artist');
 
+    this.setArtistFont();
     let currentLine = '';
     for (let artist of this.poster.artistNames) {
-      const lineWidth = this.calculateTextWidth(currentLine, artist);
+      const lineWidth = this.calculateTextWidth(afp, currentLine, artist);
       if (lineWidth > this.maxPosterWidth) {
         lines.push(this.cutTrailingChar(currentLine));
         currentLine = artist + poster.artistSeperator;
@@ -118,16 +117,17 @@ export abstract class PosterTextLayout {
 
     ctx.textBaseline = 'top';
     ctx.textAlign = 'center';
-    ctx.fillStyle = this.theme.artistColor;
+    ctx.fillStyle = this.fontPkg('artist').fontColor;
 
-    const fh = this.fontHeight(this.theme.artistFontRatio);
+    const lineHeight = this.fontPkg('artist').lineHeight(this.posterHeight);
+    console.log(lineHeight);
     let movingTop: number = 0;
     lines.forEach((line, i) => {
-      movingTop = baseTop + (i + 1) * fh;
-      this.printCenter(line, movingTop);
+      movingTop = baseTop + (i + 1) * lineHeight;
+      this.printCenter(line, movingTop, this.fontPkg('artist'));
     });
 
-    const bottom = movingTop + fh;
+    const bottom = movingTop + lineHeight;
 
     return {
       top: baseTop,
@@ -140,139 +140,114 @@ export abstract class PosterTextLayout {
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 
-  public stroke(str: string, x: number, y: number, maxWidth?: number) {
-    const { strokeInfo } = this.theme;
-    if (!strokeInfo) return;
-    const ctx = this.ctx;
-    const fillStyle = ctx.fillStyle;
-    const lineWidth = ctx.lineWidth;
-
-    const strokeList = Array.isArray(strokeInfo) ? strokeInfo : [strokeInfo];
-
-    strokeList.forEach(ss => {
-      ctx.strokeStyle = ss.strokeStyle;
-      ctx.lineWidth = ss.lineWidth;
-      ctx.strokeText(str, x + ss.offsetX, y + ss.offsetY, maxWidth);
-    });
-
-    ctx.lineWidth = lineWidth;
-    ctx.fillStyle = fillStyle;
-  }
-
   public setSkew() {
     if (this.theme.skewText) this.ctx.transform(1, 0.06, 0.06, 1, -20, 0);
   }
 
-  public printCenter(str: string, top: number) {
+  public printCenter(str: string, top: number, fp: PosterFontPackage) {
     const ctx = this.ctx;
+    ctx.save();
     ctx.textAlign = 'center';
-    this.stroke(str, this.midX, top, this.maxPosterWidth);
-    ctx.fillText(str, this.midX, top, this.maxPosterWidth);
+    fp.draw(str, this.midX, top, this.maxPosterWidth, ctx);
+    ctx.restore();
   }
 
-  public printLeft(str: string, top: number) {
+  public printLeft(str: string, top: number, fp: PosterFontPackage) {
     const ctx = this.ctx;
+    ctx.save();
     ctx.textAlign = 'left';
-    this.stroke(str, this.sideMargin, top, this.maxPosterWidth);
-    ctx.fillText(str, this.sideMargin, top, this.maxPosterWidth);
+    fp.draw(str, this.midX, top, this.maxPosterWidth, ctx);
+    ctx.restore();
   }
 
-  public printRight(str: string, top: number) {
+  public printRight(str: string, top: number, fp: PosterFontPackage) {
+    this.ctx.save();
     this.ctx.textAlign = 'right';
-    this.stroke(
-      str,
-      this.posterWidth - this.sideMargin,
-      top,
-      this.maxPosterWidth,
-    );
-    this.ctx.fillText(
-      str,
-      this.posterWidth - this.sideMargin,
-      top,
-      this.maxPosterWidth,
-    );
+    fp.draw(str, this.midX, top, this.maxPosterWidth, this.ctx);
+    this.ctx.restore();
   }
 
   public drawFestivalName() {
     const ctx = this.poster.canvasCtx;
-    ctx.font = this.fontString(
-      this.theme.festivalNameFontRatio,
-      this.theme.festivalNameFont,
-    );
-    ctx.fillStyle = this.theme.festivalNameColor;
+    const { nameFontPackage } = this.theme;
+    ctx.save();
+    ctx.font = nameFontPackage.fontString(this.posterHeight);
+    ctx.fillStyle = nameFontPackage.fontColor;
     ctx.textBaseline = 'top';
     ctx.textAlign = 'center';
     ctx.strokeStyle = 'black';
-    ctx.lineWidth = 2;
-
-    this.printCenter(this.poster.festivalName, this.festivalNameTop);
+    this.printCenter(
+      this.poster.festivalName,
+      this.festivalNameTop,
+      nameFontPackage,
+    );
+    ctx.restore();
   }
 }
 
 export class BasicLayout extends PosterTextLayout {}
 export class WeekendLayout extends PosterTextLayout {
   dayFont() {
-    this.ctx.font = this.fontString(
-      this.theme.artistFontRatio * 2,
-      this.theme.artistFont,
+    this.ctx.font = this.theme.artistFontPackage.fontString(
+      this.posterHeight,
+      2,
     );
   }
 
   artistFont() {
-    this.ctx.font = this.fontString(
-      this.theme.artistFontRatio,
-      this.theme.artistFont,
-    );
+    this.ctx.font = this.theme.artistFontPackage.fontString(this.posterHeight);
   }
 
   drawArtistBlock(artistTopOverride?: number): ArtistBlockMetrics {
-    this.setSkew();
     const lines = this.artistLines();
     const oneThird = Math.ceil(lines.length / 3);
     const day1Lines = lines.slice(0, oneThird);
     const day2Lines = lines.slice(oneThird, oneThird * 2);
     const day3Lines = lines.slice(oneThird * 2);
+    const { ctx } = this;
+    const { artistFontPackage: afp } = this.theme;
+    ctx.save();
 
-    this.ctx.textBaseline = 'bottom';
-    this.ctx.fillStyle = this.theme.artistColor;
+    ctx.textBaseline = 'bottom';
+    ctx.fillStyle = afp.fontColor;
 
-    const fh = this.fontHeight(this.theme.artistFontRatio);
+    const lineHeight = afp.lineHeight(this.posterHeight);
     const startTop = artistTopOverride || this.artistTop;
-    const actualTop = startTop - fh;
+    const actualTop = startTop - lineHeight;
     let movingTop = startTop;
 
     this.dayFont();
-    this.printLeft('FRIDAY', movingTop);
+    this.printLeft('FRIDAY', movingTop, afp);
     this.artistFont();
 
     day1Lines.forEach((line, i) => {
-      movingTop += fh;
-      this.printLeft(line, movingTop);
+      movingTop += lineHeight;
+      this.printLeft(line, movingTop, afp);
     });
 
-    movingTop = movingTop + fh * 3;
+    movingTop = movingTop + lineHeight * 3;
 
     this.dayFont();
-    this.printRight('SATURDAY', movingTop);
+    this.printRight('SATURDAY', movingTop, afp);
     this.artistFont();
 
     day2Lines.forEach((line, i) => {
-      movingTop += fh;
-      this.printRight(line, movingTop);
+      movingTop += lineHeight;
+      this.printRight(line, movingTop, afp);
     });
 
-    movingTop = movingTop + fh * 3;
-    this.ctx.textAlign = 'left';
+    movingTop = movingTop + lineHeight * 3;
+    ctx.textAlign = 'left';
 
     this.dayFont();
-    this.printLeft('SUNDAY', movingTop);
+    this.printLeft('SUNDAY', movingTop, afp);
     this.artistFont();
     day3Lines.forEach(line => {
-      movingTop += fh;
-      this.printLeft(line, movingTop);
+      movingTop += lineHeight;
+      this.printLeft(line, movingTop, afp);
     });
 
-    this.clearTransform();
+    ctx.restore();
     return {
       top: actualTop,
       bottom: movingTop,

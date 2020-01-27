@@ -32,6 +32,14 @@ export abstract class Poster {
     protected layout: PosterTextLayout,
   ) {}
 
+  protected get artistFontPkg() {
+    return this.theme.artistFontPackage;
+  }
+
+  protected get festivalNameFontPkg() {
+    return this.theme.nameFontPackage;
+  }
+
   protected static getContext(can: HTMLCanvasElement) {
     const ctx = can.getContext('2d');
     if (!ctx) throw new AppError('Expected canvas context');
@@ -80,8 +88,8 @@ export abstract class Poster {
   }
 
   protected async load(can: HTMLCanvasElement, loadBackground: boolean) {
-    const artistFont = new FontFaceObserver(this.theme.artistFont);
-    const nameFont = new FontFaceObserver(this.theme.festivalNameFont);
+    const artistFont = new FontFaceObserver(this.artistFontPkg.fontType);
+    const nameFont = new FontFaceObserver(this.festivalNameFontPkg.fontType);
 
     const toAwait = [artistFont.load(), nameFont.load()];
     if (loadBackground) toAwait.push(this.loadImage());
@@ -161,15 +169,6 @@ export abstract class Poster {
 }
 
 class BasicPoster extends Poster {}
-
-// export const usePosterSize = () => {
-//   // const [, windowH] = useWindowSize();
-//   // const h = Math.floor(windowH * 0.8);
-//   // const w = Math.floor(h * 0.7);
-//   const w = 600;
-//   const h = 900;
-//   return [Math.min(w, MAX_POSTER_WIDTH), Math.min(h, MAX_POSTER_HEIGHT)];
-// };
 
 export const usePoster = (): Poster => {
   const me = useMe();

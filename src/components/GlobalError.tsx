@@ -40,11 +40,6 @@ const GlobalError: React.FC<Props> = ({ children }) => {
   const error = errorData.error;
 
   let errorBanner;
-  console.log(
-    `isError: ${
-      errorData.isError
-    }, error: ${!!error}, errorData.error: ${!!errorData.error}`,
-  );
   if (error) {
     switch (error.type) {
       case 'NoSpotifyAccess':
