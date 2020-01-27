@@ -13,12 +13,29 @@ export const ModalGroup: React.FC<Props> = ({
   toggle,
   ...groupProps
 }) => {
-  const { currentPage } = groupProps;
+  const { currentPage, submit, pageHeaders } = groupProps;
   const lastPage = React.Children.count(children) - 1;
+  const pageHeader = pageHeaders[currentPage];
+
+  const renderSubmit = () => {
+    const submits = Array.isArray(submit) ? submit : [submit];
+    return submits.map(s => (
+      <Button
+        color='success'
+        onClick={() => {
+          s.submitFN();
+          toggle();
+        }}
+      >
+        {s.text}
+      </Button>
+    ));
+  };
+
   return (
     <div>
-      <Modal size='lg' isOpen={active}>
-        <ModalHeader toggle={toggle}>Test Header</ModalHeader>
+      <Modal scrollable size='lg' isOpen={active}>
+        <ModalHeader toggle={toggle}>{pageHeader}</ModalHeader>
         <ModalBody>
           <Group {...groupProps}>{children}</Group>
         </ModalBody>
@@ -33,17 +50,12 @@ export const ModalGroup: React.FC<Props> = ({
               Next
             </Button>
           )}
-          {currentPage === lastPage && (
-            <Button
-              color='success'
-              onClick={() => {
-                groupProps.onSubmit();
-                toggle();
-              }}
-            >
-              Submit
+          {currentPage === lastPage && renderSubmit()}
+          {
+            <Button color='danger' onClick={() => toggle()}>
+              Cancel
             </Button>
-          )}
+          }
         </ModalFooter>
       </Modal>
     </div>

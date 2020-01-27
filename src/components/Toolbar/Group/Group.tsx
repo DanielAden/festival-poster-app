@@ -1,10 +1,16 @@
 import React from 'react';
 import './Group.css';
 
+interface GroupSubmit {
+  text: string;
+  submitFN: () => void;
+  color?: 'success' | 'primary' | 'secondary';
+}
 export interface GroupProps {
+  pageHeaders: string[];
   onNextPage: () => void;
   onPrevPage: () => void;
-  onSubmit: () => void;
+  submit: GroupSubmit | GroupSubmit[];
   currentPage: number;
 }
 export const Group: React.FC<GroupProps> = ({ children, currentPage }) => {
