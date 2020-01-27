@@ -156,7 +156,14 @@ export abstract class PosterTextLayout {
     const ctx = this.ctx;
     ctx.save();
     ctx.textAlign = 'left';
-    fp.draw(str, this.midX, top, this.maxPosterWidth, ctx, this.posterHeight);
+    fp.draw(
+      str,
+      this.sideMargin,
+      top,
+      this.maxPosterWidth,
+      ctx,
+      this.posterHeight,
+    );
     ctx.restore();
   }
 
@@ -165,7 +172,7 @@ export abstract class PosterTextLayout {
     this.ctx.textAlign = 'right';
     fp.draw(
       str,
-      this.midX,
+      this.posterWidth - this.sideMargin,
       top,
       this.maxPosterWidth,
       this.ctx,
