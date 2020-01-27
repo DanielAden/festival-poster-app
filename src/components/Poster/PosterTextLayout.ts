@@ -119,7 +119,6 @@ export abstract class PosterTextLayout {
     ctx.textAlign = 'center';
 
     const lineHeight = this.fontPkg('artist').lineHeight(this.posterHeight);
-    console.log(lineHeight);
     let movingTop: number = 0;
     lines.forEach((line, i) => {
       movingTop = baseTop + (i + 1) * lineHeight;
@@ -214,7 +213,6 @@ export class CoachellaLayout extends PosterTextLayout {
     this.currentArtistFontSize =
       this.currentArtistFontSize * this.textScaleDelta;
     this.ctx.font = `${this.currentArtistFontSize}px ${afp.fontType}`;
-    console.log(this.ctx.font);
   }
 
   setHeadlinerFont() {

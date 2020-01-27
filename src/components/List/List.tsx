@@ -30,6 +30,17 @@ const generateId = () => {
   return _ID;
 };
 
+export function mapToListItems<T>(items: T[]): ListItems<T> {
+  return items.map(i => {
+    return createNewListItem<T>({
+      data: i,
+      isSelected: true,
+      canEdit: false,
+      userAdded: false,
+    });
+  });
+}
+
 export function createNewListItem<T>(
   oldItem: Omit<ListItem<T>, 'id'>,
   newItem?: Omit<Partial<ListItem<T>>, 'id'>,

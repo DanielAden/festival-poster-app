@@ -67,7 +67,6 @@ const PosterCanvas: React.FC<Props> = ({ parentDomRect }) => {
         throw new Error('Unable to retreive poster background canvas element');
 
       const redrawBG = needBackgroundImageUpdate();
-      console.log(redrawBG);
       if (redrawBG) setisLoading(true);
       await poster.drawMultiCanvas(can, redrawBG ? bgcan : undefined);
       setisLoading(false);

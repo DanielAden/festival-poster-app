@@ -1,8 +1,10 @@
-import React, { useState, Children } from 'react';
+import React, { useState, Children, useEffect } from 'react';
 import SpotifyInfoCapturePanel from '../SpotifyInfoCapturePanel';
 import useSpotifyAccessToken from '../../store/system/useSpotifyAccessToken';
 import { ModalGroup } from './Group';
 import { Button } from 'reactstrap';
+import { useSpotifyTopArtists } from '../../spotify/SpotifyAPIHooks';
+import List, { useList } from '../List/List';
 
 interface Props {}
 const ImportArtists: React.FC<Props> = () => {
@@ -39,7 +41,7 @@ const ImportArtists: React.FC<Props> = () => {
           onPrevPage={() => setPage(page - 1)}
           onSubmit={() => {}}
         >
-          <SpotifyArtists />
+          <SpotifyArtists timeRange={'medium_term'} />
           <div>Page 2</div>
           <div>Page 3</div>
         </ModalGroup>
@@ -55,9 +57,48 @@ const ImportArtists: React.FC<Props> = () => {
   );
 };
 
-interface SpotifyArtistsProps {}
-const SpotifyArtists: React.FC<SpotifyArtistsProps> = () => {
-  return <div>Spotify Artists</div>;
+const renderSpotifyArtist = (data: any) => {
+  const url = data.images[data.images.length - 1].url;
+  return (
+    <span>
+      <img
+        className=''
+        alt={data.name + ' photo'}
+        src={url}
+        style={{
+          height: '50px',
+          width: '50px',
+          marginRight: '5px',
+        }}
+      />
+      {data.name}
+    </span>
+  );
+};
+
+interface SpotifyArtistsProps {
+  timeRange: string;
+}
+const SpotifyArtists: React.FC<SpotifyArtistsProps> = ({ timeRange }) => {
+  const artists = useSpotifyTopArtists(timeRange);
+  // const items = mapToListItems(artists);
+  const [items, setItems, listItemHook] = useList();
+
+  useEffect(() => {
+    if (artists.length === 0) return;
+    setItems(artists);
+  }, [artists, setItems]);
+
+  return (
+    <div>
+      <List
+        canSelect
+        items={items}
+        {...listItemHook}
+        renderData={renderSpotifyArtist}
+      />
+    </div>
+  );
 };
 
 export default ImportArtists;

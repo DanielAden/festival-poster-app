@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   spotifyAPIFactory,
   SpotifyAPI,
@@ -48,8 +48,12 @@ const artistObjectsToListItems = (artistObjects: SpotifyArtistObject[]) => {
 };
 
 let count = 0; // TODO remove
+const countCheck = () => {
+  count++;
+  if (count > 5) throw new Error('Hit Count Limit');
+};
 type UseSpotifyTopArtists<T> = [ListItems<T>, (newTimeRange: string) => void];
-export const useSpotifyTopArtists = () => {
+export const useTopArtistsCached = () => {
   const timeRange = useTypedSelector(s => s.poster.topArtistsTimeRange);
   const topArtists = useTypedSelector(s => s.poster.artists);
 
@@ -94,6 +98,30 @@ export const useSpotifyTopArtists = () => {
   return { topArtists, setTopArtistsTimeRange };
 };
 
+export const useSpotifyTopArtists = (timeRange: string) => {
+  const api = useSpotifyAPI();
+  const elog = useErrorLog();
+  const [artists, setartists] = useState<SpotifyArtistObject[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!api?.topArtists) return;
+      try {
+        const data = await api.topArtists({ time_range: timeRange });
+        if (data instanceof Error) {
+          elog(data);
+          return;
+        }
+        setartists(data);
+      } catch (e) {
+        elog(e);
+      }
+    };
+    fetchData();
+  }, [api, elog, timeRange]);
+  return artists;
+};
+
 export const useMe = () => {
   const me = useTypedSelector(s => s.poster.me);
   const api = useSpotifyAPI();
@@ -106,6 +134,7 @@ export const useMe = () => {
       if (!api) throw new Error('Expected api');
       log('Using spotify api to fetch me data');
       let meData;
+      countCheck(); // TODO Remove once done testing
       try {
         meData = await api.me();
       } catch (e) {

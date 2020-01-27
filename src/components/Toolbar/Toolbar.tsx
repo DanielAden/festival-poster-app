@@ -18,7 +18,6 @@ export const Toolbar: React.FC<Props> = ({ children }) => {
     }
     setclickedId(id);
     setWindowActive(true);
-    console.log(id);
   };
 
   const handleWindowClose = () => {
