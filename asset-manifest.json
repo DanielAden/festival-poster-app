@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/festival-poster-app/static/css/main.30b474b2.chunk.css",
-    "main.js": "/festival-poster-app/static/js/main.9c1f5103.chunk.js",
-    "main.js.map": "/festival-poster-app/static/js/main.9c1f5103.chunk.js.map",
+    "main.js": "/festival-poster-app/static/js/main.e67cc4a1.chunk.js",
+    "main.js.map": "/festival-poster-app/static/js/main.e67cc4a1.chunk.js.map",
     "runtime-main.js": "/festival-poster-app/static/js/runtime-main.81049c0c.js",
     "runtime-main.js.map": "/festival-poster-app/static/js/runtime-main.81049c0c.js.map",
-    "static/js/2.6c6b8296.chunk.js": "/festival-poster-app/static/js/2.6c6b8296.chunk.js",
-    "static/js/2.6c6b8296.chunk.js.map": "/festival-poster-app/static/js/2.6c6b8296.chunk.js.map",
+    "static/js/2.476404db.chunk.js": "/festival-poster-app/static/js/2.476404db.chunk.js",
+    "static/js/2.476404db.chunk.js.map": "/festival-poster-app/static/js/2.476404db.chunk.js.map",
     "index.html": "/festival-poster-app/index.html",
-    "precache-manifest.2ce9c1794ddf9e81bb7e81d67cad3e40.js": "/festival-poster-app/precache-manifest.2ce9c1794ddf9e81bb7e81d67cad3e40.js",
+    "precache-manifest.13bb5535e61e3b62f77b40a71eb00b7d.js": "/festival-poster-app/precache-manifest.13bb5535e61e3b62f77b40a71eb00b7d.js",
     "service-worker.js": "/festival-poster-app/service-worker.js",
     "static/css/main.30b474b2.chunk.css.map": "/festival-poster-app/static/css/main.30b474b2.chunk.css.map",
-    "static/js/2.6c6b8296.chunk.js.LICENSE": "/festival-poster-app/static/js/2.6c6b8296.chunk.js.LICENSE",
+    "static/js/2.476404db.chunk.js.LICENSE": "/festival-poster-app/static/js/2.476404db.chunk.js.LICENSE",
     "static/media/fonts.css": "/festival-poster-app/static/media/western_bang_bang.92c70263.otf",
     "static/media/desert.png": "/festival-poster-app/static/media/desert.1f4ebc63.png",
     "static/media/galaxy.png": "/festival-poster-app/static/media/galaxy.5fd0b3a6.png",
@@ -20,8 +20,8 @@
   },
   "entrypoints": [
     "static/js/runtime-main.81049c0c.js",
-    "static/js/2.6c6b8296.chunk.js",
+    "static/js/2.476404db.chunk.js",
     "static/css/main.30b474b2.chunk.css",
-    "static/js/main.9c1f5103.chunk.js"
+    "static/js/main.e67cc4a1.chunk.js"
   ]
 }
