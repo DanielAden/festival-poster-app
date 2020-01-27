@@ -39,7 +39,7 @@ const ImportArtists: React.FC<Props> = () => {
           onPrevPage={() => setPage(page - 1)}
           onSubmit={() => {}}
         >
-          <div>Page 1</div>
+          <SpotifyArtists />
           <div>Page 2</div>
           <div>Page 3</div>
         </ModalGroup>
@@ -53,6 +53,11 @@ const ImportArtists: React.FC<Props> = () => {
       {!showAuth && renderButtons()}
     </div>
   );
+};
+
+interface SpotifyArtistsProps {}
+const SpotifyArtists: React.FC<SpotifyArtistsProps> = () => {
+  return <div>Spotify Artists</div>;
 };
 
 export default ImportArtists;

@@ -17,7 +17,7 @@ export const ModalGroup: React.FC<Props> = ({
   const lastPage = React.Children.count(children) - 1;
   return (
     <div>
-      <Modal size='lg' centered isOpen={active}>
+      <Modal size='lg' isOpen={active}>
         <ModalHeader toggle={toggle}>Test Header</ModalHeader>
         <ModalBody>
           <Group {...groupProps}>{children}</Group>
