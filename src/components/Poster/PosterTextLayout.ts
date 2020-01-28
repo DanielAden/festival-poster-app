@@ -12,6 +12,7 @@ interface ArtistBlockMetrics {
 }
 
 export abstract class PosterTextLayout {
+  public abstract dateCount: number;
   constructor(private _poster?: Poster) {}
 
   public set poster(poster: Poster) {
@@ -220,9 +221,12 @@ export abstract class PosterTextLayout {
   }
 }
 
-export class BasicLayout extends PosterTextLayout {}
+export class BasicLayout extends PosterTextLayout {
+  dateCount = 1;
+}
 
 export class CoachellaLayout extends PosterTextLayout {
+  dateCount = 1;
   private textScaleDelta: number = 0.9;
   private currentArtistFontSize = 0;
 
@@ -301,6 +305,8 @@ export class CoachellaLayout extends PosterTextLayout {
 }
 
 export class WeekendLayout extends PosterTextLayout {
+  dateCount = 3;
+
   artistFont() {
     this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight);
   }

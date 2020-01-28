@@ -17,6 +17,7 @@ import {
   mergePoster,
 } from '../../store/Poster/posterSlice';
 import useTypedSelector from '../../store/rootReducer';
+import { usePosterLayout } from '../Poster/PosterTextLayout';
 
 const optionDebouncRate = 600;
 
@@ -39,7 +40,8 @@ const PosterOptions: React.FC<PosterOptionsProps> = () => {
 };
 
 const Dates: React.FC<any> = () => {
-  const { showDates, date1 } = useTypedSelector(s => s.poster);
+  const { dateCount } = usePosterLayout();
+  const { showDates, date1, date2, date3 } = useTypedSelector(s => s.poster);
   const dispatch = useDispatch();
   const toggleShowDates = () =>
     dispatch(mergePoster({ showDates: !showDates }));
@@ -61,6 +63,20 @@ const Dates: React.FC<any> = () => {
         <AppInput
           initialValue={date1.date}
           onResult={r => dispatchDate('date1', r)}
+          debounceRate={optionDebouncRate}
+        />
+      )}
+      {showDates && dateCount > 1 && (
+        <AppInput
+          initialValue={date2.date}
+          onResult={r => dispatchDate('date2', r)}
+          debounceRate={optionDebouncRate}
+        />
+      )}
+      {showDates && dateCount > 2 && (
+        <AppInput
+          initialValue={date3.date}
+          onResult={r => dispatchDate('date2', r)}
           debounceRate={optionDebouncRate}
         />
       )}
