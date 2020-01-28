@@ -1,6 +1,10 @@
 import React from 'react';
 import './Group.css';
 
+export interface GroupPageProps<T> {
+  groupStatePkg: GroupStatePkg<T>;
+}
+
 export type GroupStatePkg<T> = Readonly<{
   state: T;
   mergeState: (newState: Partial<T>) => void;

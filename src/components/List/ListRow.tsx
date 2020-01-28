@@ -132,7 +132,7 @@ const ListRow: FCRow = ({
         {typeof rowNumber === 'number' && `${rowNumber + 1}. `}
         {renderData(item.data)}
         {renderActionButtons()}
-        {active ? '✅' : '❌'}
+        {active ? '✅' : canSelect ? '❌' : ''}
       </ListGroupItem>
     );
   };

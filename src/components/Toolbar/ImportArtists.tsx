@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import SpotifyInfoCapturePanel from '../SpotifyInfoCapturePanel';
 import useSpotifyAccessToken from '../../store/system/useSpotifyAccessToken';
-import { ModalGroup, useModalGroup, GroupStatePkg } from './Group';
+import {
+  ModalGroup,
+  useModalGroup,
+  GroupStatePkg,
+  GroupPageProps,
+} from './Group';
 import { Button } from 'reactstrap';
 import { useSpotifyTopArtists } from '../../spotify/SpotifyAPIHooks';
 import List, { useList, ListItem } from '../List/List';
@@ -16,6 +21,12 @@ interface TopArtistsGS {
   artists: ListItem<SpotifyArtistObject>[];
 }
 
+interface PlaylistGS {
+  selectedPlaylist: string;
+  artists: ListItem<SpotifyArtistObject>[];
+  playlists: string[];
+}
+
 interface Props {}
 const ImportArtists: React.FC<Props> = () => {
   const data = useSpotifyAccessToken();
@@ -23,7 +34,7 @@ const ImportArtists: React.FC<Props> = () => {
   const dispatch = useDispatch();
   const [timeRange, setTimeRange] = useState('');
 
-  const [topArtistsGS, topArtistProps, topArtistToggle] = useModalGroup<
+  const [topArtistsPkg, topArtistProps, topArtistToggle] = useModalGroup<
     TopArtistsGS
   >(
     ['Select Artists'],
@@ -46,10 +57,34 @@ const ImportArtists: React.FC<Props> = () => {
     { artists: [] },
   );
 
+  const [playlistPkg, playlistProps, playlistToggle] = useModalGroup<
+    PlaylistGS
+  >(
+    ['Select a Playlist', 'Select Artists'],
+    [
+      {
+        text: 'Replace Existing Artists',
+        submitFN: state => {
+          const selected = state.artists.filter(a => a.isSelected);
+          dispatch(updateArtistList(selected));
+        },
+      },
+      {
+        text: 'Merge with Existing Artists',
+        submitFN: state => {
+          const selected = state.artists.filter(a => a.isSelected);
+          dispatch(mergeArtistList(selected));
+        },
+      },
+    ],
+    { artists: [], selectedPlaylist: '', playlists: [] },
+  );
+
   const renderPlaylistModal = () => {
     return (
-      <ModalGroup {...topArtistProps}>
-        <SpotifyArtists {...topArtistsGS} timeRange={'medium_term'} />
+      <ModalGroup {...playlistProps}>
+        <SpotifyPlaylistList groupStatePkg={playlistPkg} />
+        {/* <PlaylistArtists /> */}
       </ModalGroup>
     );
   };
@@ -57,7 +92,7 @@ const ImportArtists: React.FC<Props> = () => {
   const renderTopArtistModal = () => {
     return (
       <ModalGroup {...topArtistProps}>
-        <SpotifyArtists {...topArtistsGS} timeRange={timeRange} />
+        <SpotifyArtists groupStatePkg={topArtistsPkg} timeRange={timeRange} />
       </ModalGroup>
     );
   };
@@ -92,10 +127,16 @@ const ImportArtists: React.FC<Props> = () => {
         >
           Import Your Top Artists (1 Month)
         </Button>
-        <Button className={'btn-success mx-1 my-1'}>
+        <Button
+          className={'btn-success mx-1 my-1'}
+          onClick={() => {
+            playlistToggle();
+          }}
+        >
           Import From a Playlist
         </Button>
         {renderTopArtistModal()}
+        {renderPlaylistModal()}
       </div>
     );
   };
@@ -127,13 +168,13 @@ const renderSpotifyArtist = (data: any) => {
   );
 };
 
-interface SpotifyArtistsProps extends GroupStatePkg<TopArtistsGS> {
+interface SpotifyArtistsProps extends GroupPageProps<TopArtistsGS> {
   timeRange: string;
 }
 const SpotifyArtists: React.FC<SpotifyArtistsProps> = ({
   timeRange,
   children,
-  ...groupStatePkg
+  groupStatePkg,
 }) => {
   const artists = useSpotifyTopArtists(timeRange);
   const [items, setItems, listItemHook] = useList<SpotifyArtistObject>();
@@ -158,5 +199,28 @@ const SpotifyArtists: React.FC<SpotifyArtistsProps> = ({
     </div>
   );
 };
+
+interface SpotifyPlaylistListProps extends GroupPageProps<PlaylistGS> {}
+
+const playlists = ['playlist 1', 'playlist 2', 'playlist 3'];
+const SpotifyPlaylistList: React.FC<SpotifyPlaylistListProps> = ({
+  groupStatePkg,
+}) => {
+  const [items, setItems, listItemHook] = useList<string>();
+
+  useEffect(() => {
+    setItems(playlists);
+  }, [setItems]);
+
+  return (
+    <div>
+      <List items={items} {...listItemHook} renderData={i => i} />
+    </div>
+  );
+};
+
+{
+  /* <PlaylistArtists /> */
+}
 
 export default ImportArtists;
