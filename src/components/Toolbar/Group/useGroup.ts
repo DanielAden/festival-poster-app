@@ -70,8 +70,8 @@ export const useModalGroup = <T>(
   const [active, setActive] = useState(false);
 
   const toggle = useCallback(() => {
-    setActive(!active);
-  }, [active]);
+    setActive(oldActive => !oldActive);
+  }, []);
 
   return [
     gsp,

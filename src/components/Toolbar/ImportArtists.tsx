@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import SpotifyInfoCapturePanel from '../SpotifyInfoCapturePanel';
 import useSpotifyAccessToken from '../../store/system/useSpotifyAccessToken';
 import { ModalGroup, useModalGroup, GroupStatePkg } from './Group';
@@ -21,6 +21,7 @@ const ImportArtists: React.FC<Props> = () => {
   const data = useSpotifyAccessToken();
   const showAuth = data.status !== 'VALID';
   const dispatch = useDispatch();
+  const [timeRange, setTimeRange] = useState('');
 
   const [topArtistsGS, topArtistProps, topArtistToggle] = useModalGroup<
     TopArtistsGS
@@ -46,73 +47,18 @@ const ImportArtists: React.FC<Props> = () => {
   );
 
   const renderPlaylistModal = () => {
-    // return (
-    // <ModalGroup
-    //   pageHeaders={['Playlists']}
-    //   active={showTopArtistsModal}
-    //   toggle={toggle}
-    //   currentPage={page}
-    //   onNextPage={() => setPage(page + 1)}
-    //   onPrevPage={() => setPage(page - 1)}
-    //   submitOptions={[
-    //     {
-    //       text: 'Replace Existing Artists',
-    //       submitFN: () => {
-    //         const selected = artists.filter(a => a.isSelected);
-    //         dispatch(updateArtistList(selected));
-    //       },
-    //     },
-    //     {
-    //       text: 'Merge with Existing Artists',
-    //       submitFN: () => {
-    //         const selected = artists.filter(a => a.isSelected);
-    //         dispatch(mergeArtistList(selected));
-    //       },
-    //     },
-    //   ]}
-    // >
-    //   <SpotifyArtists
-    //     setArtistListItems={setArtists}
-    //     timeRange={'medium_term'}
-    //   />
-    // </ModalGroup>
-    // );
+    return (
+      <ModalGroup {...topArtistProps}>
+        <SpotifyArtists {...topArtistsGS} timeRange={'medium_term'} />
+      </ModalGroup>
+    );
   };
 
   const renderTopArtistModal = () => {
     return (
       <ModalGroup {...topArtistProps}>
-        <SpotifyArtists {...topArtistsGS} timeRange={'medium_term'} />
+        <SpotifyArtists {...topArtistsGS} timeRange={timeRange} />
       </ModalGroup>
-      // <ModalGroup
-      //   pageHeaders={['Select Artists']}
-      //   active={showTopArtistsModal}
-      //   toggle={toggle}
-      //   currentPage={page}
-      //   onNextPage={() => setPage(page + 1)}
-      //   onPrevPage={() => setPage(page - 1)}
-      //   submitOptions={[
-      //     {
-      //       text: 'Replace Existing Artists',
-      //       submitFN: () => {
-      //         const selected = artists.filter(a => a.isSelected);
-      //         dispatch(updateArtistList(selected));
-      //       },
-      //     },
-      //     {
-      //       text: 'Merge with Existing Artists',
-      //       submitFN: () => {
-      //         const selected = artists.filter(a => a.isSelected);
-      //         dispatch(mergeArtistList(selected));
-      //       },
-      //     },
-      //   ]}
-      // >
-      //   <SpotifyArtists
-      //     setArtistListItems={setArtists}
-      //     timeRange={'medium_term'}
-      //   />
-      // </ModalGroup>
     );
   };
 
@@ -121,14 +67,29 @@ const ImportArtists: React.FC<Props> = () => {
       <div className='d-flex flex-column'>
         <Button
           className={'btn-success mx-1 my-1'}
-          onClick={() => topArtistToggle()}
+          onClick={() => {
+            topArtistToggle();
+            setTimeRange('long_term');
+          }}
         >
           Import Your Top Artists (All Time)
         </Button>
-        <Button className={'btn-success mx-1 my-1'}>
+        <Button
+          className={'btn-success mx-1 my-1'}
+          onClick={() => {
+            topArtistToggle();
+            setTimeRange('medium_term');
+          }}
+        >
           Import Your Top Artists (6 Months)
         </Button>
-        <Button className={'btn-success mx-1 my-1'}>
+        <Button
+          className={'btn-success mx-1 my-1'}
+          onClick={() => {
+            topArtistToggle();
+            setTimeRange('short_term');
+          }}
+        >
           Import Your Top Artists (1 Month)
         </Button>
         <Button className={'btn-success mx-1 my-1'}>
