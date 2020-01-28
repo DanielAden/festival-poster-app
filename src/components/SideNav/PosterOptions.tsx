@@ -10,9 +10,16 @@ import {
   Label,
   FormGroup,
 } from 'reactstrap';
+import AppInput from '../AppInput/AppInput';
+import { useDispatch } from 'react-redux';
+import { changeFestivalName } from '../../store/Poster/posterSlice';
+import useTypedSelector from '../../store/rootReducer';
 
 interface PosterOptionsProps {}
 const PosterOptions: React.FC<PosterOptionsProps> = () => {
+  const dispatch = useDispatch();
+  const festivalName = useTypedSelector(s => s.poster.festivalName);
+
   const renderDates = () => {
     return (
       <Form>
@@ -32,7 +39,10 @@ const PosterOptions: React.FC<PosterOptionsProps> = () => {
 
   return (
     <div>
-      <Input placeholder='Festival Name' />
+      <AppInput
+        initialValue={festivalName}
+        onResultHook={r => dispatch(changeFestivalName(r))}
+      />
       <FormGroup check>
         <Label check>
           <Input type='checkbox' />

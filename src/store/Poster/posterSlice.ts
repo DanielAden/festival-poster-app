@@ -7,6 +7,8 @@ import {
   SpotifyUserObject,
 } from '../../spotify/SpotifyAPI';
 
+export const DEFAULT_FESTIVAL_NAME = 'My Festival';
+
 export interface PosterState {
   me: SpotifyUserObject | null;
   artists: ListItems<SpotifyArtistObject>;
@@ -15,6 +17,7 @@ export interface PosterState {
   themeType: string;
   height: number;
   width: number;
+  festivalName: string;
 }
 
 const height = window.innerHeight * 0.8;
@@ -28,6 +31,7 @@ const initialState: PosterState = {
   themeType: 'desert',
   width,
   height,
+  festivalName: DEFAULT_FESTIVAL_NAME,
 };
 
 const posterSlice = createSlice({
@@ -37,6 +41,11 @@ const posterSlice = createSlice({
     changeThemeType(state, action: PayloadAction<string>) {
       return produce(state, draftState => {
         draftState.themeType = action.payload;
+      });
+    },
+    changeFestivalName(state, action: PayloadAction<string>) {
+      return produce(state, draftState => {
+        draftState.festivalName = action.payload;
       });
     },
     changeLayoutType(state, action: PayloadAction<string>) {
@@ -73,6 +82,7 @@ export const {
   changeLayoutType,
   updateMeData,
   mergeArtistList,
+  changeFestivalName,
 } = posterSlice.actions;
 
 export default posterSlice.reducer;

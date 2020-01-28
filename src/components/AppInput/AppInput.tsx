@@ -26,6 +26,7 @@ export interface AppInputProps extends InputProps {
   changeHook?: InputHook;
   onResultHook?: InputHook;
   submitHook?: SubmitHook;
+  initialValue?: string;
 }
 
 const AppInput: React.FC<AppInputProps> = ({
@@ -34,9 +35,10 @@ const AppInput: React.FC<AppInputProps> = ({
   onResultHook,
   submittable,
   submitHook,
+  initialValue = '',
   ...inputProps
 }) => {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(initialValue);
   const [inError, setinError] = useState(false);
   const [errorText, seterrorText] = useState('');
 

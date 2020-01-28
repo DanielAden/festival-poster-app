@@ -8,9 +8,7 @@ import { usePosterLayout } from './PosterTextLayout';
 import FontFaceObserver from 'fontfaceobserver';
 import { useMemo } from 'react';
 import { useMe } from '../../spotify/SpotifyAPIHooks';
-
-const DEFAULT_FESTIVAL_NAME = 'My Festival';
-const festivalNameTemplate = (one: string) => `${one} FEST`;
+import { DEFAULT_FESTIVAL_NAME } from '../../store/Poster/posterSlice';
 
 type Case = 'none' | 'upper';
 export abstract class Poster {
@@ -21,7 +19,6 @@ export abstract class Poster {
   public img!: HTMLImageElement;
   protected _drawBackground: boolean = true;
 
-  protected festivalNameText: string = DEFAULT_FESTIVAL_NAME;
   protected festivalNameCase: Case = 'upper';
 
   protected artistCase: Case = 'upper';
@@ -65,16 +62,8 @@ export abstract class Poster {
 
   public get festivalName(): string {
     return this.festivalNameCase === 'upper'
-      ? this.festivalNameText.toUpperCase()
-      : this.festivalNameText;
-  }
-
-  public set display_name(displayName: string | undefined) {
-    if (!displayName) {
-      this.festivalNameText = DEFAULT_FESTIVAL_NAME;
-      return;
-    }
-    this.festivalNameText = festivalNameTemplate(displayName);
+      ? this.ps.festivalName.toUpperCase()
+      : this.ps.festivalName;
   }
 
   public get artistNames() {
@@ -178,8 +167,8 @@ export const usePoster = (): Poster => {
 
   const posterMemo = useMemo(() => {
     const poster = new BasicPoster(ps, theme, layout);
-    poster.display_name = me?.display_name;
+    // poster.festivalName = ps.festivalName; // me?.display_name;
     return poster;
-  }, [layout, me, ps, theme]);
+  }, [layout, ps, theme]);
   return posterMemo;
 };
