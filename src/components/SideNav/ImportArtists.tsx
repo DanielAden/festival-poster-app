@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SpotifyInfoCapturePanel from '../SpotifyInfoCapturePanel';
 import useSpotifyAccessToken from '../../store/system/useSpotifyAccessToken';
-import { ModalGroup, useModalGroup, GroupPageProps } from './Group';
+import { ModalGroup, useModalGroup, GroupPageProps } from '../Group';
 import { Button } from 'reactstrap';
 import { useSpotifyTopArtists } from '../../spotify/SpotifyAPIHooks';
 import List, { useList, ListItem } from '../List/List';
