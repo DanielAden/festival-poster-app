@@ -15,7 +15,6 @@ import { useDispatch } from 'react-redux';
 import {
   changeFestivalName,
   mergePoster,
-  FestivalDate,
 } from '../../store/Poster/posterSlice';
 import useTypedSelector from '../../store/rootReducer';
 

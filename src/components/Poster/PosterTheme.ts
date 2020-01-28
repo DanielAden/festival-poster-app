@@ -10,8 +10,9 @@ export abstract class PosterTheme {
   public festivalNameTopRatio = 0.05;
   public artistTopRatio = 0.4;
   public skewText: boolean = false;
-  public abstract nameFontPackage: FontPkg;
+  public abstract nameFontPkg: FontPkg;
   public abstract artistFontPkg: FontPkg;
+  public abstract dateFontPkg: FontPkg;
 }
 
 export class DesertTheme extends PosterTheme {
@@ -19,22 +20,25 @@ export class DesertTheme extends PosterTheme {
   sideMarginRatio = 0.03;
   artistTopRatio = 0.3;
 
-  nameFontPackage = new BasicFontPkg('TexasTango', 'orange', 0.08);
+  nameFontPkg = new BasicFontPkg('TexasTango', 'orange', 0.08);
   artistFontPkg = new BasicFontPkg('WesternBangBang', 'orange', 0.032);
+  dateFontPkg = new BasicFontPkg('WesternBangBang', 'orange', 0.032);
 }
 
 export class PunkTheme extends PosterTheme {
   backgroundImage = images.punk;
-  nameFontPackage = new BasicFontPkg('WesternBangBang', '#37C3E1', 0.1);
+  nameFontPkg = new BasicFontPkg('WesternBangBang', '#37C3E1', 0.1);
   artistFontPkg = new BasicFontPkg('WesternBangBang', '#37C3E1', 0.033);
+  dateFontPkg = new BasicFontPkg('WesternBangBang', '#37C3E1', 0.033);
 }
 
 export class RockTheme extends PosterTheme {
   backgroundImage = images.metal;
   sideMarginRatio = 0.035;
 
-  nameFontPackage = new BasicFontPkg('MadridGrunge', '#7C7170', 0.1);
+  nameFontPkg = new BasicFontPkg('MadridGrunge', '#7C7170', 0.1);
   artistFontPkg = new BasicFontPkg('PunkrockerStamp', '#7C7170', 0.032);
+  dateFontPkg = new BasicFontPkg('PunkrockerStamp', '#7C7170', 0.032);
 }
 
 export class GalaxyTheme extends PosterTheme {
@@ -44,13 +48,14 @@ export class GalaxyTheme extends PosterTheme {
   artistFont = 'Monteral';
   artistColor = 'white';
 
-  nameFontPackage = new BasicFontPkg('Cocogoose', 'white', 0.1, {
+  nameFontPkg = new BasicFontPkg('Cocogoose', 'white', 0.1, {
     widthRatio: 0.1,
     offsetX: 0,
     offsetY: 0,
     strokeStyle: 'black',
   });
   artistFontPkg = new BasicFontPkg('Monteral', 'white', 0.02);
+  dateFontPkg = new BasicFontPkg('Monteral', 'white', 0.02);
 
   sideMarginRatio = 0.055;
 }
@@ -61,7 +66,7 @@ export class TestTheme extends PosterTheme {
   festivalNameTopRatio = 0.05;
   sideMarginRatio = 0.055;
 
-  nameFontPackage = new BasicFontPkg('Cocogoose', 'white', 0.1);
+  nameFontPkg = new BasicFontPkg('Cocogoose', 'white', 0.1);
   artistFontPkg = new BasicFontPkg('Monteral', 'lime', 0.02, [
     {
       strokeStyle: 'yellow',
@@ -77,6 +82,7 @@ export class TestTheme extends PosterTheme {
     },
   ]);
 
+  dateFontPkg = this.artistFontPkg;
   skewText = true;
 }
 

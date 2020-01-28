@@ -3,6 +3,7 @@ import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
 import { useMemo } from 'react';
 import FontPkg from './PosterFontPackage';
+import { TextBox } from './TextBox';
 
 interface ArtistBlockMetrics {
   top: number;
@@ -31,12 +32,14 @@ export abstract class PosterTextLayout {
     return this.poster.theme;
   }
 
-  public fontPkg(type: 'artist' | 'name') {
+  public fontPkg(type: 'artist' | 'name' | 'date') {
     switch (type) {
       case 'artist':
         return this.theme.artistFontPkg;
       case 'name':
-        return this.theme.nameFontPackage;
+        return this.theme.nameFontPkg;
+      case 'date':
+        return this.theme.dateFontPkg;
     }
   }
 
@@ -156,7 +159,7 @@ export abstract class PosterTextLayout {
     ctx.textAlign = 'left';
     fp.draw(
       str,
-      this.sideMargin,
+      this.poster.maxLeft,
       top,
       this.maxPosterWidth,
       ctx,
@@ -170,7 +173,7 @@ export abstract class PosterTextLayout {
     this.ctx.textAlign = 'right';
     fp.draw(
       str,
-      this.posterWidth - this.sideMargin,
+      this.poster.maxRight,
       top,
       this.maxPosterWidth,
       this.ctx,
@@ -181,7 +184,7 @@ export abstract class PosterTextLayout {
 
   public drawFestivalName() {
     const ctx = this.poster.canvasCtx;
-    const { nameFontPackage } = this.theme;
+    const { nameFontPkg: nameFontPackage } = this.theme;
     ctx.save();
     ctx.font = nameFontPackage.fontString(this.posterHeight);
     ctx.textBaseline = 'top';
@@ -193,6 +196,27 @@ export abstract class PosterTextLayout {
       nameFontPackage,
     );
     ctx.restore();
+  }
+
+  protected initDates() {
+    return this.poster.dates.map(date => {
+      return new TextBox(
+        this.ctx,
+        this.poster,
+        date.date,
+        this.fontPkg('date'),
+      );
+    });
+  }
+
+  public drawDates() {
+    if (!this.poster.drawDates) return;
+    const [date1box] = this.initDates();
+    const y =
+      this.theme.nameFontPkg.fontHeight(this.posterHeight) +
+      this.festivalNameTop +
+      date1box.metrics.heigth;
+    date1box.draw(this.midX, y, 'center');
   }
 }
 
@@ -277,15 +301,12 @@ export class CoachellaLayout extends PosterTextLayout {
 }
 
 export class WeekendLayout extends PosterTextLayout {
-  dayFont() {
-    this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight, 2);
-  }
-
   artistFont() {
     this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight);
   }
 
   drawArtistBlock(artistTopOverride?: number): ArtistBlockMetrics {
+    const dateBoxes = this.initDates();
     const lines = this.artistLines();
     const oneThird = Math.ceil(lines.length / 3);
     const day1Lines = lines.slice(0, oneThird);
@@ -294,7 +315,7 @@ export class WeekendLayout extends PosterTextLayout {
     const { ctx } = this;
     const { artistFontPkg: afp } = this.theme;
     ctx.save();
-
+    this.artistFont();
     ctx.textBaseline = 'bottom';
 
     const lineHeight = afp.lineHeight(this.posterHeight);
@@ -302,9 +323,9 @@ export class WeekendLayout extends PosterTextLayout {
     const actualTop = startTop - lineHeight;
     let movingTop = startTop;
 
-    this.dayFont();
-    this.printLeft('FRIDAY', movingTop, afp);
-    this.artistFont();
+    // this.printLeft('FRIDAY', movingTop, afp);
+    dateBoxes[0].scale = 2;
+    dateBoxes[0].drawLeft(movingTop);
 
     day1Lines.forEach((line, i) => {
       movingTop += lineHeight;
@@ -313,9 +334,8 @@ export class WeekendLayout extends PosterTextLayout {
 
     movingTop = movingTop + lineHeight * 3;
 
-    this.dayFont();
-    this.printRight('SATURDAY', movingTop, afp);
-    this.artistFont();
+    dateBoxes[1].scale = 2;
+    dateBoxes[1].drawRight(movingTop);
 
     day2Lines.forEach((line, i) => {
       movingTop += lineHeight;
@@ -325,9 +345,9 @@ export class WeekendLayout extends PosterTextLayout {
     movingTop = movingTop + lineHeight * 3;
     ctx.textAlign = 'left';
 
-    this.dayFont();
-    this.printLeft('SUNDAY', movingTop, afp);
-    this.artistFont();
+    dateBoxes[2].scale = 2;
+    dateBoxes[2].drawLeft(movingTop);
+
     day3Lines.forEach(line => {
       movingTop += lineHeight;
       this.printLeft(line, movingTop, afp);
@@ -340,6 +360,8 @@ export class WeekendLayout extends PosterTextLayout {
       height: movingTop - actualTop,
     };
   }
+
+  public drawDates() {} // Dates are drawn in the artist block for this layout
 }
 
 export const usePosterLayout = (): PosterTextLayout => {

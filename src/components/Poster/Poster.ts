@@ -33,7 +33,7 @@ export abstract class Poster {
   }
 
   protected get festivalNameFontPkg() {
-    return this.theme.nameFontPackage;
+    return this.theme.nameFontPkg;
   }
 
   protected static getContext(can: HTMLCanvasElement) {
@@ -45,6 +45,14 @@ export abstract class Poster {
   public setPosterSize(w: number, h: number) {
     this._w = Math.floor(w);
     this._h = Math.floor(h);
+  }
+
+  public get drawDates() {
+    return this.ps.showDates;
+  }
+
+  public get dates() {
+    return [this.ps.date1, this.ps.date2, this.ps.date3];
   }
 
   public get w() {
@@ -101,6 +109,14 @@ export abstract class Poster {
     await this._draw();
   }
 
+  public get maxLeft() {
+    return this.theme.sideMarginRatio * this.h;
+  }
+
+  public get maxRight() {
+    return this.w - this.theme.sideMarginRatio * this.h;
+  }
+
   protected async _draw({
     drawBackground = true,
     drawArtistBlock = true,
@@ -111,6 +127,7 @@ export abstract class Poster {
       await this.drawBackground(this.canvas);
     if (drawFestivalName) this.layout.drawFestivalName();
     if (drawArtistBlock) await this.drawArtistBlock();
+    this.layout.drawDates();
   }
 
   protected async drawArtistBlock() {
