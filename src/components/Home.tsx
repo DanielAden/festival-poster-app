@@ -3,7 +3,7 @@ import { Container, Row, Col, Nav } from 'reactstrap';
 import PosterCanvas from './Poster/PosterCanvas';
 import Options from './Options';
 import AppButton from './AppButton';
-import SideNav from './Toolbar/SideNav';
+import SideNav from './SideNav/SideNav';
 import { useBoundingRectangle } from '../utils';
 
 const renderDevTools = () => {

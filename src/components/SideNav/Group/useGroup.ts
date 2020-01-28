@@ -1,8 +1,8 @@
 import { GroupProps, GroupSubmitOptions } from './Group';
-import { ModalGroupProps } from './';
+import { ModalGroupProps } from '../Group';
 import { useState, useMemo, useCallback } from 'react';
 import produce from 'immer';
-import { GroupStatePkg } from './';
+import { GroupStatePkg } from '../Group';
 
 export type UseGroup<T> = [GroupStatePkg<T>, GroupProps<T>];
 export const useGroup = <T>(
