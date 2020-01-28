@@ -1,31 +1,43 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './SideNav.css';
 import { Button, ButtonGroup } from 'reactstrap';
 import ImportArtists from './ImportArtists';
 import ArtistList from './ArtistsList';
 import PosterOptions from './PosterOptions';
+import useTypedSelector from '../../store/rootReducer';
+import {
+  sideNavSelectionChange,
+  toggleSideNav,
+} from '../../store/SideNav/sideNavSlice';
+import { useDispatch } from 'react-redux';
 
-interface Props {
-  active: boolean;
-  toggle: () => void;
-}
-const SideNav: React.FC<Props> = ({ active, toggle }) => {
-  const [selected, setSelected] = useState(0);
-  const width = 300; // active ? 300 : 0;
+interface Props {}
+const SideNav: React.FC<Props> = () => {
+  const isOpen = useTypedSelector(s => s.sidenav.isOpen);
+  const selectedOption = useTypedSelector(s => s.sidenav.selectedOption);
+  const dispatch = useDispatch();
+  const width = isOpen ? 300 : 0;
 
   const handleSelection = (id: number) => {
-    setSelected(id);
+    dispatch(sideNavSelectionChange(id));
   };
 
   return (
     <div className='sidenav' style={{ width }}>
-      <a href='#' className='closebtn' onClick={toggle}>
+      <a
+        href='#'
+        className='closebtn'
+        onClick={() => dispatch(toggleSideNav())}
+      >
         &times;
       </a>
-      <Selections selectedId={selected} onSelectChange={handleSelection} />
-      {selected === 0 && <ImportArtists />}
-      {selected === 1 && <ArtistList />}
-      {selected === 2 && <PosterOptions />}
+      <Selections
+        selectedId={selectedOption}
+        onSelectChange={handleSelection}
+      />
+      {selectedOption === 0 && <ImportArtists />}
+      {selectedOption === 1 && <ArtistList />}
+      {selectedOption === 2 && <PosterOptions />}
     </div>
   );
 };

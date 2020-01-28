@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Container, Row, Col, Nav } from 'reactstrap';
 import PosterCanvas from './Poster/PosterCanvas';
 import Options from './Options';
 import AppButton from './AppButton';
 import SideNav from './SideNav/SideNav';
 import { useBoundingRectangle } from '../utils';
+import { useDispatch } from 'react-redux';
+import { toggleSideNav } from '../store/SideNav/sideNavSlice';
 
 const renderDevTools = () => {
   if (process.env.NODE_ENV !== 'development') return null;
@@ -26,9 +28,8 @@ const renderDevTools = () => {
 
 interface Props {}
 const Home: React.FC<Props> = () => {
-  const [navActive, setNavActive] = useState(false);
-  const toggleNav = () => setNavActive(!navActive);
   const [rect, ref] = useBoundingRectangle<HTMLDivElement>();
+  const dispatch = useDispatch();
 
   return (
     <div className='home h-100'>
@@ -36,13 +37,13 @@ const Home: React.FC<Props> = () => {
         className='navbar navbar-expand-sm navbar-light bg-light py-0'
         style={{ marginBottom: '10px' }}
       >
-        <AppButton className='mr-2' onClick={() => toggleNav()}>
+        <AppButton className='mr-2' onClick={() => dispatch(toggleSideNav())}>
           Artists
         </AppButton>
         <div className='navbar-brand'>Poster App</div>
         {renderDevTools()}
       </Nav>
-      <SideNav active={navActive} toggle={toggleNav} />
+      <SideNav />
       <Options />
       <div ref={ref} className='h-100'>
         <Container className='h-100'>
