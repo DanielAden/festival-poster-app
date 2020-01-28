@@ -9,19 +9,22 @@ import {
 
 export const DEFAULT_FESTIVAL_NAME = 'My Festival';
 
+export interface FestivalDate {
+  date: string;
+}
+
 export interface PosterState {
   me: SpotifyUserObject | null;
   artists: ListItems<SpotifyArtistObject>;
   topArtistsTimeRange: string; // TODO make this type safe
   layoutType: string;
   themeType: string;
-  height: number;
-  width: number;
   festivalName: string;
+  showDates: boolean;
+  date1: FestivalDate;
+  date2: FestivalDate;
+  date3: FestivalDate;
 }
-
-const height = window.innerHeight * 0.8;
-const width = height * 0.65;
 
 const initialState: PosterState = {
   me: null,
@@ -29,15 +32,20 @@ const initialState: PosterState = {
   topArtistsTimeRange: 'medium_term',
   layoutType: 'basic',
   themeType: 'desert',
-  width,
-  height,
   festivalName: DEFAULT_FESTIVAL_NAME,
+  showDates: true,
+  date1: { date: 'FRIDAY APRIL 10' },
+  date2: { date: 'SATURDAY APRIL 11' },
+  date3: { date: 'SUNDAY APRIL 12' },
 };
 
 const posterSlice = createSlice({
   name: 'poster',
   initialState,
   reducers: {
+    mergePoster(state, action: PayloadAction<Partial<PosterState>>) {
+      return { ...state, ...action.payload };
+    },
     changeThemeType(state, action: PayloadAction<string>) {
       return produce(state, draftState => {
         draftState.themeType = action.payload;
@@ -83,6 +91,7 @@ export const {
   updateMeData,
   mergeArtistList,
   changeFestivalName,
+  mergePoster,
 } = posterSlice.actions;
 
 export default posterSlice.reducer;

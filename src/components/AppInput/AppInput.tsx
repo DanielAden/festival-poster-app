@@ -22,7 +22,7 @@ export interface AppInputProps extends InputProps {
   submittable?: boolean;
   validations?: InputValidator[];
   changeHook?: InputHook;
-  onResultHook?: InputHook;
+  onResult?: InputHook;
   submitHook?: SubmitHook;
   initialValue?: string;
   debounceRate?: number;
@@ -31,7 +31,7 @@ export interface AppInputProps extends InputProps {
 const AppInput: React.FC<AppInputProps> = ({
   validations,
   changeHook,
-  onResultHook,
+  onResult,
   submittable,
   submitHook,
   initialValue = '',
@@ -48,15 +48,15 @@ const AppInput: React.FC<AppInputProps> = ({
         // reset to non error state
         setinError(false);
         seterrorText('');
-        onResultHook?.('');
+        onResult?.('');
         return;
       }
       if (isUndefined(validations)) {
-        onResultHook?.(newText);
+        onResult?.(newText);
         return;
       }
       if (validations.length === 0) {
-        onResultHook?.(newText);
+        onResult?.(newText);
         return;
       }
       let errorVobj;
@@ -72,11 +72,11 @@ const AppInput: React.FC<AppInputProps> = ({
       if (errorVobj) return;
       setinError(false);
       seterrorText('');
-      onResultHook?.(newText);
+      onResult?.(newText);
     }, debounceRate);
   };
   const vFNs = validations ? validations : [];
-  const dvHook = useCallback(getValidatedResultHook(), [...vFNs, onResultHook]);
+  const dvHook = useCallback(getValidatedResultHook(), [...vFNs, onResult]);
 
   const handleChange = (newText: string) => {
     setInputValue(newText);
