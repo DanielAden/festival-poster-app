@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './SideNav.css';
 import { Button, ButtonGroup } from 'reactstrap';
 import ImportArtists from './ImportArtists';
+import ArtistList from './ArtistsList';
 
 interface Props {
   active: boolean;
@@ -22,6 +23,7 @@ const SideNav: React.FC<Props> = ({ active, toggle }) => {
       </a>
       <Selections selectedId={selected} onSelectChange={handleSelection} />
       {selected === 0 && <ImportArtists />}
+      {selected === 1 && <ArtistList />}
     </div>
   );
 };

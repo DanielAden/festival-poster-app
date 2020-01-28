@@ -211,6 +211,7 @@ export interface ListProps<T> extends ListHandlers<T> {
   canEditGlobal?: boolean;
   canSelect?: boolean;
   rowNumbers?: boolean;
+  canSelectAll?: boolean;
 }
 
 type FCList<T = any> = React.FC<ListProps<T>>;
@@ -219,8 +220,9 @@ const List: FCList = props => {
   const [addRowText, setAddRowText] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const { items } = props;
-  const canSelectAll = props.canSelect && props.handleSelectAll;
-  const canClear = props.canSelect && props.handleClear;
+  const canSelectAll =
+    props.canSelect && props.canSelectAll && props.handleSelectAll;
+  const canClear = props.canSelect && props.canSelectAll && props.handleClear;
 
   const renderAddRow = () => {
     const { handleAddRow, canAddRow } = props;

@@ -187,6 +187,7 @@ const SpotifyArtists: React.FC<SpotifyArtistsProps> = ({
     <div>
       <List
         canSelect
+        canSelectAll
         items={items}
         {...listItemHook}
         renderData={renderSpotifyArtist}
