@@ -1,15 +1,5 @@
 import React from 'react';
-import {
-  InputGroup,
-  InputGroupAddon,
-  Input,
-  InputGroupText,
-  Form,
-  Row,
-  Col,
-  Label,
-  FormGroup,
-} from 'reactstrap';
+import { Input, Form, Label, FormGroup } from 'reactstrap';
 import AppInput from '../AppInput/AppInput';
 import { useDispatch } from 'react-redux';
 import {
@@ -76,7 +66,7 @@ const Dates: React.FC<any> = () => {
       {showDates && dateCount > 2 && (
         <AppInput
           initialValue={date3.date}
-          onResult={r => dispatchDate('date2', r)}
+          onResult={r => dispatchDate('date3', r)}
           debounceRate={optionDebouncRate}
         />
       )}

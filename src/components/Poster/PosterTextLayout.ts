@@ -216,7 +216,7 @@ export abstract class PosterTextLayout {
     const y =
       this.theme.nameFontPkg.fontHeight(this.posterHeight) +
       this.festivalNameTop +
-      date1box.metrics.heigth;
+      date1box.metrics.height;
     date1box.draw(this.midX, y, 'center');
   }
 }
@@ -322,48 +322,52 @@ export class WeekendLayout extends PosterTextLayout {
     const { artistFontPkg: afp } = this.theme;
     ctx.save();
     this.artistFont();
-    ctx.textBaseline = 'bottom';
+    ctx.textBaseline = 'top';
 
     const lineHeight = afp.lineHeight(this.posterHeight);
     const startTop = artistTopOverride || this.artistTop;
-    const actualTop = startTop - lineHeight;
     let movingTop = startTop;
 
-    // this.printLeft('FRIDAY', movingTop, afp);
-    dateBoxes[0].scale = 2;
-    dateBoxes[0].drawLeft(movingTop);
+    dateBoxes.forEach(db => (db.scale = 2));
+    const dateLH = dateBoxes[0].lineHeight;
+
+    const drawDate = (i: number, right = false) => {
+      if (this.poster.showDates) {
+        right
+          ? dateBoxes[i].drawRight(movingTop)
+          : dateBoxes[i].drawLeft(movingTop);
+        movingTop += dateLH;
+      } else {
+        movingTop += dateLH;
+      }
+    };
+
+    drawDate(0);
 
     day1Lines.forEach((line, i) => {
-      movingTop += lineHeight;
       this.printLeft(line, movingTop, afp);
+      movingTop += lineHeight;
     });
 
-    movingTop = movingTop + lineHeight * 3;
-
-    dateBoxes[1].scale = 2;
-    dateBoxes[1].drawRight(movingTop);
+    drawDate(1, true);
 
     day2Lines.forEach((line, i) => {
-      movingTop += lineHeight;
       this.printRight(line, movingTop, afp);
+      movingTop += lineHeight;
     });
 
-    movingTop = movingTop + lineHeight * 3;
-    ctx.textAlign = 'left';
-
-    dateBoxes[2].scale = 2;
-    dateBoxes[2].drawLeft(movingTop);
+    drawDate(2);
 
     day3Lines.forEach(line => {
-      movingTop += lineHeight;
       this.printLeft(line, movingTop, afp);
+      movingTop += lineHeight;
     });
 
     ctx.restore();
     return {
-      top: actualTop,
-      bottom: movingTop,
-      height: movingTop - actualTop,
+      top: startTop,
+      bottom: movingTop + lineHeight,
+      height: movingTop + lineHeight - startTop,
     };
   }
 

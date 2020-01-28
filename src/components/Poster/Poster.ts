@@ -117,6 +117,10 @@ export abstract class Poster {
     return this.w - this.theme.sideMarginRatio * this.h;
   }
 
+  public get showDates() {
+    return this.ps.showDates;
+  }
+
   protected async _draw({
     drawBackground = true,
     drawArtistBlock = true,
@@ -127,7 +131,7 @@ export abstract class Poster {
       await this.drawBackground(this.canvas);
     if (drawFestivalName) this.layout.drawFestivalName();
     if (drawArtistBlock) await this.drawArtistBlock();
-    this.layout.drawDates();
+    if (this.showDates) this.layout.drawDates();
   }
 
   protected async drawArtistBlock() {

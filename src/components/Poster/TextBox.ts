@@ -37,16 +37,20 @@ export class TextBox {
 
   protected setup() {
     this.ctx.font = this.fontPkg.fontString(this.poster.h, this.scale);
-    console.log(this.ctx.font);
+  }
+
+  public get lineHeight() {
+    return this.fontPkg.fontHeight(this.poster.h) * this.scale;
   }
 
   public get metrics() {
     this.ctx.save();
+    this.setup();
     const _metrics = this.ctx.measureText(this.text);
     this.ctx.restore();
     return {
       width: _metrics.width,
-      heigth: this.fontPkg.fontHeight(this.poster.h),
+      height: this.lineHeight,
     };
   }
 }
