@@ -42,7 +42,7 @@ const SideNav: React.FC<Props> = () => {
   );
 };
 
-const buttons = ['Import Artists', 'Manage Artists', 'Manage Poster'];
+const buttons = ['Import Artists', 'Manage Artists', 'Advanced Options'];
 interface SelectionsProps {
   selectedId: number;
   onSelectChange: (id: number) => void;

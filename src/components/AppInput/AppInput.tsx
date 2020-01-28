@@ -10,8 +10,6 @@ import {
 import { debounce, isUndefined } from 'lodash';
 import AppButton from '../AppButton';
 
-export const DEBOUNCE_RATE = 200;
-
 export interface ValidationObject {
   isValid: boolean;
   errorMsg?: string;
@@ -27,6 +25,7 @@ export interface AppInputProps extends InputProps {
   onResultHook?: InputHook;
   submitHook?: SubmitHook;
   initialValue?: string;
+  debounceRate?: number;
 }
 
 const AppInput: React.FC<AppInputProps> = ({
@@ -36,6 +35,7 @@ const AppInput: React.FC<AppInputProps> = ({
   submittable,
   submitHook,
   initialValue = '',
+  debounceRate = 300,
   ...inputProps
 }) => {
   const [inputValue, setInputValue] = useState(initialValue);
@@ -73,7 +73,7 @@ const AppInput: React.FC<AppInputProps> = ({
       setinError(false);
       seterrorText('');
       onResultHook?.(newText);
-    }, DEBOUNCE_RATE);
+    }, debounceRate);
   };
   const vFNs = validations ? validations : [];
   const dvHook = useCallback(getValidatedResultHook(), [...vFNs, onResultHook]);

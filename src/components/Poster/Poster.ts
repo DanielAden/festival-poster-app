@@ -7,8 +7,7 @@ import { PosterTextLayout } from './PosterTextLayout';
 import { usePosterLayout } from './PosterTextLayout';
 import FontFaceObserver from 'fontfaceobserver';
 import { useMemo } from 'react';
-import { useMe } from '../../spotify/SpotifyAPIHooks';
-import { DEFAULT_FESTIVAL_NAME } from '../../store/Poster/posterSlice';
+// import { useMe } from '../../spotify/SpotifyAPIHooks';
 
 type Case = 'none' | 'upper';
 export abstract class Poster {
@@ -160,7 +159,7 @@ export abstract class Poster {
 class BasicPoster extends Poster {}
 
 export const usePoster = (): Poster => {
-  const me = useMe();
+  // const me = useMe();
   const theme = usePosterTheme();
   const layout = usePosterLayout();
   const ps = useTypedSelector(s => s.poster);

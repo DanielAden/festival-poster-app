@@ -18,7 +18,7 @@ import useTypedSelector from '../../store/rootReducer';
 interface PosterOptionsProps {}
 const PosterOptions: React.FC<PosterOptionsProps> = () => {
   const dispatch = useDispatch();
-  const festivalName = useTypedSelector(s => s.poster.festivalName);
+  const { festivalName } = useTypedSelector(s => s.poster);
 
   const renderDates = () => {
     return (
@@ -42,6 +42,8 @@ const PosterOptions: React.FC<PosterOptionsProps> = () => {
       <AppInput
         initialValue={festivalName}
         onResultHook={r => dispatch(changeFestivalName(r))}
+        placeholder='Festival Name'
+        debounceRate={600}
       />
       <FormGroup check>
         <Label check>
