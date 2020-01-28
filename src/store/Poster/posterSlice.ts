@@ -50,20 +50,14 @@ const posterSlice = createSlice({
       });
     },
     mergeArtistList(state, action: PayloadAction<PosterState['artists']>) {
-      return produce(state, draftState => {
-        draftState.artists = unionBy(
-          draftState.artists,
-          action.payload,
-          'data.name', // (x, y) => x.data.name === y.data.name,
-        );
-        draftState.artists = action.payload;
-      });
+      const stateArtists = [...state.artists];
+      const newState = {
+        ...state,
+        artists: unionBy(stateArtists, action.payload, a => a.data.name),
+      };
+      return newState;
     },
-    updateMeData(state, action: PayloadAction<SpotifyUserObject>) {
-      return produce(state, draftState => {
-        draftState.me = action.payload;
-      });
-    },
+    updateMeData(state, action: PayloadAction<SpotifyUserObject>) {},
     topArtistsTimeRangeUpdated(state, action: PayloadAction<string>) {
       return produce(state, draftState => {
         draftState.topArtistsTimeRange = action.payload;
