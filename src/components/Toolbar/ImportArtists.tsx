@@ -1,10 +1,10 @@
-import React, { useState, Children, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import SpotifyInfoCapturePanel from '../SpotifyInfoCapturePanel';
 import useSpotifyAccessToken from '../../store/system/useSpotifyAccessToken';
-import { ModalGroup } from './Group';
+import { ModalGroup, useModalGroup, GroupStatePkg } from './Group';
 import { Button } from 'reactstrap';
 import { useSpotifyTopArtists } from '../../spotify/SpotifyAPIHooks';
-import List, { useList, ListItems } from '../List/List';
+import List, { useList, ListItem } from '../List/List';
 import { SpotifyArtistObject } from '../../spotify/SpotifyAPI';
 import { useDispatch } from 'react-redux';
 import {
@@ -12,23 +12,116 @@ import {
   mergeArtistList,
 } from '../../store/Poster/posterSlice';
 
+interface TopArtistsGS {
+  artists: ListItem<SpotifyArtistObject>[];
+}
+
 interface Props {}
 const ImportArtists: React.FC<Props> = () => {
   const data = useSpotifyAccessToken();
   const showAuth = data.status !== 'VALID';
-
-  const [page, setPage] = useState(0);
-  const [showModal, setShowModal] = useState(false);
-  const [artists, setArtists] = useState<ListItems<SpotifyArtistObject>>([]);
   const dispatch = useDispatch();
-  const toggle = () => setShowModal(!showModal);
+
+  const [topArtistsGS, topArtistProps, topArtistToggle] = useModalGroup<
+    TopArtistsGS
+  >(
+    ['Select Artists'],
+    [
+      {
+        text: 'Replace Existing Artists',
+        submitFN: state => {
+          const selected = state.artists.filter(a => a.isSelected);
+          dispatch(updateArtistList(selected));
+        },
+      },
+      {
+        text: 'Merge with Existing Artists',
+        submitFN: state => {
+          const selected = state.artists.filter(a => a.isSelected);
+          dispatch(mergeArtistList(selected));
+        },
+      },
+    ],
+    { artists: [] },
+  );
+
+  const renderPlaylistModal = () => {
+    // return (
+    // <ModalGroup
+    //   pageHeaders={['Playlists']}
+    //   active={showTopArtistsModal}
+    //   toggle={toggle}
+    //   currentPage={page}
+    //   onNextPage={() => setPage(page + 1)}
+    //   onPrevPage={() => setPage(page - 1)}
+    //   submitOptions={[
+    //     {
+    //       text: 'Replace Existing Artists',
+    //       submitFN: () => {
+    //         const selected = artists.filter(a => a.isSelected);
+    //         dispatch(updateArtistList(selected));
+    //       },
+    //     },
+    //     {
+    //       text: 'Merge with Existing Artists',
+    //       submitFN: () => {
+    //         const selected = artists.filter(a => a.isSelected);
+    //         dispatch(mergeArtistList(selected));
+    //       },
+    //     },
+    //   ]}
+    // >
+    //   <SpotifyArtists
+    //     setArtistListItems={setArtists}
+    //     timeRange={'medium_term'}
+    //   />
+    // </ModalGroup>
+    // );
+  };
+
+  const renderTopArtistModal = () => {
+    return (
+      <ModalGroup {...topArtistProps}>
+        <SpotifyArtists {...topArtistsGS} timeRange={'medium_term'} />
+      </ModalGroup>
+      // <ModalGroup
+      //   pageHeaders={['Select Artists']}
+      //   active={showTopArtistsModal}
+      //   toggle={toggle}
+      //   currentPage={page}
+      //   onNextPage={() => setPage(page + 1)}
+      //   onPrevPage={() => setPage(page - 1)}
+      //   submitOptions={[
+      //     {
+      //       text: 'Replace Existing Artists',
+      //       submitFN: () => {
+      //         const selected = artists.filter(a => a.isSelected);
+      //         dispatch(updateArtistList(selected));
+      //       },
+      //     },
+      //     {
+      //       text: 'Merge with Existing Artists',
+      //       submitFN: () => {
+      //         const selected = artists.filter(a => a.isSelected);
+      //         dispatch(mergeArtistList(selected));
+      //       },
+      //     },
+      //   ]}
+      // >
+      //   <SpotifyArtists
+      //     setArtistListItems={setArtists}
+      //     timeRange={'medium_term'}
+      //   />
+      // </ModalGroup>
+    );
+  };
 
   const renderButtons = () => {
     return (
       <div className='d-flex flex-column'>
         <Button
           className={'btn-success mx-1 my-1'}
-          onClick={() => setShowModal(true)}
+          onClick={() => topArtistToggle()}
         >
           Import Your Top Artists (All Time)
         </Button>
@@ -41,36 +134,7 @@ const ImportArtists: React.FC<Props> = () => {
         <Button className={'btn-success mx-1 my-1'}>
           Import From a Playlist
         </Button>
-
-        <ModalGroup
-          pageHeaders={['Select Artists']}
-          active={showModal}
-          toggle={toggle}
-          currentPage={page}
-          onNextPage={() => setPage(page + 1)}
-          onPrevPage={() => setPage(page - 1)}
-          submit={[
-            {
-              text: 'Replace Existing Artists',
-              submitFN: () => {
-                const selected = artists.filter(a => a.isSelected);
-                dispatch(updateArtistList(selected));
-              },
-            },
-            {
-              text: 'Merge with Existing Artists',
-              submitFN: () => {
-                const selected = artists.filter(a => a.isSelected);
-                dispatch(mergeArtistList(selected));
-              },
-            },
-          ]}
-        >
-          <SpotifyArtists
-            setArtistListItems={setArtists}
-            timeRange={'medium_term'}
-          />
-        </ModalGroup>
+        {renderTopArtistModal()}
       </div>
     );
   };
@@ -92,7 +156,7 @@ const renderSpotifyArtist = (data: any) => {
         alt={data.name + ' photo'}
         src={url}
         style={{
-          height: '50px',
+          height: '50px', // TODO don't hardcode these values
           width: '50px',
           marginRight: '5px',
         }}
@@ -102,17 +166,15 @@ const renderSpotifyArtist = (data: any) => {
   );
 };
 
-interface SpotifyArtistsProps {
+interface SpotifyArtistsProps extends GroupStatePkg<TopArtistsGS> {
   timeRange: string;
-  // setArtistListItems: (items: ListItem<SpotifyArtistObject>[]) => void;
-  setArtistListItems: React.Dispatch<any>;
 }
 const SpotifyArtists: React.FC<SpotifyArtistsProps> = ({
   timeRange,
-  setArtistListItems,
+  children,
+  ...groupStatePkg
 }) => {
   const artists = useSpotifyTopArtists(timeRange);
-  // const items = mapToListItems(artists);
   const [items, setItems, listItemHook] = useList<SpotifyArtistObject>();
 
   useEffect(() => {
@@ -121,8 +183,8 @@ const SpotifyArtists: React.FC<SpotifyArtistsProps> = ({
   }, [artists, setItems]);
 
   useEffect(() => {
-    setArtistListItems(items);
-  }, [items, setArtistListItems]);
+    groupStatePkg.mergeState({ artists: items });
+  }, [groupStatePkg, items]);
 
   return (
     <div>

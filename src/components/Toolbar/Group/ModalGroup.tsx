@@ -2,28 +2,30 @@ import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Group, GroupProps } from './Group';
 
-interface Props extends GroupProps {
+export interface ModalGroupProps extends GroupProps {
   active: boolean;
   toggle: () => void;
 }
 
-export const ModalGroup: React.FC<Props> = ({
+export const ModalGroup: React.FC<ModalGroupProps> = ({
   children,
   active,
   toggle,
   ...groupProps
 }) => {
-  const { currentPage, submit, pageHeaders } = groupProps;
+  const { groupStatePkg, currentPage, submitOptions, pageHeaders } = groupProps;
   const lastPage = React.Children.count(children) - 1;
   const pageHeader = pageHeaders[currentPage];
 
   const renderSubmit = () => {
-    const submits = Array.isArray(submit) ? submit : [submit];
+    const submits = Array.isArray(submitOptions)
+      ? submitOptions
+      : [submitOptions];
     return submits.map(s => (
       <Button
         color={s.color || 'success'}
         onClick={() => {
-          s.submitFN();
+          s.submitFN(groupStatePkg.state);
           toggle();
         }}
       >

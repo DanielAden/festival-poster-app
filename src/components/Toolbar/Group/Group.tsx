@@ -1,17 +1,26 @@
 import React from 'react';
 import './Group.css';
 
-interface GroupSubmit {
+export type GroupStatePkg<T> = Readonly<{
+  state: T;
+  mergeState: (newState: Partial<T>) => void;
+}>;
+
+export interface GroupSubmitOption<T> {
   text: string;
-  submitFN: () => void;
+  submitFN: (state: T) => void;
   color?: 'success' | 'primary' | 'secondary';
 }
-export interface GroupProps {
+export type GroupSubmitOptions<T> =
+  | GroupSubmitOption<T>
+  | GroupSubmitOption<T>[];
+export interface GroupProps<T = any> {
   pageHeaders: string[];
   onNextPage: () => void;
   onPrevPage: () => void;
-  submit: GroupSubmit | GroupSubmit[];
+  submitOptions: GroupSubmitOptions<T>;
   currentPage: number;
+  groupStatePkg: GroupStatePkg<T>;
 }
 export const Group: React.FC<GroupProps> = ({ children, currentPage }) => {
   return (
