@@ -11,6 +11,7 @@ import { ListGroup, ListGroupItem, Button, Input } from 'reactstrap';
 import { SpotifyArtistObject } from '../../spotify/SpotifyAPI';
 import './ArtistList.css';
 import AppInput from '../AppInput/AppInput';
+import { portraitPlaceholder } from '../../images';
 
 interface Props {}
 const ArtistsList: React.FC<Props> = () => {
@@ -25,7 +26,7 @@ const ArtistsList: React.FC<Props> = () => {
           const newArtist: AppArtistObject = {
             name: text,
             uri: text,
-            images: [{ url: '' }],
+            images: [{ url: portraitPlaceholder }],
           };
           const listItem = createNewListItem({
             data: newArtist,
