@@ -187,6 +187,12 @@ export abstract class PosterTextLayout {
     const ctx = this.poster.canvasCtx;
     const { nameFontPkg: nameFontPackage } = this.theme;
     ctx.save();
+
+    if (this.poster.drawPresentedBy) {
+      ctx.textBaseline = 'bottom';
+      this.drawPresentedBy(0, this.festivalNameTop);
+    }
+
     ctx.font = nameFontPackage.fontString(this.posterHeight);
     ctx.textBaseline = 'top';
     ctx.textAlign = 'center';
@@ -218,6 +224,18 @@ export abstract class PosterTextLayout {
       this.festivalNameTop +
       date1box.metrics.height;
     date1box.draw(this.midX, y, 'center');
+  }
+
+  public drawPresentedBy(x: number, y: number) {
+    const pbTextBox = new TextBox(
+      this.ctx,
+      this.poster,
+      this.poster.presentedByText,
+      this.theme.nameFontPkg,
+    );
+
+    pbTextBox.scale = 0.2;
+    pbTextBox.draw(x, y);
   }
 }
 

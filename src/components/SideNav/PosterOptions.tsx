@@ -9,7 +9,7 @@ import {
 import useTypedSelector from '../../store/rootReducer';
 import { usePosterLayout } from '../Poster/PosterTextLayout';
 
-const optionDebouncRate = 600;
+const optionDebouncRate = 0;
 
 interface PosterOptionsProps {}
 const PosterOptions: React.FC<PosterOptionsProps> = () => {
@@ -18,6 +18,8 @@ const PosterOptions: React.FC<PosterOptionsProps> = () => {
 
   return (
     <div>
+      <PresentedBy />
+      Festival Name
       <AppInput
         initialValue={festivalName}
         onResult={r => dispatch(changeFestivalName(r))}
@@ -25,6 +27,37 @@ const PosterOptions: React.FC<PosterOptionsProps> = () => {
         debounceRate={optionDebouncRate}
       />
       <Dates />
+    </div>
+  );
+};
+
+interface Props {}
+const PresentedBy: React.FC<Props> = () => {
+  const dispatch = useDispatch();
+  const presentedBy = useTypedSelector(s => s.poster.presentedBy);
+  const showPresentedBy = useTypedSelector(s => s.poster.showPresentedBy);
+  const togglePresentedBy = () =>
+    dispatch(mergePoster({ showPresentedBy: !showPresentedBy }));
+
+  return (
+    <div>
+      <FormGroup check>
+        <Label check>
+          <Input
+            type='checkbox'
+            checked={showPresentedBy}
+            onChange={() => togglePresentedBy()}
+          />
+          Show Presented By
+        </Label>
+      </FormGroup>
+      {showPresentedBy && (
+        <AppInput
+          initialValue={presentedBy}
+          debounceRate={optionDebouncRate}
+          onResult={r => dispatch(mergePoster({ presentedBy: r }))}
+        />
+      )}
     </div>
   );
 };

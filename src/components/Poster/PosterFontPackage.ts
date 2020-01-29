@@ -29,9 +29,10 @@ export default class FontPkg {
     ctx: CanvasRenderingContext2D,
     sinfo: PosterTextStrokeInfo,
     totalHeight: number,
+    scale: number,
   ) {
     ctx.strokeStyle = sinfo.strokeStyle;
-    ctx.lineWidth = this.fontLineWidth(sinfo.widthRatio, totalHeight);
+    ctx.lineWidth = this.fontLineWidth(sinfo.widthRatio, totalHeight) * scale;
   }
 
   protected setTextCtx(ctx: CanvasRenderingContext2D) {
@@ -45,6 +46,7 @@ export default class FontPkg {
     maxWidth: number,
     ctx: CanvasRenderingContext2D,
     totalHeight: number,
+    scale: number = 1,
   ) {
     const strokeList = Array.isArray(this.strokeInfo)
       ? this.strokeInfo
@@ -52,7 +54,7 @@ export default class FontPkg {
 
     ctx.save();
     strokeList.forEach(sinfo => {
-      this.setStrokeCtx(ctx, sinfo, totalHeight);
+      this.setStrokeCtx(ctx, sinfo, totalHeight, scale);
       ctx.strokeText(str, x + sinfo.offsetX, y + sinfo.offsetY, maxWidth);
     });
     ctx.restore();

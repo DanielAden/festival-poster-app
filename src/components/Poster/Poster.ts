@@ -63,6 +63,14 @@ export abstract class Poster {
     return this._h;
   }
 
+  public get presentedByText(): string {
+    return this.ps.presentedBy;
+  }
+
+  public get drawPresentedBy(): boolean {
+    return this.ps.showPresentedBy;
+  }
+
   public get artistSeperator() {
     return String.fromCharCode(8226);
   }

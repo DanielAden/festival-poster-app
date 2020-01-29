@@ -8,6 +8,7 @@ import {
 } from '../../spotify/SpotifyAPI';
 
 export const DEFAULT_FESTIVAL_NAME = 'My Festival';
+export const DEFAULT_PRESENTED_BY = 'Presented by Red Bull';
 
 export interface FestivalDate {
   date: string;
@@ -24,6 +25,8 @@ export interface PosterState {
   date1: FestivalDate;
   date2: FestivalDate;
   date3: FestivalDate;
+  showPresentedBy: boolean;
+  presentedBy: string;
 }
 
 const initialState: PosterState = {
@@ -37,6 +40,8 @@ const initialState: PosterState = {
   date1: { date: 'FRIDAY APRIL 10' },
   date2: { date: 'SATURDAY APRIL 11' },
   date3: { date: 'SUNDAY APRIL 12' },
+  showPresentedBy: true,
+  presentedBy: DEFAULT_PRESENTED_BY,
 };
 
 const posterSlice = createSlice({

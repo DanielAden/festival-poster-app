@@ -18,10 +18,11 @@ export class TextBox {
     textAlign: 'left' | 'center' | 'right' = 'left',
   ) {
     const { ctx, fontPkg, poster, text } = this;
+    const left = x < poster.maxLeft ? poster.maxLeft : x;
     ctx.save();
     this.setup();
     ctx.textAlign = textAlign;
-    fontPkg.draw(text, x, y, 10000, ctx, poster.h);
+    fontPkg.draw(text, left, y, 10000, ctx, poster.h, this.scale);
     ctx.restore();
   }
 
