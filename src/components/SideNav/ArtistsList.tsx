@@ -22,6 +22,7 @@ const ArtistsList: React.FC<Props> = () => {
     <div>
       <AppInput
         submittable
+        submitText={'Add'}
         submitHook={text => {
           const newArtist: AppArtistObject = {
             name: text,
@@ -37,7 +38,7 @@ const ArtistsList: React.FC<Props> = () => {
           dispatch(updateArtistList([listItem, ...artists]));
           return { isValid: true };
         }}
-        placeholder={'Add Artist'}
+        placeholder={'Add Custom Artist'}
       />
       <ListGroup>
         {artists.map(artistObj => (

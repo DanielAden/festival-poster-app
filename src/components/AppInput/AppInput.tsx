@@ -20,6 +20,7 @@ export type InputHook = (text: string) => void;
 export type SubmitHook = (text: string) => ValidationObject;
 export interface AppInputProps extends InputProps {
   submittable?: boolean;
+  submitText?: string;
   validations?: InputValidator[];
   changeHook?: InputHook;
   onResult?: InputHook;
@@ -34,6 +35,7 @@ const AppInput: React.FC<AppInputProps> = ({
   onResult,
   submittable,
   submitHook,
+  submitText = 'Submit',
   initialValue = '',
   debounceRate = 300,
   ...inputProps
@@ -100,7 +102,7 @@ const AppInput: React.FC<AppInputProps> = ({
           disabled={inError || inputValue === ''}
           onClick={handleSubmit}
         >
-          Submit
+          {submitText}
         </AppButton>
       </InputGroupAddon>
     );
