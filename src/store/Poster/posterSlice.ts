@@ -20,13 +20,6 @@ export interface FestivalDate {
   date: string;
 }
 
-export type HeadlinerKey = 'headliners1' | 'headliners2' | 'headliners3';
-const headlinerKeys: HeadlinerKey[] = [
-  'headliners1',
-  'headliners2',
-  'headliners3',
-];
-
 export interface PosterState {
   me: SpotifyUserObject | null;
   artists: ListItems<AppArtistObject>;

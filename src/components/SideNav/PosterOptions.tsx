@@ -6,12 +6,9 @@ import {
   changeFestivalName,
   mergePoster,
   headlinerChanged,
-  headlinerRemoved,
 } from '../../store/Poster/posterSlice';
 import useTypedSelector from '../../store/rootReducer';
 import { usePosterLayout } from '../Poster/PosterTextLayout';
-import { usePosterTheme } from '../Poster/PosterTheme';
-import AppSelect, { SelectOption, useAppSelect } from '../AppSelect/AppSelect';
 
 const optionDebouncRate = 0;
 
@@ -124,8 +121,6 @@ const Dates: React.FC<any> = () => {
 
 interface HeadlinerProps {}
 const Headliners: React.FC<HeadlinerProps> = () => {
-  const dispatch = useDispatch();
-
   return (
     <>
       <Label>
