@@ -86,13 +86,22 @@ const AppInput: React.FC<AppInputProps> = ({
     dvHook?.(newText);
   };
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = () => {
     if (inError) return;
     if (!submitHook) return;
     const vobj = submitHook(inputValue);
-    if (vobj.isValid) return;
-    setinError(true);
-    seterrorText(vobj.errorMsg || '');
+    if (!vobj.isValid) {
+      setinError(true);
+      seterrorText(vobj.errorMsg || '');
+      return;
+    }
+    setInputValue('');
+  };
+
+  const handleEnter = (e: any) => {
+    if (e.key !== 'Enter') return;
+    if (inputValue === '') return; // Todo add optional validation for required
+    handleSubmit();
   };
 
   const renderSubmit = () => {
@@ -118,6 +127,7 @@ const AppInput: React.FC<AppInputProps> = ({
             {...inputProps}
             invalid={inError}
             onChange={e => handleChange(e.target.value)}
+            onKeyPress={handleEnter}
           />
           {submittable && renderSubmit()}
           {inError && <FormFeedback>{errorText}</FormFeedback>}
