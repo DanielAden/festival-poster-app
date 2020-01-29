@@ -82,13 +82,32 @@ export abstract class Poster {
   }
 
   public get artistNames() {
-    let artists = this.ps.artists.filter(a => a.isSelected);
+    let artists = this.ps.artists.filter(a => {
+      return a.isSelected && !this.allHeadliners.includes(a.data.name);
+    });
     const artistNames = artists.map(a => {
       let { name } = a.data;
       if (this.artistCase === 'upper') name = name.toUpperCase();
       return name;
     });
     return artistNames;
+  }
+
+  public get headliners() {
+    const { ps } = this;
+    return {
+      line1: ps.headliners1,
+      line2: ps.headliners2,
+      line3: ps.headliners3,
+    };
+  }
+
+  protected get allHeadliners() {
+    return [
+      ...this.headliners.line1,
+      ...this.headliners.line2,
+      ...this.headliners.line3,
+    ];
   }
 
   protected async load(can: HTMLCanvasElement, loadBackground: boolean) {

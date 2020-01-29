@@ -13,6 +13,7 @@ interface ArtistBlockMetrics {
 
 export abstract class PosterTextLayout {
   public abstract dateCount: number;
+  public abstract headlinerLineCount: number;
   constructor(private _poster?: Poster) {}
 
   public set poster(poster: Poster) {
@@ -78,6 +79,25 @@ export abstract class PosterTextLayout {
 
   protected get festivalNameTop() {
     return Math.floor(this.theme.festivalNameTopRatio * this.posterHeight);
+  }
+
+  protected get headliners() {
+    return this.poster.headliners;
+  }
+
+  protected get headlinersLine1() {
+    if (this.headliners.line1.length === 0) return '';
+    return this.headliners.line1[0];
+  }
+
+  protected get headlinersLine2() {
+    if (this.headliners.line2.length === 0) return '';
+    return this.headliners.line2[0];
+  }
+
+  protected get headlinersLine3() {
+    if (this.headliners.line3.length === 0) return '';
+    return this.headliners.line3[0];
   }
 
   public get artistTop() {
@@ -241,10 +261,12 @@ export abstract class PosterTextLayout {
 
 export class BasicLayout extends PosterTextLayout {
   dateCount = 1;
+  headlinerLineCount = 0;
 }
 
 export class CoachellaLayout extends PosterTextLayout {
   dateCount = 1;
+  headlinerLineCount = 1;
   private textScaleDelta: number = 0.9;
   private currentArtistFontSize = 0;
 
@@ -265,13 +287,8 @@ export class CoachellaLayout extends PosterTextLayout {
     this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight, 2);
   }
 
-  private get headliners() {
-    return this.poster.artistNames.slice(0, 3);
-  }
-
   private get artistNames() {
-    const headliners = this.headliners;
-    return this.poster.artistNames.filter(a => !headliners.includes(a));
+    return this.poster.artistNames;
   }
 
   protected artistLines() {
@@ -306,8 +323,9 @@ export class CoachellaLayout extends PosterTextLayout {
     const artistLines = this.artistLines();
     let movingTop = startTop;
 
+    const hlLine1 = this.headlinersLine1;
     this.setHeadlinerFont();
-    this.printLeft(this.headliners[0], movingTop, afp);
+    this.printLeft(hlLine1, movingTop, afp);
     this.setArtistFont();
     this.printRight('FRIDAY', movingTop, this.theme.artistFontPkg);
 
@@ -324,6 +342,7 @@ export class CoachellaLayout extends PosterTextLayout {
 
 export class WeekendLayout extends PosterTextLayout {
   dateCount = 3;
+  headlinerLineCount = 0;
 
   artistFont() {
     this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight);

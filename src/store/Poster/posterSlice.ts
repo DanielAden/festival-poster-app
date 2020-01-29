@@ -33,6 +33,9 @@ export interface PosterState {
   date3: FestivalDate;
   showPresentedBy: boolean;
   presentedBy: string;
+  headliners1: string[];
+  headliners2: string[];
+  headliners3: string[];
 }
 
 const initialState: PosterState = {
@@ -48,6 +51,9 @@ const initialState: PosterState = {
   date3: { date: 'SUNDAY APRIL 12' },
   showPresentedBy: true,
   presentedBy: DEFAULT_PRESENTED_BY,
+  headliners1: [],
+  headliners2: [],
+  headliners3: [],
 };
 
 const posterSlice = createSlice({
