@@ -38,7 +38,7 @@ const Home: React.FC<Props> = () => {
         style={{ marginBottom: '10px' }}
       >
         <AppButton className='mr-2' onClick={() => dispatch(toggleSideNav())}>
-          Artists
+          Options
         </AppButton>
         <div className='navbar-brand'>Poster App</div>
         {renderDevTools()}
