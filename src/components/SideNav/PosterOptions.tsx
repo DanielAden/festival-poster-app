@@ -5,6 +5,8 @@ import { useDispatch } from 'react-redux';
 import {
   changeFestivalName,
   mergePoster,
+  headlinerChanged,
+  headlinerRemoved,
 } from '../../store/Poster/posterSlice';
 import useTypedSelector from '../../store/rootReducer';
 import { usePosterLayout } from '../Poster/PosterTextLayout';
@@ -122,21 +124,52 @@ const Dates: React.FC<any> = () => {
 
 interface HeadlinerProps {}
 const Headliners: React.FC<HeadlinerProps> = () => {
-  const artists = useTypedSelector(s => s.poster.artists);
-  // const hlLine1 = useTypedSelector(s => s.poster.headliners1);
   const dispatch = useDispatch();
-  const options = artists.map(a => {
-    return {
-      value: a.data.name,
-      text: a.data.name,
-    };
-  });
-  const [, artistSelectHook] = useAppSelect(options, '', value => {
-    const newHeadliners = [value];
-    dispatch(mergePoster({ headliners1: newHeadliners }));
-  });
 
-  return <AppSelect labelText={'Headliner (Line 1)'} {...artistSelectHook} />;
+  return (
+    <>
+      <Label>
+        Headliner (Line 1)
+        <HeadlinerSelect line={0} pos={0} />
+      </Label>
+    </>
+  );
+};
+
+interface HeadlinerSelectProps {
+  line: number;
+  pos: number;
+}
+const HeadlinerSelect: React.FC<HeadlinerSelectProps> = ({ line, pos }) => {
+  const headliner = useTypedSelector(s => s.poster.headliners[line][pos]);
+  const artists = useTypedSelector(s => s.poster.artists);
+  const dispatch = useDispatch();
+  const noArtists = artists.length === 0;
+
+  return (
+    <Input
+      type='select'
+      disabled={!headliner && noArtists}
+      value={headliner}
+      onChange={e =>
+        dispatch(headlinerChanged({ line, pos, newHeadliner: e.target.value }))
+      }
+    >
+      {!headliner && noArtists && (
+        <option disabled selected>
+          {'No Artists...'}
+        </option>
+      )}
+      {!headliner && !noArtists && (
+        <option disabled selected>
+          {'Select a Headliner'}
+        </option>
+      )}
+      {artists.map(a => (
+        <option value={a.data.name}>{a.data.name}</option>
+      ))}
+    </Input>
+  );
 };
 
 export default PosterOptions;

@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ListItems } from '../../components/List/List';
-import { unionBy, remove } from 'lodash';
+import { unionBy } from 'lodash';
 import { SpotifyUserObject } from '../../spotify/SpotifyAPI';
 
 export const DEFAULT_FESTIVAL_NAME = 'My Festival';
 export const DEFAULT_PRESENTED_BY = 'Presented by Red Bull';
+export const DEFAULT_HEADLINER = 'Select a Headliner';
 
 export interface AppArtistImage {
   url: string;
@@ -19,6 +20,13 @@ export interface FestivalDate {
   date: string;
 }
 
+export type HeadlinerKey = 'headliners1' | 'headliners2' | 'headliners3';
+const headlinerKeys: HeadlinerKey[] = [
+  'headliners1',
+  'headliners2',
+  'headliners3',
+];
+
 export interface PosterState {
   me: SpotifyUserObject | null;
   artists: ListItems<AppArtistObject>;
@@ -32,9 +40,7 @@ export interface PosterState {
   date3: FestivalDate;
   showPresentedBy: boolean;
   presentedBy: string;
-  headliners1: string[];
-  headliners2: string[];
-  headliners3: string[];
+  headliners: Array<string[]>;
 }
 
 const initialState: PosterState = {
@@ -50,9 +56,7 @@ const initialState: PosterState = {
   date3: { date: 'SUNDAY APRIL 12' },
   showPresentedBy: true,
   presentedBy: DEFAULT_PRESENTED_BY,
-  headliners1: [],
-  headliners2: [],
-  headliners3: [],
+  headliners: [[], [], []],
 };
 
 const posterSlice = createSlice({
@@ -73,20 +77,24 @@ const posterSlice = createSlice({
     },
     updateArtistList(state, action: PayloadAction<PosterState['artists']>) {
       state.artists = action.payload;
+      state.headliners = [[], [], []];
     },
     artistRemoved(state, action: PayloadAction<AppArtistObject>) {
-      const artists = [...state.artists];
-      remove(artists, ao => ao.data.uri === action.payload.uri);
-      return {
-        ...state,
-        artists,
-      };
+      const { name } = action.payload;
+      const removedArtist = (ao: PosterState['artists'][0]) =>
+        ao.data.name !== name;
+      const removedName = (headliner: string) => headliner === name;
+
+      state.artists = state.artists.filter(removedArtist);
+      state.headliners.forEach((headlinerList, line) => {
+        const pos = headlinerList.findIndex(removedName);
+        if (pos > -1) state.headliners[line].splice(pos, 1);
+      });
     },
     mergeArtistList(state, action: PayloadAction<PosterState['artists']>) {
-      const stateArtists = [...state.artists];
       const newState = {
         ...state,
-        artists: unionBy(stateArtists, action.payload, a => a.data.name),
+        artists: unionBy(state.artists, action.payload, a => a.data.name),
       };
       return newState;
     },
@@ -106,6 +114,27 @@ const posterSlice = createSlice({
     topArtistsTimeRangeUpdated(state, action: PayloadAction<string>) {
       state.topArtistsTimeRange = action.payload;
     },
+    headlinerChanged(
+      state,
+      action: PayloadAction<{
+        line: number;
+        pos: number;
+        newHeadliner: string;
+      }>,
+    ) {
+      const { line, pos, newHeadliner } = action.payload;
+      state.headliners[line][pos] = newHeadliner;
+    },
+    headlinerRemoved(
+      state,
+      action: PayloadAction<{
+        line: number;
+        pos: number;
+      }>,
+    ) {
+      const { line, pos } = action.payload;
+      state.headliners[line].splice(pos, 1);
+    },
   },
 });
 
@@ -120,6 +149,8 @@ export const {
   mergePoster,
   artistRemoved,
   moveArtist,
+  headlinerChanged,
+  headlinerRemoved,
 } = posterSlice.actions;
 
 export default posterSlice.reducer;

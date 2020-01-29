@@ -93,21 +93,12 @@ export abstract class Poster {
     return artistNames;
   }
 
-  public get headliners() {
-    const { ps } = this;
-    return {
-      line1: ps.headliners1,
-      line2: ps.headliners2,
-      line3: ps.headliners3,
-    };
+  public getHeadlinersList(line: number) {
+    return this.ps.headliners[line];
   }
 
   protected get allHeadliners() {
-    return [
-      ...this.headliners.line1,
-      ...this.headliners.line2,
-      ...this.headliners.line3,
-    ];
+    return this.ps.headliners.flat();
   }
 
   protected async load(can: HTMLCanvasElement, loadBackground: boolean) {

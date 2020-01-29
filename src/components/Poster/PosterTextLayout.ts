@@ -81,23 +81,22 @@ export abstract class PosterTextLayout {
     return Math.floor(this.theme.festivalNameTopRatio * this.posterHeight);
   }
 
-  protected get headliners() {
-    return this.poster.headliners;
-  }
-
   protected get headlinersLine1() {
-    if (this.headliners.line1.length === 0) return '';
-    return this.headliners.line1[0];
+    const list = this.poster.getHeadlinersList(0);
+    if (list.length === 0) return '';
+    return list[0];
   }
 
   protected get headlinersLine2() {
-    if (this.headliners.line2.length === 0) return '';
-    return this.headliners.line2[0];
+    const list = this.poster.getHeadlinersList(1);
+    if (list.length === 0) return '';
+    return list[0];
   }
 
   protected get headlinersLine3() {
-    if (this.headliners.line3.length === 0) return '';
-    return this.headliners.line3[0];
+    const list = this.poster.getHeadlinersList(2);
+    if (list.length === 0) return '';
+    return list[0];
   }
 
   public get artistTop() {
