@@ -93,6 +93,17 @@ const posterSlice = createSlice({
       };
       return newState;
     },
+    moveArtist(state, action: PayloadAction<{ from: number; to: number }>) {
+      const { from, to } = action.payload;
+      const artists = [...state.artists];
+      const fromArtist = artists[from];
+      artists.splice(to, 0, fromArtist);
+      artists.splice(from, 1);
+      return {
+        ...state,
+        artists,
+      };
+    },
     updateMeData(state, action: PayloadAction<SpotifyUserObject>) {},
     topArtistsTimeRangeUpdated(state, action: PayloadAction<string>) {
       return produce(state, draftState => {
@@ -112,6 +123,7 @@ export const {
   changeFestivalName,
   mergePoster,
   artistRemoved,
+  moveArtist,
 } = posterSlice.actions;
 
 export default posterSlice.reducer;
