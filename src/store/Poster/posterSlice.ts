@@ -68,6 +68,9 @@ const posterSlice = createSlice({
     changeLayoutType(state, action: PayloadAction<string>) {
       state.layoutType = action.payload;
     },
+    artistAdded(state, action: PayloadAction<PosterState['artists'][0]>) {
+      state.artists.unshift(action.payload);
+    },
     updateArtistList(state, action: PayloadAction<PosterState['artists']>) {
       state.artists = action.payload;
       state.headliners = [[], [], []];
@@ -144,6 +147,7 @@ export const {
   moveArtist,
   headlinerChanged,
   headlinerRemoved,
+  artistAdded,
 } = posterSlice.actions;
 
 export default posterSlice.reducer;

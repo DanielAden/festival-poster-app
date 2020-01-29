@@ -4,7 +4,7 @@ import useTypedSelector from '../../store/rootReducer';
 import {
   artistRemoved,
   AppArtistObject,
-  updateArtistList,
+  artistAdded,
   moveArtist,
 } from '../../store/Poster/posterSlice';
 import { useDispatch } from 'react-redux';
@@ -51,7 +51,6 @@ const ArtistsList: React.FC<Props> = () => {
 
   return (
     <div>
-      {isTouch && 'Touch Device'}
       <AppInput
         submittable
         submitText={'Add'}
@@ -67,7 +66,7 @@ const ArtistsList: React.FC<Props> = () => {
             userAdded: true,
             canEdit: true,
           });
-          dispatch(updateArtistList([listItem, ...artists]));
+          dispatch(artistAdded(listItem));
           return { isValid: true };
         }}
         placeholder={'Add Custom Artist'}

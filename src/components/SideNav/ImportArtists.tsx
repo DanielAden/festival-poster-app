@@ -215,8 +215,4 @@ const SpotifyPlaylistList: React.FC<SpotifyPlaylistListProps> = ({
   );
 };
 
-{
-  /* <PlaylistArtists /> */
-}
-
 export default ImportArtists;
