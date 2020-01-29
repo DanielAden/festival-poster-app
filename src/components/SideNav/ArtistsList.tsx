@@ -1,20 +1,29 @@
-import React from 'react';
-import List, { useReduxList, createNewListItem } from '../List/List';
-import useTypedSelector, { RootState } from '../../store/rootReducer';
+import React, { useRef } from 'react';
+import { createNewListItem } from '../List/List';
+import useTypedSelector from '../../store/rootReducer';
 import {
   artistRemoved,
   AppArtistObject,
   updateArtistList,
   moveArtist,
 } from '../../store/Poster/posterSlice';
-import { useSelector, useDispatch } from 'react-redux';
-import { ListGroup, ListGroupItem, Button, Input } from 'reactstrap';
-import { SpotifyArtistObject } from '../../spotify/SpotifyAPI';
+import { useDispatch } from 'react-redux';
+import { ListGroup, ListGroupItem, Button } from 'reactstrap';
 import './ArtistList.css';
 import AppInput from '../AppInput/AppInput';
 import { portraitPlaceholder } from '../../images';
-import { useDrag, DndProvider, useDrop } from 'react-dnd';
+import {
+  useDrag,
+  DndProvider,
+  useDrop,
+  DropTargetMonitor,
+  XYCoord,
+} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import TouchBackend from 'react-dnd-touch-backend';
+
+// Taken from this thread: https://stackoverflow.com/questions/4817029/whats-the-best-way-to-detect-a-touch-screen-device-using-javascript/4819886#4819886
+var isTouch = 'ontouchstart' in window || navigator.msMaxTouchPoints > 0;
 
 const ARTIST_LIST_ITEM = 'ArtistListItem';
 
@@ -22,9 +31,27 @@ interface Props {}
 const ArtistsList: React.FC<Props> = () => {
   const artists = useTypedSelector(s => s.poster.artists);
   const dispatch = useDispatch();
+  const moveItem = (from: number, to: number) =>
+    dispatch(moveArtist({ from, to }));
+
+  const renderListGroup = () => {
+    return (
+      <ListGroup>
+        {artists.map((artistObj, i) => (
+          <Row
+            artistObj={artistObj.data}
+            key={artistObj.data.uri}
+            rowIndex={i}
+            moveItem={moveItem}
+          />
+        ))}
+      </ListGroup>
+    );
+  };
 
   return (
     <div>
+      {isTouch && 'Touch Device'}
       <AppInput
         submittable
         submitText={'Add'}
@@ -45,44 +72,67 @@ const ArtistsList: React.FC<Props> = () => {
         }}
         placeholder={'Add Custom Artist'}
       />
-      <DndProvider backend={HTML5Backend}>
-        <ListGroup>
-          {artists.map((artistObj, i) => (
-            <Row
-              artistObj={artistObj.data}
-              key={artistObj.data.uri}
-              rowIndex={i}
-            />
-          ))}
-        </ListGroup>
+      <DndProvider backend={isTouch ? TouchBackend : HTML5Backend}>
+        {renderListGroup()}
       </DndProvider>
     </div>
   );
 };
 
+interface DragItem {
+  type: string;
+  rowIndex: number;
+}
+
 interface RowProps {
   artistObj: AppArtistObject;
   rowIndex: number;
+  moveItem: (from: number, to: number) => void;
 }
-const Row: React.FC<RowProps> = ({ artistObj, rowIndex }) => {
+const Row: React.FC<RowProps> = ({ artistObj, rowIndex, moveItem }) => {
   const src = artistObj.images[artistObj.images.length - 1].url;
   const dispatch = useDispatch();
-  const [{ isDragging }, dragRef] = useDrag({
-    item: { type: ARTIST_LIST_ITEM },
+  const ref = useRef<HTMLDivElement>(null);
+  const [{ isDragging }, drag] = useDrag({
+    item: { type: ARTIST_LIST_ITEM, rowIndex },
     collect: mon => ({
       isDragging: mon.isDragging(),
     }),
     end: (item, mon) => {
       const to = mon.getDropResult();
       if (!to) return;
-      const toIndex = to.rowIndex + 1;
+      const toIndex = to.rowIndex;
       if (rowIndex === toIndex) return;
-      dispatch(moveArtist({ from: rowIndex, to: toIndex }));
     },
   });
 
-  const [{ isOver }, dropRef] = useDrop({
+  const [{ isOver }, drop] = useDrop({
     accept: ARTIST_LIST_ITEM,
+    hover(item: DragItem, monitor: DropTargetMonitor) {
+      if (!ref.current) {
+        return;
+      }
+      const dragIndex = item.rowIndex;
+      const hoverIndex = rowIndex;
+
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+      const hoverBoundingRect = ref.current!.getBoundingClientRect();
+      const hoverMiddleY =
+        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      const clientOffset = monitor.getClientOffset();
+      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+        return;
+      }
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+        return;
+      }
+      moveItem(dragIndex, hoverIndex);
+      item.rowIndex = hoverIndex;
+    },
+
     drop: (item, mon) => {
       return { rowIndex };
     },
@@ -94,30 +144,40 @@ const Row: React.FC<RowProps> = ({ artistObj, rowIndex }) => {
   isOver && console.log('over');
 
   const style = (): React.CSSProperties => {
-    if (isDragging)
+    if (isDragging && !isTouch)
       return {
-        opacity: 0.5,
+        opacity: 0,
       };
+    if (isDragging && isTouch)
+      return {
+        boxShadow: 'box-shadow: 0px 0px 35px 0px rgba(0,0,0,0.75)',
+      };
+    if (isOver) {
+      return { cursor: 'move' };
+    }
     return {};
   };
 
+  drag(drop(ref));
+  const listRef = isTouch ? null : ref;
+  const iconRef = isTouch ? ref : null;
   return (
-    <div ref={dragRef} style={style()}>
-      <div ref={dropRef}>
-        <ListGroupItem className='px-0 py-0 bx-0 by-0 d-flex justify-content-between'>
-          <span>
-            <img
-              className=''
-              alt={artistObj.name + ' photo'}
-              src={src}
-              style={{
-                height: '3rem',
-                width: '3rem',
-                marginRight: '5px',
-              }}
-            />
-            {artistObj.name}
-          </span>
+    <div ref={listRef} style={style()}>
+      <ListGroupItem className='px-0 py-0 bx-0 by-0 d-flex justify-content-between movable'>
+        <span>
+          <img
+            className=''
+            alt={artistObj.name + ' photo'}
+            src={src}
+            style={{
+              height: '3rem',
+              width: '3rem',
+              marginRight: '5px',
+            }}
+          />
+          {artistObj.name}
+        </span>
+        {!isTouch && (
           <Button
             color='danger'
             type='button'
@@ -127,17 +187,16 @@ const Row: React.FC<RowProps> = ({ artistObj, rowIndex }) => {
           >
             <span aria-hidden='true'>&times;</span>
           </Button>
-        </ListGroupItem>
-      </div>
-      {isOver && (
-        <li
-          style={{
-            height: '100%',
-            backgroundColor: 'lightgreen',
-            opacity: 0.5,
-          }}
-        ></li>
-      )}
+        )}
+        {isTouch && (
+          <div
+            ref={iconRef}
+            style={{ fontSize: '2rem', paddingRight: '.5rem' }}
+          >
+            ☰
+          </div>
+        )}
+      </ListGroupItem>
     </div>
   );
 };

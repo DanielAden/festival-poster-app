@@ -95,10 +95,16 @@ const posterSlice = createSlice({
     },
     moveArtist(state, action: PayloadAction<{ from: number; to: number }>) {
       const { from, to } = action.payload;
+      if (from === to) return state;
       const artists = [...state.artists];
       const fromArtist = artists[from];
-      artists.splice(to, 0, fromArtist);
-      artists.splice(from, 1);
+      if (from < to) {
+        artists.splice(to + 1, 0, fromArtist);
+        artists.splice(from, 1);
+      } else {
+        artists.splice(from, 1);
+        artists.splice(to, 0, fromArtist);
+      }
       return {
         ...state,
         artists,

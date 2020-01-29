@@ -20,3 +20,7 @@
     opacity: 0;
   }
 }
+
+.movable:hover {
+  cursor: move;
+}
