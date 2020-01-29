@@ -2,13 +2,19 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ListItems } from '../../components/List/List';
 import produce from 'immer';
 import { unionBy, remove } from 'lodash';
-import {
-  SpotifyArtistObject,
-  SpotifyUserObject,
-} from '../../spotify/SpotifyAPI';
+import { SpotifyUserObject } from '../../spotify/SpotifyAPI';
 
 export const DEFAULT_FESTIVAL_NAME = 'My Festival';
 export const DEFAULT_PRESENTED_BY = 'Presented by Red Bull';
+
+export interface AppArtistImage {
+  url: string;
+}
+export interface AppArtistObject {
+  name: string;
+  uri: string;
+  images: AppArtistImage[];
+}
 
 export interface FestivalDate {
   date: string;
@@ -16,7 +22,7 @@ export interface FestivalDate {
 
 export interface PosterState {
   me: SpotifyUserObject | null;
-  artists: ListItems<SpotifyArtistObject>;
+  artists: ListItems<AppArtistObject>;
   topArtistsTimeRange: string; // TODO make this type safe
   layoutType: string;
   themeType: string;
@@ -71,7 +77,7 @@ const posterSlice = createSlice({
         draftState.artists = action.payload;
       });
     },
-    artistRemoved(state, action: PayloadAction<SpotifyArtistObject>) {
+    artistRemoved(state, action: PayloadAction<AppArtistObject>) {
       const artists = [...state.artists];
       remove(artists, ao => ao.data.uri === action.payload.uri);
       return {
