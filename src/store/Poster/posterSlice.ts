@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ListItems } from '../../components/List/List';
-import produce from 'immer';
 import { unionBy, remove } from 'lodash';
 import { SpotifyUserObject } from '../../spotify/SpotifyAPI';
 
@@ -64,24 +63,16 @@ const posterSlice = createSlice({
       return { ...state, ...action.payload };
     },
     changeThemeType(state, action: PayloadAction<string>) {
-      return produce(state, draftState => {
-        draftState.themeType = action.payload;
-      });
+      state.themeType = action.payload;
     },
     changeFestivalName(state, action: PayloadAction<string>) {
-      return produce(state, draftState => {
-        draftState.festivalName = action.payload;
-      });
+      state.festivalName = action.payload;
     },
     changeLayoutType(state, action: PayloadAction<string>) {
-      return produce(state, draftState => {
-        draftState.layoutType = action.payload;
-      });
+      state.layoutType = action.payload;
     },
     updateArtistList(state, action: PayloadAction<PosterState['artists']>) {
-      return produce(state, draftState => {
-        draftState.artists = action.payload;
-      });
+      state.artists = action.payload;
     },
     artistRemoved(state, action: PayloadAction<AppArtistObject>) {
       const artists = [...state.artists];
@@ -101,26 +92,19 @@ const posterSlice = createSlice({
     },
     moveArtist(state, action: PayloadAction<{ from: number; to: number }>) {
       const { from, to } = action.payload;
-      if (from === to) return state;
-      const artists = [...state.artists];
-      const fromArtist = artists[from];
+      if (from === to) return;
+      const fromArtist = state.artists[from];
       if (from < to) {
-        artists.splice(to + 1, 0, fromArtist);
-        artists.splice(from, 1);
+        state.artists.splice(to + 1, 0, fromArtist);
+        state.artists.splice(from, 1);
       } else {
-        artists.splice(from, 1);
-        artists.splice(to, 0, fromArtist);
+        state.artists.splice(from, 1);
+        state.artists.splice(to, 0, fromArtist);
       }
-      return {
-        ...state,
-        artists,
-      };
     },
     updateMeData(state, action: PayloadAction<SpotifyUserObject>) {},
     topArtistsTimeRangeUpdated(state, action: PayloadAction<string>) {
-      return produce(state, draftState => {
-        draftState.topArtistsTimeRange = action.payload;
-      });
+      state.topArtistsTimeRange = action.payload;
     },
   },
 });
