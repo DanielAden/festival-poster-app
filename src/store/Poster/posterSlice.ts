@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ListItems } from '../../components/List/List';
 import produce from 'immer';
-import { unionBy } from 'lodash';
+import { unionBy, remove } from 'lodash';
 import {
   SpotifyArtistObject,
   SpotifyUserObject,
@@ -71,6 +71,14 @@ const posterSlice = createSlice({
         draftState.artists = action.payload;
       });
     },
+    artistRemoved(state, action: PayloadAction<SpotifyArtistObject>) {
+      const artists = [...state.artists];
+      remove(artists, ao => ao.data.uri === action.payload.uri);
+      return {
+        ...state,
+        artists,
+      };
+    },
     mergeArtistList(state, action: PayloadAction<PosterState['artists']>) {
       const stateArtists = [...state.artists];
       const newState = {
@@ -97,6 +105,7 @@ export const {
   mergeArtistList,
   changeFestivalName,
   mergePoster,
+  artistRemoved,
 } = posterSlice.actions;
 
 export default posterSlice.reducer;
