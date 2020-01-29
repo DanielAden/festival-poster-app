@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "0ec873ed3ea9bb51da3fb664b5ccb2d2",
+    "revision": "2b2fdc0c54212e0a0d59c4a94dab780e",
     "url": "/festival-poster-app/index.html"
   },
   {
-    "revision": "2e853d34475491a74be1",
-    "url": "/festival-poster-app/static/css/main.30b474b2.chunk.css"
+    "revision": "b86d65fa1e051e90f858",
+    "url": "/festival-poster-app/static/css/main.5bd0f889.chunk.css"
   },
   {
-    "revision": "fd1f048447b71867c249",
-    "url": "/festival-poster-app/static/js/2.476404db.chunk.js"
+    "revision": "352461c3c8dd6bc3ce99",
+    "url": "/festival-poster-app/static/js/2.5058f9cb.chunk.js"
   },
   {
-    "revision": "68aed49bcdcbc067487a3d461801ff7e",
-    "url": "/festival-poster-app/static/js/2.476404db.chunk.js.LICENSE"
+    "revision": "08ff44fdfb43c8bca0778cbfad2d24ce",
+    "url": "/festival-poster-app/static/js/2.5058f9cb.chunk.js.LICENSE"
   },
   {
-    "revision": "2e853d34475491a74be1",
-    "url": "/festival-poster-app/static/js/main.e67cc4a1.chunk.js"
+    "revision": "b86d65fa1e051e90f858",
+    "url": "/festival-poster-app/static/js/main.c5645843.chunk.js"
   },
   {
     "revision": "e5bd0bda25262c62530b",
@@ -46,6 +46,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "78fbcaffed3562d2e826e202dc49dd05",
     "url": "/festival-poster-app/static/media/metal.78fbcaff.png"
+  },
+  {
+    "revision": "4788048f319dc48101678d9e69f5077e",
+    "url": "/festival-poster-app/static/media/portrait_placeholder.4788048f.png"
   },
   {
     "revision": "ae35ea3b35ee66d523e76dbaf79e53c6",
