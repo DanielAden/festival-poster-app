@@ -58,6 +58,7 @@ const Selections: React.FC<SelectionsProps> = ({
       {buttons.map((b, i) => {
         return (
           <Button
+            key={i}
             className={`${setClass(i)}`}
             onClick={() => onSelectChange(i)}
           >

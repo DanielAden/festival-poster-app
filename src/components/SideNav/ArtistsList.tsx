@@ -180,7 +180,7 @@ const Row: React.FC<RowProps> = ({ artistObj, rowIndex, moveItem }) => {
           <Button
             color='danger'
             type='button'
-            class='close'
+            className='close'
             aria-label='Close'
             onClick={() => dispatch(artistRemoved(artistObj))}
           >
