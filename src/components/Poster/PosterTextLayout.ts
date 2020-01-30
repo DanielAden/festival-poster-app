@@ -169,7 +169,7 @@ export abstract class PosterTextLayout {
     const ctx = this.ctx;
     ctx.save();
     ctx.textAlign = 'center';
-    fp.draw(str, this.midX, top, this.maxPosterWidth, ctx, this.posterHeight);
+    // fp.draw(str, this.midX, top, this.maxPosterWidth, ctx, this.posterHeight);
     ctx.restore();
   }
 
@@ -177,28 +177,28 @@ export abstract class PosterTextLayout {
     const ctx = this.ctx;
     ctx.save();
     ctx.textAlign = 'left';
-    fp.draw(
-      str,
-      this.poster.maxLeft,
-      top,
-      this.maxPosterWidth,
-      ctx,
-      this.posterHeight,
-    );
+    // fp.draw(
+    //   str,
+    //   this.poster.maxLeft,
+    //   top,
+    //   this.maxPosterWidth,
+    //   ctx,
+    //   this.posterHeight,
+    // );
     ctx.restore();
   }
 
   public printRight(str: string, top: number, fp: FontPkg) {
     this.ctx.save();
     this.ctx.textAlign = 'right';
-    fp.draw(
-      str,
-      this.poster.maxRight,
-      top,
-      this.maxPosterWidth,
-      this.ctx,
-      this.posterHeight,
-    );
+    // fp.draw(
+    //   str,
+    //   this.poster.maxRight,
+    //   top,
+    //   this.maxPosterWidth,
+    //   this.ctx,
+    //   this.posterHeight,
+    // );
     this.ctx.restore();
   }
 
@@ -226,12 +226,7 @@ export abstract class PosterTextLayout {
 
   protected initDates() {
     return this.poster.dates.map(date => {
-      return new TextBox(
-        this.ctx,
-        this.poster,
-        date.date,
-        this.fontPkg('date'),
-      );
+      return new TextBox(date.date, this.poster, this.fontPkg('date'));
     });
   }
 
@@ -242,19 +237,20 @@ export abstract class PosterTextLayout {
       this.theme.nameFontPkg.fontHeight(this.posterHeight) +
       this.festivalNameTop +
       date1box.metrics.height;
-    date1box.draw(this.midX, y, 'center');
+    date1box.setXY(this.midX, y);
+    date1box.draw();
   }
 
   public drawPresentedBy(x: number, y: number) {
     const pbTextBox = new TextBox(
-      this.ctx,
-      this.poster,
       this.poster.presentedByText,
+      this.poster,
       this.theme.nameFontPkg,
     );
 
     pbTextBox.scale = 0.2;
-    pbTextBox.draw(x, y);
+    pbTextBox.setXY(x, y);
+    pbTextBox.draw();
   }
 }
 
@@ -283,7 +279,7 @@ export class CoachellaLayout extends PosterTextLayout {
   }
 
   setHeadlinerFont() {
-    this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight, 2);
+    // this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight, 2);
   }
 
   private get artistNames() {
@@ -365,13 +361,13 @@ export class WeekendLayout extends PosterTextLayout {
     let movingTop = startTop;
 
     dateBoxes.forEach(db => (db.scale = 2));
-    const dateLH = dateBoxes[0].lineHeight;
+    const dateLH = dateBoxes[0].height;
 
     const drawDate = (i: number, right = false) => {
       if (this.poster.showDates) {
-        right
-          ? dateBoxes[i].drawRight(movingTop)
-          : dateBoxes[i].drawLeft(movingTop);
+        // right
+        //   ? dateBoxes[i].drawRight(movingTop)
+        //   : dateBoxes[i].drawLeft(movingTop);
         movingTop += dateLH;
       } else {
         movingTop += dateLH;
@@ -410,6 +406,27 @@ export class WeekendLayout extends PosterTextLayout {
   public drawDates() {} // Dates are drawn in the artist block for this layout
 }
 
+export class TestLayout extends PosterTextLayout {
+  dateCount = 0;
+  headlinerLineCount = 0;
+
+  drawArtistBlock() {
+    return {
+      top: 0,
+      bottom: 0,
+      height: 0,
+    };
+  }
+
+  drawDates() {}
+  drawFestivalName() {
+    const { poster } = this;
+    const tb = new TextBox('TextBox Test Line', poster, this.fontPkg('name'));
+    tb.draw();
+  }
+  drawPresentedBy() {}
+}
+
 export const usePosterLayout = (): PosterTextLayout => {
   const layoutType = useTypedSelector(s => s.poster.layoutType);
   const layoutMeme = useMemo(() => {
@@ -420,6 +437,8 @@ export const usePosterLayout = (): PosterTextLayout => {
         return new WeekendLayout();
       case 'coachella':
         return new CoachellaLayout();
+      case 'test':
+        return new TestLayout();
       default:
         throw new AppError(`Invalid theme ${layoutType}`);
     }

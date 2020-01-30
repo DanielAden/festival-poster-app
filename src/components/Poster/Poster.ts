@@ -135,6 +135,10 @@ export abstract class Poster {
     return this.w - this.theme.sideMarginRatio * this.h;
   }
 
+  public get maxWidth() {
+    return this.maxRight - this.maxLeft;
+  }
+
   public get showDates() {
     return this.ps.showDates;
   }

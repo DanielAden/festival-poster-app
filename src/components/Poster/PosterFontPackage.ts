@@ -7,7 +7,7 @@ export interface PosterTextStrokeInfo {
 
 type StrokeInfo = PosterTextStrokeInfo | PosterTextStrokeInfo[];
 export default class FontPkg {
-  protected strokeInfo: StrokeInfo;
+  public strokeInfo: StrokeInfo;
 
   constructor(
     public fontType: string,
@@ -25,66 +25,25 @@ export default class FontPkg {
         };
   }
 
-  protected setStrokeCtx(
-    ctx: CanvasRenderingContext2D,
-    sinfo: PosterTextStrokeInfo,
-    totalHeight: number,
-    scale: number,
-  ) {
-    ctx.strokeStyle = sinfo.strokeStyle;
-    ctx.lineWidth = this.fontLineWidth(sinfo.widthRatio, totalHeight) * scale;
-  }
-
   protected setTextCtx(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = this.fontColor;
   }
 
-  public draw(
-    str: string,
-    x: number,
-    y: number,
-    maxWidth: number,
-    ctx: CanvasRenderingContext2D,
-    totalHeight: number,
-    scale: number = 1,
-  ) {
-    const strokeList = Array.isArray(this.strokeInfo)
-      ? this.strokeInfo
-      : [this.strokeInfo];
-
-    ctx.save();
-    strokeList.forEach(sinfo => {
-      this.setStrokeCtx(ctx, sinfo, totalHeight, scale);
-      ctx.strokeText(str, x + sinfo.offsetX, y + sinfo.offsetY, maxWidth);
-    });
-    ctx.restore();
-
-    ctx.save();
-    this.setTextCtx(ctx);
-    ctx.fillText(str, x, y, maxWidth);
-    ctx.restore();
-  }
-
   public fontHeight(totalHeight: number) {
-    return Math.floor(this.fontSizeRatio * totalHeight);
+    return this.fontSizeRatio * totalHeight;
   }
 
-  public fontString(totalHeight: number, scale = 1) {
+  public fontString(totalHeight: number) {
     const fheight = this.fontHeight(totalHeight);
-    return `${fheight * scale}px ${this.fontType}`;
+    return `${fheight}px ${this.fontType}`;
   }
 
-  public fontLineWidth(widthRatio: number, totalHeight: number): number {
-    const lineWidth = widthRatio * this.fontHeight(totalHeight);
-    return lineWidth;
-  }
-
-  private get maxStrokeRatio() {
+  protected get maxStrokeRatio() {
     if (!this.strokeInfo) return 0;
     const siList = Array.isArray(this.strokeInfo)
       ? this.strokeInfo
       : [this.strokeInfo];
-    let maxStrokeRatio = 0;
+    let maxStrokeRatio = 1;
     siList.forEach(si => {
       maxStrokeRatio = Math.max(
         maxStrokeRatio,
