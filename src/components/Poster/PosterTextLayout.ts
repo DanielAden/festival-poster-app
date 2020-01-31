@@ -234,7 +234,7 @@ export abstract class PosterTextLayout {
     if (!this.poster.drawDates) return;
     const [date1box] = this.initDates();
     const y =
-      this.theme.nameFontPkg.fontHeight(this.posterHeight) +
+      this.theme.nameFontPkg.lineHeight(this.posterHeight) +
       this.festivalNameTop +
       date1box.height;
     date1box.setXY(this.midX, y);
@@ -280,7 +280,7 @@ export class CoachellaLayout extends PosterTextLayout {
 
   setArtistFont() {
     const { artistFontPkg: afp } = this.theme;
-    this.currentArtistFontSize = afp.fontHeight(this.posterHeight);
+    this.currentArtistFontSize = afp.lineHeight(this.posterHeight);
     this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight);
   }
 
@@ -436,8 +436,8 @@ export class TestLayout extends PosterTextLayout {
 
   drawFestivalName() {
     // this.testDrawBasic();
-    // this.testDrawBelow();
-    this.testDrawBorderBox();
+    this.testDrawBelow();
+    // this.testDrawBorderBox();
   }
 
   testDrawBasic() {
@@ -464,11 +464,11 @@ export class TestLayout extends PosterTextLayout {
 
   testDrawBelow() {
     const { poster, ctx } = this;
-    const tb = new TextBox('TextBox Test Line', poster, this.fontPkg('name'));
-    const tb2 = new TextBox('TextBox Test Line2', poster, this.fontPkg('name'));
+    const tb = new TextBox('Test1', poster, this.fontPkg('name'));
+    const tb2 = new TextBox('Test2', poster, this.fontPkg('name'));
 
-    tb.setXY(0, 0);
-    tb.draw();
+    tb.setXY(50, 100);
+    tb.draw().box();
     tb.drawBelow(tb2);
   }
 }

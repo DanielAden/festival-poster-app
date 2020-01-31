@@ -80,7 +80,9 @@ export default class FontPkg {
     const el = document.createElement('div');
     el.style.font = `${this.fontSizeRatio * totalHeight}px ${this.fontType}`;
     el.innerText = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    document.getElementById('root')?.appendChild(el);
+    const root = document.getElementById('root');
+    if (!root) throw new Error('Could not get root element');
+    root.appendChild(el);
     const height = el.getBoundingClientRect().height;
     el.remove();
     return height;
