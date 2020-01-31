@@ -236,7 +236,7 @@ export abstract class PosterTextLayout {
     const y =
       this.theme.nameFontPkg.fontHeight(this.posterHeight) +
       this.festivalNameTop +
-      date1box.metrics.height;
+      date1box.height;
     date1box.setXY(this.midX, y);
     date1box.draw();
   }
@@ -251,6 +251,19 @@ export abstract class PosterTextLayout {
     pbTextBox.scale = 0.2;
     pbTextBox.setXY(x, y);
     pbTextBox.draw();
+  }
+
+  public drawHorizontalLine(x1: number, x2: number, y: number) {
+    const { ctx } = this;
+    ctx.save();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = 'red';
+
+    ctx.beginPath(); // Start a new path
+    ctx.moveTo(x1, y);
+    ctx.lineTo(x2, y);
+    ctx.stroke();
+    ctx.restore();
   }
 }
 
@@ -419,12 +432,45 @@ export class TestLayout extends PosterTextLayout {
   }
 
   drawDates() {}
+  drawPresentedBy() {}
+
   drawFestivalName() {
+    // this.testDrawBasic();
+    // this.testDrawBelow();
+    this.testDrawBorderBox();
+  }
+
+  testDrawBasic() {
     const { poster } = this;
     const tb = new TextBox('TextBox Test Line', poster, this.fontPkg('name'));
     tb.draw();
   }
-  drawPresentedBy() {}
+
+  testDrawBorderBox() {
+    const { poster } = this;
+    const tb = new TextBox('Test Line', poster, this.fontPkg('name'));
+    tb.setXY(50, 100);
+    tb.fontPkg.strokeInfo = [];
+    tb.draw().box();
+
+    // this.drawHorizontalLine(tb.x, tb.right, tb.y);
+    // this.drawHorizontalLine(tb.x, tb.right, tb.bottom);
+
+    // ctx.beginPath(); // Start a new path
+    // ctx.moveTo(tb.x, tb.bottom);
+    // ctx.lineTo(tb.right, tb.bottom);
+    // ctx.stroke();
+  }
+
+  testDrawBelow() {
+    const { poster, ctx } = this;
+    const tb = new TextBox('TextBox Test Line', poster, this.fontPkg('name'));
+    const tb2 = new TextBox('TextBox Test Line2', poster, this.fontPkg('name'));
+
+    tb.setXY(0, 0);
+    tb.draw();
+    tb.drawBelow(tb2);
+  }
 }
 
 export const usePosterLayout = (): PosterTextLayout => {

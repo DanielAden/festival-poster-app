@@ -5,6 +5,34 @@ export interface PosterTextStrokeInfo {
   offsetY: number;
 }
 
+export const offsetXStroke = (fontTYpe: string) => {
+  switch (fontTYpe) {
+    case 'MadridGrunge':
+    case 'WesternBangBang':
+    case 'TexasTango':
+      return true;
+    case 'Monteral':
+    case 'Cocogoose':
+    case 'PunkrockerStamp':
+    default:
+      return false;
+  }
+};
+
+export const offsetYStroke = (fontTYpe: string) => {
+  switch (fontTYpe) {
+    case 'MadridGrunge':
+      return true;
+    case 'TexasTango':
+    case 'WesternBangBang':
+    case 'PunkrockerStamp':
+    case 'Monteral':
+    case 'Cocogoose':
+    default:
+      return false;
+  }
+};
+
 type StrokeInfo = PosterTextStrokeInfo | PosterTextStrokeInfo[];
 export default class FontPkg {
   public strokeInfo: StrokeInfo;
@@ -12,7 +40,7 @@ export default class FontPkg {
   constructor(
     public fontType: string,
     public fontColor: string,
-    public fontSizeRatio: number, // 0 to 1
+    public fontSizeRatio: number,
     strokeInfo?: StrokeInfo,
   ) {
     this.strokeInfo = strokeInfo
@@ -25,8 +53,25 @@ export default class FontPkg {
         };
   }
 
-  protected setTextCtx(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = this.fontColor;
+  protected strokeLen(totalHeight: number) {
+    if (!this.strokeInfo) return 0;
+    return Math.floor(this.maxStrokeSize(totalHeight) / 2);
+  }
+
+  public strokeDeltaX(totalHeight: number) {
+    if (offsetXStroke(this.fontType)) {
+      return this.strokeLen(totalHeight);
+    } else {
+      return 0;
+    }
+  }
+
+  public strokeDeltaY(totalHeight: number) {
+    if (offsetYStroke(this.fontType)) {
+      return this.strokeLen(totalHeight);
+    } else {
+      return 0;
+    }
   }
 
   public fontHeight(totalHeight: number) {
@@ -38,12 +83,12 @@ export default class FontPkg {
     return `${fheight}px ${this.fontType}`;
   }
 
-  protected get maxStrokeRatio() {
+  public get maxStrokeRatio() {
     if (!this.strokeInfo) return 0;
     const siList = Array.isArray(this.strokeInfo)
       ? this.strokeInfo
       : [this.strokeInfo];
-    let maxStrokeRatio = 1;
+    let maxStrokeRatio = 0;
     siList.forEach(si => {
       maxStrokeRatio = Math.max(
         maxStrokeRatio,
@@ -59,7 +104,7 @@ export default class FontPkg {
 
   public lineHeight(totalHeight: number): number {
     const fontHeight = this.fontHeight(totalHeight);
-    return fontHeight + this.maxStrokeSize(totalHeight);
+    return fontHeight + this.strokeLen(totalHeight);
   }
 }
 

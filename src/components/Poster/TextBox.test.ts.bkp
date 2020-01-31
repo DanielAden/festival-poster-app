@@ -1,0 +1,51 @@
+import { TextBox } from './TextBox';
+import { BasicPoster } from './Poster';
+import { posterInitialState } from '../../store/Poster/posterSlice';
+import { BasicLayout } from './PosterTextLayout';
+import { PosterTheme } from './PosterTheme';
+import FontPkg from './PosterFontPackage';
+
+const posterX = 800;
+const posterY = 1000;
+const fontHeghtRatio = 0.1;
+
+class TestFontPkg extends FontPkg {}
+const testFontPkg = () => {
+  return new TestFontPkg('serif', 'red', fontHeghtRatio);
+};
+
+class _TestTheme extends PosterTheme {
+  artistFontPkg = testFontPkg();
+  nameFontPkg = testFontPkg();
+  dateFontPkg = testFontPkg();
+}
+
+let ps = posterInitialState();
+let layout = new BasicLayout();
+let theme = new _TestTheme();
+let poster = new BasicPoster(ps, theme, layout);
+let tb1 = new TextBox('tb1', poster, testFontPkg());
+let tb2 = new TextBox('tb2', poster, testFontPkg());
+
+beforeEach(() => {
+  ps = posterInitialState();
+  theme = new _TestTheme();
+  layout = new BasicLayout();
+  poster = new BasicPoster(ps, theme, layout);
+  poster.setPosterSize(posterX, posterY);
+  tb1 = new TextBox('tb1', poster, testFontPkg());
+  tb2 = new TextBox('tb2', poster, testFontPkg());
+});
+
+// test('height calculation', () => {
+//   expect(tb1.height).toBe(fontHeghtRatio * posterY);
+// });
+
+// test('height calculation with stroke', () => {
+//   expect(tb1.height).toBe(fontHeghtRatio * posterY);
+// });
+
+test('basic draw below', () => {
+  tb1.drawBelow(tb2);
+  expect(tb2.y).toBe(tb1.height);
+});

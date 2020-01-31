@@ -199,7 +199,7 @@ export abstract class Poster {
   }
 }
 
-class BasicPoster extends Poster {}
+export class BasicPoster extends Poster {}
 
 export const usePoster = (): Poster => {
   // const me = useMe();

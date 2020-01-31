@@ -36,21 +36,26 @@ export interface PosterState {
   headliners: Array<string[]>;
 }
 
-const initialState: PosterState = {
-  me: null,
-  artists: [],
-  topArtistsTimeRange: 'medium_term',
-  layoutType: 'basic',
-  themeType: 'desert',
-  festivalName: DEFAULT_FESTIVAL_NAME,
-  showDates: true,
-  date1: { date: 'FRIDAY APRIL 10' },
-  date2: { date: 'SATURDAY APRIL 11' },
-  date3: { date: 'SUNDAY APRIL 12' },
-  showPresentedBy: true,
-  presentedBy: DEFAULT_PRESENTED_BY,
-  headliners: [[], [], []],
+export const posterInitialState = (): PosterState => {
+  const initialState: PosterState = {
+    me: null,
+    artists: [],
+    topArtistsTimeRange: 'medium_term',
+    layoutType: 'basic',
+    themeType: 'desert',
+    festivalName: DEFAULT_FESTIVAL_NAME,
+    showDates: true,
+    date1: { date: 'FRIDAY APRIL 10' },
+    date2: { date: 'SATURDAY APRIL 11' },
+    date3: { date: 'SUNDAY APRIL 12' },
+    showPresentedBy: true,
+    presentedBy: DEFAULT_PRESENTED_BY,
+    headliners: [[], [], []],
+  };
+  return initialState;
 };
+
+const initialState = posterInitialState();
 
 const posterSlice = createSlice({
   name: 'poster',

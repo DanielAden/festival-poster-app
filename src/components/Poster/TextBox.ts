@@ -16,12 +16,14 @@ export class TextBox {
     this.y = y;
   }
 
-  public draw() {
-    const { ctx } = this;
-    ctx.save();
-    this.drawStroke();
-    this.drawText();
-    ctx.restore();
+  protected get drawX() {
+    const { poster, fontPkg } = this;
+    return this.x + fontPkg.strokeDeltaX(poster.h);
+  }
+
+  protected get drawY() {
+    const { poster, fontPkg } = this;
+    return this.y + fontPkg.strokeDeltaY(poster.h);
   }
 
   protected get strokeInfo() {
@@ -36,17 +38,13 @@ export class TextBox {
     return lineWidth;
   }
 
-  protected setStrokeCtx(
-    sinfo: PosterTextStrokeInfo,
-    totalHeight: number,
-    // scale: number,
-  ) {
+  protected setStrokeCtx(sinfo: PosterTextStrokeInfo) {
     // this.ctx.scale(scale, scale);
     const { ctx, fontPkg, poster } = this;
     ctx.font = fontPkg.fontString(poster.h);
     ctx.textBaseline = 'top';
     ctx.strokeStyle = sinfo.strokeStyle;
-    ctx.lineWidth = this.strokeLineSize(sinfo.widthRatio, totalHeight);
+    ctx.lineWidth = this.strokeLineSize(sinfo.widthRatio, poster.h);
   }
 
   protected drawStroke() {
@@ -54,13 +52,8 @@ export class TextBox {
     this.save();
     this.strokeInfo.forEach(sinfo => {
       // this.setStrokeCtx(sinfo, poster.h, this.scale);
-      this.setStrokeCtx(sinfo, poster.h);
-      ctx.strokeText(
-        this.text,
-        this.x + sinfo.offsetX,
-        this.y + sinfo.offsetY,
-        poster.maxWidth,
-      );
+      this.setStrokeCtx(sinfo);
+      ctx.strokeText(this.text, this.drawX, this.drawY);
     });
     this.restore();
   }
@@ -78,7 +71,7 @@ export class TextBox {
     const { ctx, poster } = this;
     this.save();
     this.setTextCtx();
-    ctx.fillText(this.text, this.x, this.y, poster.maxWidth);
+    ctx.fillText(this.text, this.drawX, this.drawY); // poster.maxWidth);
     this.restore();
   }
 
@@ -102,14 +95,48 @@ export class TextBox {
     return this.fontPkg.lineHeight(this.poster.h);
   }
 
-  public get metrics() {
-    this.ctx.save();
-    this.setup();
-    const _metrics = this.ctx.measureText(this.text);
-    this.ctx.restore();
-    return {
-      width: _metrics.width,
-      height: this.height,
-    };
+  public get bottom(): number {
+    return this.y + this.fontPkg.lineHeight(this.poster.h);
+  }
+
+  public get right(): number {
+    return this.x + this.width;
+  }
+
+  public get left() {
+    return this.x;
+  }
+
+  public get width(): number {
+    const { fontPkg, poster } = this;
+    this.save();
+    this.setTextCtx();
+    const m = this.ctx.measureText(this.text);
+    this.restore();
+    return m.width;
+  }
+
+  public draw() {
+    const { ctx } = this;
+    ctx.save();
+    this.drawStroke();
+    this.drawText();
+    ctx.restore();
+    return this;
+  }
+
+  public box() {
+    const boxLineWidth = 3;
+    const { ctx } = this;
+    ctx.save();
+    ctx.lineWidth = boxLineWidth;
+    ctx.strokeStyle = 'red';
+    ctx.strokeRect(this.x, this.y, this.width, this.height);
+    ctx.restore();
+  }
+
+  public drawBelow(tb: TextBox) {
+    tb.y = this.y + this.height;
+    tb.draw();
   }
 }
