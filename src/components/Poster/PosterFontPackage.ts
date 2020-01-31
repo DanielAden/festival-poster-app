@@ -74,8 +74,16 @@ export default class FontPkg {
     }
   }
 
+  // Maybe no the best way to get the font height
+  // but its a lot harder to do than you would think
   public fontHeight(totalHeight: number) {
-    return this.fontSizeRatio * totalHeight;
+    const el = document.createElement('div');
+    el.style.font = `${this.fontSizeRatio * totalHeight}px ${this.fontType}`;
+    el.innerText = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    document.getElementById('root')?.appendChild(el);
+    const height = el.getBoundingClientRect().height;
+    el.remove();
+    return height;
   }
 
   public fontString(totalHeight: number) {

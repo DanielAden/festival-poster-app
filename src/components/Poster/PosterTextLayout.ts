@@ -448,7 +448,7 @@ export class TestLayout extends PosterTextLayout {
 
   testDrawBorderBox() {
     const { poster } = this;
-    const tb = new TextBox('Test Line', poster, this.fontPkg('name'));
+    const tb = new TextBox('Gg', poster, this.fontPkg('name'));
     tb.setXY(50, 100);
     tb.fontPkg.strokeInfo = [];
     tb.draw().box();

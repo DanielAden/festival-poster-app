@@ -125,13 +125,17 @@ export class TextBox {
     return this;
   }
 
-  public box() {
-    const boxLineWidth = 3;
+  public box(boxLineWidth = 3, strokeStyle = 'red') {
     const { ctx } = this;
     ctx.save();
     ctx.lineWidth = boxLineWidth;
-    ctx.strokeStyle = 'red';
-    ctx.strokeRect(this.x, this.y, this.width, this.height);
+    ctx.strokeStyle = strokeStyle;
+    ctx.strokeRect(
+      this.x,
+      this.y - boxLineWidth,
+      this.width,
+      this.height + boxLineWidth * 2,
+    );
     ctx.restore();
   }
 
