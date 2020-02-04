@@ -432,8 +432,9 @@ export class TestLayout extends PosterTextLayout {
 
   drawFestivalName() {
     // this.testDrawBasic();
-    this.testDrawBelow();
+    // this.testDrawBelow();
     // this.testDrawBorderBox();
+    this.testDrawAbove();
   }
 
   testDrawBasic() {
@@ -458,13 +459,23 @@ export class TestLayout extends PosterTextLayout {
   }
 
   testDrawBelow() {
-    const { poster, ctx } = this;
+    const { poster } = this;
     const tb = new TextBox('iIjJgGTest1', poster, this.fontPkg('name'));
     const tb2 = new TextBox('iIjJgGITest2', poster, this.fontPkg('name'));
 
     tb.setXY(50, 100);
     tb.draw().box();
     tb.drawBelow(tb2);
+  }
+
+  testDrawAbove() {
+    const { poster } = this;
+    const tb = new TextBox('iIjJgGTest1', poster, this.fontPkg('name'));
+    const tb2 = new TextBox('iIjJgGITest2', poster, this.fontPkg('name'));
+
+    tb.setXY(this.midX, 100);
+    tb.drawAbove(tb2).box();
+    tb.draw().box();
   }
 }
 

@@ -106,6 +106,10 @@ export class TestTheme extends PosterTheme {
     fontType: 'Cocogoose',
     fontColor: 'white',
     fontSizeRatio: 0.03,
+    strokeInfo: {
+      strokeStyle: 'black',
+      widthRatio: 0.5,
+    },
   };
   artistFontPkg = {
     fontType: 'Monteral',

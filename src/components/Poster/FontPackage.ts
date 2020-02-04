@@ -1,8 +1,8 @@
 export interface PosterTextStrokeInfo {
   strokeStyle: string;
   widthRatio: number;
-  offsetX: number;
-  offsetY: number;
+  offsetX?: number;
+  offsetY?: number;
 }
 
 export interface FontPackage {

@@ -26,11 +26,6 @@ export class TextBox {
   //   return this.y + this.strokeDeltaY(poster.h);
   // }
 
-  protected strokeLen(totalHeight: number) {
-    if (!this.strokeInfo) return 0;
-    return Math.floor(this.maxStrokeSize(totalHeight) / 2);
-  }
-
   // public strokeDeltaX(totalHeight: number) {
   //   if (offsetXStroke(this.fontPkg.fontType)) {
   //     return this.strokeLen(totalHeight);
@@ -46,6 +41,22 @@ export class TextBox {
   //     return 0;
   //   }
   // }
+
+  // X Y coords incorporating the line width of the stroke
+  protected get textDrawCoords() {
+    const strokeDelta = this.strokeDelta;
+    return [this.x + strokeDelta, this.y + strokeDelta];
+  }
+
+  protected get strokeDrawCoords() {
+    const strokeDelta = this.strokeDelta;
+    return [this.x + strokeDelta, this.y + strokeDelta];
+  }
+
+  protected get boxDrawCoords() {
+    const strokeDelta = this.strokeDelta;
+    return [this.x, this.y];
+  }
 
   // Maybe no the best way to get the font height
   // but its a lot harder to do than you would think
@@ -73,42 +84,33 @@ export class TextBox {
     return `${fheight}px ${this.fontPkg.fontType}`;
   }
 
-  public get maxStrokeRatio() {
-    return 1;
+  protected strokeLineSize(strokeInfo: PosterTextStrokeInfo) {
+    return strokeInfo.widthRatio * this.fontHeight(this.poster.h);
   }
 
-  public maxStrokeSize(totalHeight: number) {
-    return this.maxStrokeRatio * this.fontHeight(totalHeight);
-  }
-
-  protected get strokeInfo() {
-    const { strokeInfo } = this.fontPkg;
-    const strokeList = Array.isArray(strokeInfo) ? strokeInfo : [strokeInfo];
-    return strokeList;
-  }
-
-  protected strokeLineSize(widthRatio: number, totalHeight: number): number {
-    const lineWidth = widthRatio * this.fontHeight(totalHeight);
-    return lineWidth;
-  }
-
-  protected setStrokeCtx(sinfo: PosterTextStrokeInfo) {
+  protected setStrokeCtx(strokeInfo: PosterTextStrokeInfo) {
     // this.ctx.scale(scale, scale);
     const { ctx, poster } = this;
     ctx.font = this.fontString(poster.h);
     ctx.textBaseline = 'top';
-    ctx.strokeStyle = sinfo.strokeStyle;
-    ctx.lineWidth = this.strokeLineSize(sinfo.widthRatio, poster.h);
+    ctx.strokeStyle = strokeInfo.strokeStyle;
+    ctx.lineWidth = this.strokeLineSize(strokeInfo);
+  }
+
+  protected get strokeDelta() {
+    if (!this.fontPkg.strokeInfo) return 0;
+    const size = this.strokeLineSize(this.fontPkg.strokeInfo);
+    return size / 2;
   }
 
   protected drawStroke() {
     const { ctx } = this;
+    const { strokeInfo } = this.fontPkg;
+    const [x, y] = this.strokeDrawCoords;
+    if (!strokeInfo) return;
     this.save();
-    this.strokeInfo.forEach(sinfo => {
-      // this.setStrokeCtx(sinfo, poster.h, this.scale);
-      this.setStrokeCtx(sinfo);
-      ctx.strokeText(this.text, this.x, this.y);
-    });
+    this.setStrokeCtx(strokeInfo);
+    ctx.strokeText(this.text, x, y);
     this.restore();
   }
 
@@ -123,9 +125,10 @@ export class TextBox {
 
   public drawText() {
     const { ctx } = this;
+    const [x, y] = this.textDrawCoords;
     this.save();
     this.setTextCtx();
-    ctx.fillText(this.text, this.x, this.y); // poster.maxWidth);
+    ctx.fillText(this.text, x, y); // poster.maxWidth);
     this.restore();
   }
 
@@ -146,7 +149,7 @@ export class TextBox {
   }
 
   public get height() {
-    return this.fontHeight(this.poster.h);
+    return this.fontHeight(this.poster.h) + this.strokeDelta * 2;
   }
 
   public get bottom(): number {
@@ -166,13 +169,13 @@ export class TextBox {
     this.setTextCtx();
     const m = this.ctx.measureText(this.text);
     this.restore();
-    return m.width;
+    return m.width + this.strokeDelta * 2;
   }
 
   public draw() {
     const { ctx } = this;
     ctx.save();
-    // this.drawStroke();
+    this.drawStroke();
     this.drawText();
     ctx.restore();
     return this;
@@ -180,21 +183,25 @@ export class TextBox {
 
   public box(boxLineWidth = 3, strokeStyle = 'red') {
     const { ctx } = this;
+    const [x, y] = this.boxDrawCoords;
     ctx.save();
     ctx.lineWidth = boxLineWidth;
     ctx.strokeStyle = strokeStyle;
-    ctx.strokeRect(
-      this.x,
-      this.y - boxLineWidth,
-      this.width,
-      this.height + boxLineWidth * 2,
-    );
+    ctx.strokeRect(x, y, this.width, this.height);
     ctx.restore();
   }
 
   public drawBelow(tb: TextBox) {
-    tb.y = this.y + this.height;
+    tb.y = this.bottom;
+    tb.x = this.x;
     tb.draw();
+  }
+
+  public drawAbove(tb: TextBox) {
+    tb.y = this.y - tb.height;
+    tb.x = this.x;
+    tb.draw();
+    return tb;
   }
 }
 
