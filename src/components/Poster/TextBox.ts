@@ -4,7 +4,8 @@ import { FontPackage, PosterTextStrokeInfo } from './FontPackage';
 export class TextBox {
   public x: number = 0;
   public y: number = 0;
-  public scale: number = 1;
+  public _scale: number = 1;
+  public textAlign: 'left' | 'center' | 'right' = 'left';
   constructor(
     public text: string,
     public poster: Poster,
@@ -14,6 +15,11 @@ export class TextBox {
   public setXY(x: number, y: number) {
     this.x = x;
     this.y = y;
+  }
+
+  public scale(scaleRatio: number) {
+    this._scale = scaleRatio;
+    return this;
   }
 
   // protected get drawX() {
@@ -54,7 +60,6 @@ export class TextBox {
   }
 
   protected get boxDrawCoords() {
-    const strokeDelta = this.strokeDelta;
     return [this.x, this.y];
   }
 
@@ -76,7 +81,7 @@ export class TextBox {
     root.appendChild(el);
     const height = el.getBoundingClientRect().height;
     el.remove();
-    return height;
+    return height * this._scale;
   }
 
   public fontString(totalHeight: number) {
@@ -92,8 +97,8 @@ export class TextBox {
     // this.ctx.scale(scale, scale);
     const { ctx, poster } = this;
     ctx.font = this.fontString(poster.h);
-    ctx.textBaseline = 'top';
     ctx.strokeStyle = strokeInfo.strokeStyle;
+    ctx.textAlign = this.textAlign;
     ctx.lineWidth = this.strokeLineSize(strokeInfo);
   }
 
@@ -114,8 +119,8 @@ export class TextBox {
     this.restore();
   }
 
-  protected setTextCtx(textAlign: CanvasTextAlign = 'left') {
-    const { ctx, poster, fontPkg } = this;
+  protected setTextCtx() {
+    const { ctx, poster, fontPkg, textAlign } = this;
     // ctx.scale(this.scale, this.scale);
     ctx.textBaseline = 'top';
     ctx.font = this.fontString(poster.h);
@@ -123,7 +128,7 @@ export class TextBox {
     ctx.fillStyle = fontPkg.fontColor;
   }
 
-  public drawText() {
+  protected drawText() {
     const { ctx } = this;
     const [x, y] = this.textDrawCoords;
     this.save();
@@ -161,7 +166,11 @@ export class TextBox {
   }
 
   public get left() {
-    return this.x;
+    if (this.textAlign === 'center') {
+      return this.x - this.width / 2;
+    } else {
+      return this.x;
+    }
   }
 
   public get width(): number {
@@ -175,6 +184,7 @@ export class TextBox {
   public draw() {
     const { ctx } = this;
     ctx.save();
+    ctx.textBaseline = 'top';
     this.drawStroke();
     this.drawText();
     ctx.restore();
@@ -193,13 +203,13 @@ export class TextBox {
 
   public drawBelow(tb: TextBox) {
     tb.y = this.bottom;
-    tb.x = this.x;
+    tb.x = this.left;
     tb.draw();
   }
 
   public drawAbove(tb: TextBox) {
     tb.y = this.y - tb.height;
-    tb.x = this.x;
+    tb.x = this.left;
     tb.draw();
     return tb;
   }
