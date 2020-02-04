@@ -2,8 +2,8 @@ import { Poster } from './Poster';
 import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
 import { useMemo } from 'react';
-import FontPkg from './PosterFontPackage';
 import { TextBox } from './TextBox';
+import { FontPackage } from './FontPackage';
 
 interface ArtistBlockMetrics {
   top: number;
@@ -103,14 +103,14 @@ export abstract class PosterTextLayout {
     return this.posterHeight * this.theme.artistTopRatio;
   }
 
-  protected calculateTextWidth(fp: FontPkg, ...text: string[]) {
+  protected calculateTextWidth(fp: FontPackage, ...text: string[]) {
     const fullText = text.reduce((prev, cur) => prev + cur, '');
     const metrics = this.ctx.measureText(fullText);
-    return Math.ceil(metrics.width + fp.maxStrokeSize(this.posterHeight) * 2);
+    return Math.ceil(metrics.width);
   }
 
   protected setArtistFont() {
-    this.ctx.font = this.fontPkg('artist').fontString(this.posterHeight);
+    // this.ctx.font = this.fontPkg('artist').fontString(this.posterHeight);
   }
 
   protected artistLines() {
@@ -134,26 +134,27 @@ export abstract class PosterTextLayout {
   }
 
   public drawArtistBlock(artistTopOverride?: number): ArtistBlockMetrics {
-    const ctx = this.poster.canvasCtx;
-    const baseTop = artistTopOverride || this.artistTop;
-    const lines = this.artistLines();
-
-    ctx.textBaseline = 'top';
-    ctx.textAlign = 'center';
-
-    const lineHeight = this.fontPkg('artist').lineHeight(this.posterHeight);
-    let movingTop: number = 0;
-    lines.forEach((line, i) => {
-      movingTop = baseTop + (i + 1) * lineHeight;
-      this.printCenter(line, movingTop, this.fontPkg('artist'));
-    });
-
-    const bottom = movingTop + lineHeight;
-
+    // const ctx = this.poster.canvasCtx;
+    // const baseTop = artistTopOverride || this.artistTop;
+    // const lines = this.artistLines();
+    // ctx.textBaseline = 'top';
+    // ctx.textAlign = 'center';
+    // const lineHeight = this.fontPkg('artist').lineHeight(this.posterHeight);
+    // let movingTop: number = 0;
+    // lines.forEach((line, i) => {
+    //   movingTop = baseTop + (i + 1) * lineHeight;
+    //   this.printCenter(line, movingTop, this.fontPkg('artist'));
+    // });
+    // const bottom = movingTop + lineHeight;
+    // return {
+    //   top: baseTop,
+    //   bottom,
+    //   height: bottom - baseTop,
+    // };
     return {
-      top: baseTop,
-      bottom,
-      height: bottom - baseTop,
+      top: 0,
+      bottom: 0,
+      height: 0,
     };
   }
 
@@ -165,7 +166,7 @@ export abstract class PosterTextLayout {
     if (this.theme.skewText) this.ctx.transform(1, 0.06, 0.06, 1, -20, 0);
   }
 
-  public printCenter(str: string, top: number, fp: FontPkg) {
+  public printCenter(str: string, top: number, fp: FontPackage) {
     const ctx = this.ctx;
     ctx.save();
     ctx.textAlign = 'center';
@@ -173,7 +174,7 @@ export abstract class PosterTextLayout {
     ctx.restore();
   }
 
-  public printLeft(str: string, top: number, fp: FontPkg) {
+  public printLeft(str: string, top: number, fp: FontPackage) {
     const ctx = this.ctx;
     ctx.save();
     ctx.textAlign = 'left';
@@ -188,7 +189,7 @@ export abstract class PosterTextLayout {
     ctx.restore();
   }
 
-  public printRight(str: string, top: number, fp: FontPkg) {
+  public printRight(str: string, top: number, fp: FontPackage) {
     this.ctx.save();
     this.ctx.textAlign = 'right';
     // fp.draw(
@@ -212,7 +213,7 @@ export abstract class PosterTextLayout {
       this.drawPresentedBy(0, this.festivalNameTop);
     }
 
-    ctx.font = nameFontPackage.fontString(this.posterHeight);
+    // ctx.font = nameFontPackage.fontString(this.posterHeight);
     ctx.textBaseline = 'top';
     ctx.textAlign = 'center';
     ctx.strokeStyle = 'black';
@@ -234,9 +235,8 @@ export abstract class PosterTextLayout {
     if (!this.poster.drawDates) return;
     const [date1box] = this.initDates();
     const y =
-      this.theme.nameFontPkg.lineHeight(this.posterHeight) +
-      this.festivalNameTop +
-      date1box.height;
+      // this.theme.nameFontPkg.lineHeight(this.posterHeight) +
+      this.festivalNameTop + date1box.height;
     date1box.setXY(this.midX, y);
     date1box.draw();
   }
@@ -279,9 +279,9 @@ export class CoachellaLayout extends PosterTextLayout {
   private currentArtistFontSize = 0;
 
   setArtistFont() {
-    const { artistFontPkg: afp } = this.theme;
-    this.currentArtistFontSize = afp.lineHeight(this.posterHeight);
-    this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight);
+    // const { artistFontPkg: afp } = this.theme;
+    // this.currentArtistFontSize = afp.lineHeight(this.posterHeight);
+    // this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight);
   }
 
   scaleDownArtistFont() {
@@ -326,7 +326,7 @@ export class CoachellaLayout extends PosterTextLayout {
     ctx.textBaseline = 'bottom';
 
     const { artistFontPkg: afp } = this.theme;
-    const lineHeight = afp.lineHeight(this.posterHeight);
+    const lineHeight = 30; // afp.lineHeight(this.posterHeight);
     const startTop = artistTopOverride || this.artistTop;
     const artistLines = this.artistLines();
     let movingTop = startTop;
@@ -353,7 +353,7 @@ export class WeekendLayout extends PosterTextLayout {
   headlinerLineCount = 0;
 
   artistFont() {
-    this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight);
+    // this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight);
   }
 
   drawArtistBlock(artistTopOverride?: number): ArtistBlockMetrics {
@@ -369,7 +369,7 @@ export class WeekendLayout extends PosterTextLayout {
     this.artistFont();
     ctx.textBaseline = 'top';
 
-    const lineHeight = afp.lineHeight(this.posterHeight);
+    const lineHeight = 30; // afp.lineHeight(this.posterHeight);
     const startTop = artistTopOverride || this.artistTop;
     let movingTop = startTop;
 
@@ -450,7 +450,6 @@ export class TestLayout extends PosterTextLayout {
     const { poster } = this;
     const tb = new TextBox('Gg', poster, this.fontPkg('name'));
     tb.setXY(50, 100);
-    tb.fontPkg.strokeInfo = [];
     tb.draw().box();
 
     // this.drawHorizontalLine(tb.x, tb.right, tb.y);
