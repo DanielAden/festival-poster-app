@@ -162,10 +162,6 @@ export abstract class PosterTextLayout {
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 
-  public setSkew() {
-    if (this.theme.skewText) this.ctx.transform(1, 0.06, 0.06, 1, -20, 0);
-  }
-
   public printCenter(str: string, top: number, fp: FontPackage) {
     const ctx = this.ctx;
     ctx.save();
@@ -463,8 +459,8 @@ export class TestLayout extends PosterTextLayout {
 
   testDrawBelow() {
     const { poster, ctx } = this;
-    const tb = new TextBox('Test1', poster, this.fontPkg('name'));
-    const tb2 = new TextBox('Test2', poster, this.fontPkg('name'));
+    const tb = new TextBox('iIjJgGTest1', poster, this.fontPkg('name'));
+    const tb2 = new TextBox('iIjJgGITest2', poster, this.fontPkg('name'));
 
     tb.setXY(50, 100);
     tb.draw().box();

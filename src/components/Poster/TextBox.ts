@@ -16,44 +16,50 @@ export class TextBox {
     this.y = y;
   }
 
-  protected get drawX() {
-    const { poster } = this;
-    return this.x + this.strokeDeltaX(poster.h);
-  }
+  // protected get drawX() {
+  //   const { poster } = this;
+  //   return this.x + this.strokeDeltaX(poster.h);
+  // }
 
-  protected get drawY() {
-    const { poster } = this;
-    return this.y + this.strokeDeltaY(poster.h);
-  }
+  // protected get drawY() {
+  //   const { poster } = this;
+  //   return this.y + this.strokeDeltaY(poster.h);
+  // }
 
   protected strokeLen(totalHeight: number) {
     if (!this.strokeInfo) return 0;
     return Math.floor(this.maxStrokeSize(totalHeight) / 2);
   }
 
-  public strokeDeltaX(totalHeight: number) {
-    if (offsetXStroke(this.fontPkg.fontType)) {
-      return this.strokeLen(totalHeight);
-    } else {
-      return 0;
-    }
-  }
+  // public strokeDeltaX(totalHeight: number) {
+  //   if (offsetXStroke(this.fontPkg.fontType)) {
+  //     return this.strokeLen(totalHeight);
+  //   } else {
+  //     return 0;
+  //   }
+  // }
 
-  public strokeDeltaY(totalHeight: number) {
-    if (offsetYStroke(this.fontPkg.fontType)) {
-      return this.strokeLen(totalHeight);
-    } else {
-      return 0;
-    }
-  }
+  // public strokeDeltaY(totalHeight: number) {
+  //   if (offsetYStroke(this.fontPkg.fontType)) {
+  //     return this.strokeLen(totalHeight);
+  //   } else {
+  //     return 0;
+  //   }
+  // }
 
   // Maybe no the best way to get the font height
   // but its a lot harder to do than you would think
+  // TODO make this element permanent so it doesn't get recreated
   public fontHeight(totalHeight: number) {
     const { fontSizeRatio, fontType } = this.fontPkg;
     const el = document.createElement('div');
     el.style.font = `${fontSizeRatio * totalHeight}px ${fontType}`;
-    el.innerText = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    el.style.position = 'absolute';
+    el.style.visibility = 'hidden';
+    el.style.height = 'auto';
+    el.style.width = 'auto';
+    el.style.whiteSpace = 'nowrap';
+    el.innerText = this.text;
     const root = document.getElementById('root');
     if (!root) throw new Error('Could not get root element');
     root.appendChild(el);
@@ -101,7 +107,7 @@ export class TextBox {
     this.strokeInfo.forEach(sinfo => {
       // this.setStrokeCtx(sinfo, poster.h, this.scale);
       this.setStrokeCtx(sinfo);
-      ctx.strokeText(this.text, this.drawX, this.drawY);
+      ctx.strokeText(this.text, this.x, this.y);
     });
     this.restore();
   }
@@ -119,7 +125,7 @@ export class TextBox {
     const { ctx } = this;
     this.save();
     this.setTextCtx();
-    ctx.fillText(this.text, this.drawX, this.drawY); // poster.maxWidth);
+    ctx.fillText(this.text, this.x, this.y); // poster.maxWidth);
     this.restore();
   }
 

@@ -9,7 +9,6 @@ export abstract class PosterTheme {
   public sideMarginRatio: number = 0;
   public festivalNameTopRatio = 0.05;
   public artistTopRatio = 0.4;
-  public skewText: boolean = false;
   public abstract nameFontPkg: FontPackage;
   public abstract artistFontPkg: FontPackage;
   public abstract dateFontPkg: FontPackage;
@@ -62,7 +61,7 @@ export class RockTheme extends PosterTheme {
   nameFontPkg = {
     fontType: 'MadridGrunge',
     fontColor: '#7C7170',
-    fontSizeRatio: 0.01,
+    fontSizeRatio: 0.05,
   };
   artistFontPkg = {
     fontType: 'PunkrockerStamp',
