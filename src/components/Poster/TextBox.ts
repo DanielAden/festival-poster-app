@@ -1,16 +1,37 @@
 import { Poster } from './Poster';
 import { FontPackage, PosterTextStrokeInfo } from './FontPackage';
 
-export class TextBox {
+export abstract class TextBox {
   public x: number = 0;
   public y: number = 0;
   public _scale: number = 1;
   public textAlign: 'left' | 'center' | 'right' = 'left';
+  public seperator: string = ' ';
   constructor(
-    public text: string,
+    public text: string | string[],
     public poster: Poster,
     public fontPkg: FontPackage,
   ) {}
+
+  public abstract draw(): void;
+  public abstract get height(): number;
+  public abstract get bottom(): number;
+  public abstract get right(): number;
+  public abstract get left(): number;
+  public abstract get width(): number;
+  public abstract get drawableText(): string;
+
+  public pushText(text: string) {
+    if (!Array.isArray(this.text))
+      throw new Error('can only push to text array');
+    this.text.push(text);
+  }
+
+  public popText() {
+    if (!Array.isArray(this.text))
+      throw new Error('can only pop from text array');
+    this.text.pop();
+  }
 
   public setXY(x: number, y: number) {
     this.x = x;
@@ -22,31 +43,15 @@ export class TextBox {
     return this;
   }
 
-  // protected get drawX() {
-  //   const { poster } = this;
-  //   return this.x + this.strokeDeltaX(poster.h);
-  // }
+  protected strokeLineSize(strokeInfo: PosterTextStrokeInfo) {
+    return strokeInfo.widthRatio * this.fontHeight(this.poster.h);
+  }
 
-  // protected get drawY() {
-  //   const { poster } = this;
-  //   return this.y + this.strokeDeltaY(poster.h);
-  // }
-
-  // public strokeDeltaX(totalHeight: number) {
-  //   if (offsetXStroke(this.fontPkg.fontType)) {
-  //     return this.strokeLen(totalHeight);
-  //   } else {
-  //     return 0;
-  //   }
-  // }
-
-  // public strokeDeltaY(totalHeight: number) {
-  //   if (offsetYStroke(this.fontPkg.fontType)) {
-  //     return this.strokeLen(totalHeight);
-  //   } else {
-  //     return 0;
-  //   }
-  // }
+  protected get strokeDelta() {
+    if (!this.fontPkg.strokeInfo) return 0;
+    const size = this.strokeLineSize(this.fontPkg.strokeInfo);
+    return size / 2;
+  }
 
   // X Y coords incorporating the line width of the stroke
   protected get textDrawCoords() {
@@ -75,7 +80,7 @@ export class TextBox {
     el.style.height = 'auto';
     el.style.width = 'auto';
     el.style.whiteSpace = 'nowrap';
-    el.innerText = this.text;
+    el.innerText = this.drawableText;
     const root = document.getElementById('root');
     if (!root) throw new Error('Could not get root element');
     root.appendChild(el);
@@ -84,13 +89,23 @@ export class TextBox {
     return height * this._scale;
   }
 
+  protected get ctx() {
+    return this.poster.canvasCtx;
+  }
+
+  protected save() {
+    this.ctx.save();
+  }
+
+  protected restore() {
+    this.ctx.restore();
+  }
+}
+
+export class TextBoxLine extends TextBox {
   public fontString(totalHeight: number) {
     const fheight = this.fontHeight(totalHeight);
     return `${fheight}px ${this.fontPkg.fontType}`;
-  }
-
-  protected strokeLineSize(strokeInfo: PosterTextStrokeInfo) {
-    return strokeInfo.widthRatio * this.fontHeight(this.poster.h);
   }
 
   protected setStrokeCtx(strokeInfo: PosterTextStrokeInfo) {
@@ -102,12 +117,6 @@ export class TextBox {
     ctx.lineWidth = this.strokeLineSize(strokeInfo);
   }
 
-  protected get strokeDelta() {
-    if (!this.fontPkg.strokeInfo) return 0;
-    const size = this.strokeLineSize(this.fontPkg.strokeInfo);
-    return size / 2;
-  }
-
   protected drawStroke() {
     const { ctx } = this;
     const { strokeInfo } = this.fontPkg;
@@ -115,7 +124,7 @@ export class TextBox {
     if (!strokeInfo) return;
     this.save();
     this.setStrokeCtx(strokeInfo);
-    ctx.strokeText(this.text, x, y);
+    ctx.strokeText(this.drawableText, x, y);
     this.restore();
   }
 
@@ -133,20 +142,14 @@ export class TextBox {
     const [x, y] = this.textDrawCoords;
     this.save();
     this.setTextCtx();
-    ctx.fillText(this.text, x, y); // poster.maxWidth);
+    ctx.fillText(this.drawableText, x, y); // poster.maxWidth);
     this.restore();
   }
 
-  protected get ctx() {
-    return this.poster.canvasCtx;
-  }
-
-  protected save() {
-    this.ctx.save();
-  }
-
-  protected restore() {
-    this.ctx.restore();
+  public get drawableText(): string {
+    const { text, seperator } = this;
+    if (typeof text === 'string') return text;
+    return text.join(seperator);
   }
 
   protected setup() {
@@ -176,7 +179,7 @@ export class TextBox {
   public get width(): number {
     this.save();
     this.setTextCtx();
-    const m = this.ctx.measureText(this.text);
+    const m = this.ctx.measureText(this.drawableText);
     this.restore();
     return m.width + this.strokeDelta * 2;
   }
@@ -201,13 +204,13 @@ export class TextBox {
     ctx.restore();
   }
 
-  public drawBelow(tb: TextBox) {
+  public drawBelow(tb: TextBoxLine) {
     tb.y = this.bottom;
     tb.x = this.left;
     tb.draw();
   }
 
-  public drawAbove(tb: TextBox) {
+  public drawAbove(tb: TextBoxLine) {
     tb.y = this.y - tb.height;
     tb.x = this.left;
     tb.draw();
@@ -215,30 +218,82 @@ export class TextBox {
   }
 }
 
-export const offsetXStroke = (fontTYpe: string) => {
-  switch (fontTYpe) {
-    case 'MadridGrunge':
-    case 'WesternBangBang':
-    case 'TexasTango':
-      return true;
-    case 'Monteral':
-    case 'Cocogoose':
-    case 'PunkrockerStamp':
-    default:
-      return false;
-  }
-};
+export class MultilineTextBox extends TextBox {
+  protected lines: TextBoxLine[] = [];
 
-export const offsetYStroke = (fontTYpe: string) => {
-  switch (fontTYpe) {
-    case 'MadridGrunge':
-      return true;
-    case 'TexasTango':
-    case 'WesternBangBang':
-    case 'PunkrockerStamp':
-    case 'Monteral':
-    case 'Cocogoose':
-    default:
-      return false;
+  constructor(
+    public text: string | string[],
+    public poster: Poster,
+    public fontPkg: FontPackage,
+  ) {
+    super(text, poster, fontPkg);
+    this.setLines(text);
   }
-};
+
+  private initEmptyTextBoxLine(): TextBoxLine {
+    return new TextBoxLine([], this.poster, this.fontPkg);
+  }
+
+  private setLines(text: string | string[]) {
+    const { poster } = this;
+    let line = this.initEmptyTextBoxLine();
+    if (typeof text === 'string') {
+      line.text = [text];
+      this.lines.push(line);
+      return;
+    }
+    for (let str of text) {
+      line.pushText(str);
+      if (line.width > poster.maxWidth) {
+        line.popText();
+        this.lines.push(line);
+        line = this.initEmptyTextBoxLine();
+        line.pushText(str);
+      }
+    }
+    this.lines.push(line);
+  }
+
+  public get drawableText(): string {
+    const { text, seperator } = this;
+    if (typeof text === 'string') return text;
+    return text.join(seperator);
+  }
+
+  public get height() {
+    return this.fontHeight(this.poster.h) + this.strokeDelta * 2;
+  }
+
+  public get bottom(): number {
+    return this.y + this.height;
+  }
+
+  public get right(): number {
+    return this.x + this.width;
+  }
+
+  public get left() {
+    if (this.textAlign === 'center') {
+      return this.x - this.width / 2;
+    } else {
+      return this.x;
+    }
+  }
+
+  public get width(): number {
+    return 0;
+  }
+
+  public draw() {
+    const { lines, x, y, poster } = this;
+    const _x = Math.max(x, poster.maxLeft);
+    if (lines.length === 0) return;
+    let lastLine = lines[0];
+    lastLine.setXY(_x, y);
+    lastLine.draw();
+    this.lines.slice(1).forEach(line => {
+      lastLine.drawBelow(line);
+      lastLine = line;
+    });
+  }
+}

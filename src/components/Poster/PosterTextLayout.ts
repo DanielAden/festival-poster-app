@@ -2,7 +2,7 @@ import { Poster } from './Poster';
 import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
 import { useMemo } from 'react';
-import { TextBox } from './TextBox';
+import { TextBoxLine, MultilineTextBox } from './TextBox';
 import { FontPackage } from './FontPackage';
 
 interface ArtistBlockMetrics {
@@ -14,6 +14,10 @@ interface ArtistBlockMetrics {
 export abstract class PosterTextLayout {
   public abstract dateCount: number;
   public abstract headlinerLineCount: number;
+  protected text!: {
+    name: TextBoxLine;
+    presentedBy?: TextBoxLine;
+  };
   constructor(private _poster?: Poster) {}
 
   public set poster(poster: Poster) {
@@ -26,15 +30,31 @@ export abstract class PosterTextLayout {
     return this._poster;
   }
 
-  public get ctx() {
+  public initText() {
+    const { poster } = this;
+    let presentedBy;
+    if (poster.drawPresentedBy) {
+      presentedBy = new TextBoxLine(
+        poster.presentedByText,
+        poster,
+        this.fontPkg('name'),
+      );
+    }
+    this.text = {
+      name: new TextBoxLine(poster.festivalName, poster, this.fontPkg('name')),
+      presentedBy,
+    };
+  }
+
+  protected get ctx() {
     return this.poster.canvasCtx;
   }
 
-  public get theme() {
+  protected get theme() {
     return this.poster.theme;
   }
 
-  public fontPkg(type: 'artist' | 'name' | 'date') {
+  protected fontPkg(type: 'artist' | 'name' | 'date') {
     switch (type) {
       case 'artist':
         return this.theme.artistFontPkg;
@@ -200,30 +220,20 @@ export abstract class PosterTextLayout {
   }
 
   public drawFestivalName() {
-    const ctx = this.poster.canvasCtx;
-    const { nameFontPkg: nameFontPackage } = this.theme;
-    ctx.save();
+    const { name: tbName, presentedBy } = this.text;
+    tbName.textAlign = 'center';
+    tbName.x = this.midX;
+    tbName.y = this.festivalNameTop;
+    tbName.draw();
 
-    if (this.poster.drawPresentedBy) {
-      ctx.textBaseline = 'bottom';
-      this.drawPresentedBy(0, this.festivalNameTop);
+    if (presentedBy) {
+      tbName.drawAbove(presentedBy.scale(0.2));
     }
-
-    // ctx.font = nameFontPackage.fontString(this.posterHeight);
-    ctx.textBaseline = 'top';
-    ctx.textAlign = 'center';
-    ctx.strokeStyle = 'black';
-    this.printCenter(
-      this.poster.festivalName,
-      this.festivalNameTop,
-      nameFontPackage,
-    );
-    ctx.restore();
   }
 
   protected initDates() {
     return this.poster.dates.map(date => {
-      return new TextBox(date.date, this.poster, this.fontPkg('date'));
+      return new TextBoxLine(date.date, this.poster, this.fontPkg('date'));
     });
   }
 
@@ -234,32 +244,19 @@ export abstract class PosterTextLayout {
       // this.theme.nameFontPkg.lineHeight(this.posterHeight) +
       this.festivalNameTop + date1box.height;
     date1box.setXY(this.midX, y);
-    date1box.draw();
+    // date1box.draw();
   }
 
   public drawPresentedBy(x: number, y: number) {
-    const pbTextBox = new TextBox(
+    const pbTextBox = new TextBoxLine(
       this.poster.presentedByText,
       this.poster,
       this.theme.nameFontPkg,
     );
 
-    pbTextBox.scale = 0.2;
+    pbTextBox._scale = 0.2;
     pbTextBox.setXY(x, y);
     pbTextBox.draw();
-  }
-
-  public drawHorizontalLine(x1: number, x2: number, y: number) {
-    const { ctx } = this;
-    ctx.save();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = 'red';
-
-    ctx.beginPath(); // Start a new path
-    ctx.moveTo(x1, y);
-    ctx.lineTo(x2, y);
-    ctx.stroke();
-    ctx.restore();
   }
 }
 
@@ -369,7 +366,7 @@ export class WeekendLayout extends PosterTextLayout {
     const startTop = artistTopOverride || this.artistTop;
     let movingTop = startTop;
 
-    dateBoxes.forEach(db => (db.scale = 2));
+    dateBoxes.forEach(db => (db._scale = 2));
     const dateLH = dateBoxes[0].height;
 
     const drawDate = (i: number, right = false) => {
@@ -434,18 +431,23 @@ export class TestLayout extends PosterTextLayout {
     // this.testDrawBasic();
     // this.testDrawBelow();
     // this.testDrawBorderBox();
-    this.testDrawAbove();
+    // this.testDrawAbove();
+    this.testDrawMultiLine();
   }
 
   testDrawBasic() {
     const { poster } = this;
-    const tb = new TextBox('TextBox Test Line', poster, this.fontPkg('name'));
+    const tb = new TextBoxLine(
+      'TextBox Test Line',
+      poster,
+      this.fontPkg('name'),
+    );
     tb.draw();
   }
 
   testDrawBorderBox() {
     const { poster } = this;
-    const tb = new TextBox('Gg', poster, this.fontPkg('name'));
+    const tb = new TextBoxLine('Gg', poster, this.fontPkg('name'));
     tb.setXY(50, 100);
     tb.draw().box();
 
@@ -460,8 +462,8 @@ export class TestLayout extends PosterTextLayout {
 
   testDrawBelow() {
     const { poster } = this;
-    const tb = new TextBox('iIjJgGTest1', poster, this.fontPkg('name'));
-    const tb2 = new TextBox('iIjJgGITest2', poster, this.fontPkg('name'));
+    const tb = new TextBoxLine('iIjJgGTest1', poster, this.fontPkg('name'));
+    const tb2 = new TextBoxLine('iIjJgGITest2', poster, this.fontPkg('name'));
 
     tb.setXY(50, 100);
     tb.draw().box();
@@ -470,12 +472,23 @@ export class TestLayout extends PosterTextLayout {
 
   testDrawAbove() {
     const { poster } = this;
-    const tb = new TextBox('iIjJgGTest1', poster, this.fontPkg('name'));
-    const tb2 = new TextBox('iIjJgGITest2', poster, this.fontPkg('name'));
+    const tb = new TextBoxLine('iIjJgGTest1', poster, this.fontPkg('name'));
+    const tb2 = new TextBoxLine('iIjJgGITest2', poster, this.fontPkg('name'));
 
     tb.setXY(this.midX, 100);
     tb.drawAbove(tb2).box();
     tb.draw().box();
+  }
+
+  testDrawMultiLine() {
+    const { poster } = this;
+    const mltb = new MultilineTextBox(
+      poster.artistNames,
+      poster,
+      this.fontPkg('artist'),
+    );
+    mltb.setXY(0, 100);
+    mltb.draw();
   }
 }
 

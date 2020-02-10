@@ -149,6 +149,7 @@ export abstract class Poster {
     drawFestivalName = true,
   } = {}) {
     this.clear();
+    this.layout.initText();
     if (drawBackground && this._drawBackground)
       await this.drawBackground(this.canvas);
     if (drawFestivalName) this.layout.drawFestivalName();

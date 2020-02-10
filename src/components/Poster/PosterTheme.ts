@@ -22,7 +22,11 @@ export class DesertTheme extends PosterTheme {
   nameFontPkg = {
     fontType: 'TexasTango',
     fontColor: 'orange',
-    fontSizeRatio: 0.08,
+    fontSizeRatio: 0.05,
+    strokeInfo: {
+      strokeStyle: 'black',
+      widthRatio: 0.2,
+    },
   };
   artistFontPkg = {
     fontType: 'WesternBangBang',
