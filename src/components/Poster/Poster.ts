@@ -158,12 +158,7 @@ export abstract class Poster {
   }
 
   protected async drawArtistBlock() {
-    const { bottom } = this.layout.drawArtistBlock();
-    const { maxPosterHeight } = this.layout;
-    if (bottom <= maxPosterHeight) return;
-    const newTop = this.layout.artistTop - (bottom - maxPosterHeight);
-    await this._draw({ drawArtistBlock: false });
-    this.layout.drawArtistBlock(newTop);
+    this.layout.drawArtistBlock();
   }
 
   public clear() {

@@ -5,12 +5,6 @@ import { useMemo } from 'react';
 import { TextBoxLine, MultilineTextBox } from './TextBox';
 import { FontPackage } from './FontPackage';
 
-interface ArtistBlockMetrics {
-  top: number;
-  bottom: number;
-  height: number;
-}
-
 export abstract class PosterTextLayout {
   public abstract dateCount: number;
   public abstract headlinerLineCount: number;
@@ -123,6 +117,10 @@ export abstract class PosterTextLayout {
     return this.posterHeight * this.theme.artistTopRatio;
   }
 
+  public get artistNames() {
+    return this.poster.artistNames;
+  }
+
   protected calculateTextWidth(fp: FontPackage, ...text: string[]) {
     const fullText = text.reduce((prev, cur) => prev + cur, '');
     const metrics = this.ctx.measureText(fullText);
@@ -153,29 +151,12 @@ export abstract class PosterTextLayout {
     return lines;
   }
 
-  public drawArtistBlock(artistTopOverride?: number): ArtistBlockMetrics {
-    // const ctx = this.poster.canvasCtx;
-    // const baseTop = artistTopOverride || this.artistTop;
-    // const lines = this.artistLines();
-    // ctx.textBaseline = 'top';
-    // ctx.textAlign = 'center';
-    // const lineHeight = this.fontPkg('artist').lineHeight(this.posterHeight);
-    // let movingTop: number = 0;
-    // lines.forEach((line, i) => {
-    //   movingTop = baseTop + (i + 1) * lineHeight;
-    //   this.printCenter(line, movingTop, this.fontPkg('artist'));
-    // });
-    // const bottom = movingTop + lineHeight;
-    // return {
-    //   top: baseTop,
-    //   bottom,
-    //   height: bottom - baseTop,
-    // };
-    return {
-      top: 0,
-      bottom: 0,
-      height: 0,
-    };
+  public drawArtistBlock() {
+    const { poster } = this;
+    const fontPkg = this.fontPkg('artist');
+    const artistBlock = new MultilineTextBox(this.artistNames, poster, fontPkg);
+    artistBlock.setXY(0, this.artistTop);
+    artistBlock.draw();
   }
 
   public clearTransform() {
@@ -271,12 +252,6 @@ export class CoachellaLayout extends PosterTextLayout {
   private textScaleDelta: number = 0.9;
   private currentArtistFontSize = 0;
 
-  setArtistFont() {
-    // const { artistFontPkg: afp } = this.theme;
-    // this.currentArtistFontSize = afp.lineHeight(this.posterHeight);
-    // this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight);
-  }
-
   scaleDownArtistFont() {
     const { artistFontPkg: afp } = this.theme;
     this.currentArtistFontSize =
@@ -288,56 +263,48 @@ export class CoachellaLayout extends PosterTextLayout {
     // this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight, 2);
   }
 
-  private get artistNames() {
-    return this.poster.artistNames;
-  }
+  // protected artistLines() {
+  //   const lines: string[] = [];
+  //   const poster = this.poster;
+  //   const afp = this.fontPkg('artist');
 
-  protected artistLines() {
-    const lines: string[] = [];
-    const poster = this.poster;
-    const afp = this.fontPkg('artist');
+  //   this.setArtistFont();
+  //   let currentLine = '';
+  //   for (let artist of this.artistNames) {
+  //     const lineWidth = this.calculateTextWidth(afp, currentLine, artist);
+  //     if (lineWidth > this.maxPosterWidth) {
+  //       lines.push(this.cutTrailingChar(currentLine));
+  //       currentLine = artist + poster.artistSeperator;
+  //       this.scaleDownArtistFont();
+  //       continue;
+  //     }
+  //     currentLine = currentLine + artist + poster.artistSeperator;
+  //   }
+  //   if (currentLine !== '') lines.push(this.cutTrailingChar(currentLine));
+  //   return lines;
+  // }
 
-    this.setArtistFont();
-    let currentLine = '';
-    for (let artist of this.artistNames) {
-      const lineWidth = this.calculateTextWidth(afp, currentLine, artist);
-      if (lineWidth > this.maxPosterWidth) {
-        lines.push(this.cutTrailingChar(currentLine));
-        currentLine = artist + poster.artistSeperator;
-        this.scaleDownArtistFont();
-        continue;
-      }
-      currentLine = currentLine + artist + poster.artistSeperator;
-    }
-    if (currentLine !== '') lines.push(this.cutTrailingChar(currentLine));
-    return lines;
-  }
-
-  drawArtistBlock(artistTopOverride?: number): ArtistBlockMetrics {
-    const { ctx } = this;
-    ctx.save();
-    ctx.textBaseline = 'bottom';
-
-    const { artistFontPkg: afp } = this.theme;
-    const lineHeight = 30; // afp.lineHeight(this.posterHeight);
-    const startTop = artistTopOverride || this.artistTop;
-    const artistLines = this.artistLines();
-    let movingTop = startTop;
-
-    const hlLine1 = this.headlinersLine1;
-    this.setHeadlinerFont();
-    this.printLeft(hlLine1, movingTop, afp);
-    this.setArtistFont();
-    this.printRight('FRIDAY', movingTop, this.theme.artistFontPkg);
-
-    artistLines.forEach((l, i) => {
-      movingTop = movingTop + lineHeight;
-      this.printLeft(l, movingTop, afp);
-      this.scaleDownArtistFont();
-    });
-
-    ctx.restore();
-    return { bottom: 0, top: startTop, height: 0 };
+  drawArtistBlock() {
+    //   const { ctx } = this;
+    //   ctx.save();
+    //   ctx.textBaseline = 'bottom';
+    //   const { artistFontPkg: afp } = this.theme;
+    //   const lineHeight = 30; // afp.lineHeight(this.posterHeight);
+    //   const startTop = artistTopOverride || this.artistTop;
+    //   const artistLines = this.artistLines();
+    //   let movingTop = startTop;
+    //   const hlLine1 = this.headlinersLine1;
+    //   this.setHeadlinerFont();
+    //   this.printLeft(hlLine1, movingTop, afp);
+    //   this.setArtistFont();
+    //   this.printRight('FRIDAY', movingTop, this.theme.artistFontPkg);
+    //   artistLines.forEach((l, i) => {
+    //     movingTop = movingTop + lineHeight;
+    //     this.printLeft(l, movingTop, afp);
+    //     this.scaleDownArtistFont();
+    //   });
+    //   ctx.restore();
+    return { bottom: 0, top: 0, height: 0 };
   }
 }
 
@@ -349,7 +316,7 @@ export class WeekendLayout extends PosterTextLayout {
     // this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight);
   }
 
-  drawArtistBlock(artistTopOverride?: number): ArtistBlockMetrics {
+  drawArtistBlock() {
     const dateBoxes = this.initDates();
     const lines = this.artistLines();
     const oneThird = Math.ceil(lines.length / 3);
@@ -363,7 +330,7 @@ export class WeekendLayout extends PosterTextLayout {
     ctx.textBaseline = 'top';
 
     const lineHeight = 30; // afp.lineHeight(this.posterHeight);
-    const startTop = artistTopOverride || this.artistTop;
+    const startTop = this.artistTop;
     let movingTop = startTop;
 
     dateBoxes.forEach(db => (db._scale = 2));
@@ -487,7 +454,7 @@ export class TestLayout extends PosterTextLayout {
       poster,
       this.fontPkg('artist'),
     );
-    mltb.setXY(0, 100);
+    mltb.setXY(0, 800);
     mltb.draw();
   }
 }
