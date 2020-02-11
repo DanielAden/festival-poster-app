@@ -154,6 +154,7 @@ export abstract class PosterTextLayout {
   public drawArtistBlock() {
     const { poster } = this;
     const fontPkg = this.fontPkg('artist');
+    TextBox.seperator = poster.artistSeperator;
     const artistBlock = new MultilineTextBox(this.artistNames, poster, fontPkg);
     artistBlock.setXY(0, this.artistTop);
     artistBlock.draw();
@@ -277,6 +278,7 @@ export class WeekendLayout extends PosterTextLayout {
     const oneThird = Math.ceil(artistNames.length / 3);
     const fontPkg = this.fontPkg('artist');
 
+    TextBox.seperator = poster.artistSeperator;
     const tbs: TextBox[] = [];
     const days = ['FRIDAY', 'SATURDAY', 'SUNDAY'];
     [0, 1, 2].forEach(i => {

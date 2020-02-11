@@ -7,7 +7,7 @@ export abstract class TextBox {
   public _y: number = 0;
   public _scale: number = 1;
   public textAlign: AlignType = 'left';
-  public seperator: string = ' ';
+  static seperator: string = ' ';
   constructor(
     public text: string | string[],
     public poster: Poster,
@@ -202,9 +202,9 @@ export class TextBoxLine extends TextBox {
   }
 
   public get drawableText(): string {
-    const { text, seperator } = this;
+    const { text } = this;
     if (typeof text === 'string') return text;
-    return text.join(seperator);
+    return text.join(TextBox.seperator);
   }
 
   protected setup() {
@@ -295,9 +295,9 @@ export class MultilineTextBox extends TextBox {
   }
 
   public get drawableText(): string {
-    const { text, seperator } = this;
+    const { text } = this;
     if (typeof text === 'string') return text;
-    return text.join(seperator);
+    return text.join(TextBox.seperator);
   }
 
   public get height() {
