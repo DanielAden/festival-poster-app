@@ -45,7 +45,7 @@ export class PunkTheme extends PosterTheme {
   nameFontPkg = {
     fontType: 'TexasTango',
     fontColor: '#37C3E1',
-    fontSizeRatio: 0.01,
+    fontSizeRatio: 0.06,
   };
   artistFontPkg = {
     fontType: 'WesternBangBang',
@@ -81,12 +81,12 @@ export class RockTheme extends PosterTheme {
 
 export class GalaxyTheme extends PosterTheme {
   backgroundImage = images.galaxy;
-  festivalNameTopRatio = 0.05;
+  festivalNameTopRatio = 0.06;
 
   nameFontPkg = {
     fontType: 'Cocogoose',
     fontColor: 'white',
-    fontSizeRatio: 0.01,
+    fontSizeRatio: 0.08,
   };
   artistFontPkg = {
     fontType: 'Monteral',
