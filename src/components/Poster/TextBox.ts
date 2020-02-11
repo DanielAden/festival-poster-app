@@ -51,13 +51,14 @@ export abstract class TextBox {
 
   public drawBelow(tb: TextBox, alignX: boolean = true) {
     tb.y = this.bottom;
-    if (alignX && this.textAlign !== 'center') tb.x = this.left;
+    if (alignX && tb.textAlign !== 'center') tb.x = this.left;
     tb.draw();
+    return tb;
   }
 
   public drawAbove(tb: TextBox, alignX: boolean = true) {
     tb.y = this.y - tb.height;
-    if (alignX && this.textAlign !== 'center') tb.x = this.left;
+    if (alignX && tb.textAlign !== 'center') tb.x = this.left;
     tb.draw();
     return tb;
   }
