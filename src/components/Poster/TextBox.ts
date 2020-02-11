@@ -21,6 +21,29 @@ export abstract class TextBox {
   public abstract get width(): number;
   public abstract get drawableText(): string;
 
+  public box(boxLineWidth = 3, strokeStyle = 'red') {
+    const { ctx } = this;
+    const [x, y] = this.boxDrawCoords;
+    ctx.save();
+    ctx.lineWidth = boxLineWidth;
+    ctx.strokeStyle = strokeStyle;
+    ctx.strokeRect(x, y, this.width, this.height);
+    ctx.restore();
+  }
+
+  public drawBelow(tb: TextBox) {
+    tb.y = this.bottom;
+    tb.x = this.left;
+    tb.draw();
+  }
+
+  public drawAbove(tb: TextBox) {
+    tb.y = this.y - tb.height;
+    tb.x = this.left;
+    tb.draw();
+    return tb;
+  }
+
   public pushText(text: string) {
     if (!Array.isArray(this.text))
       throw new Error('can only push to text array');
@@ -36,6 +59,7 @@ export abstract class TextBox {
   public setXY(x: number, y: number) {
     this.x = x;
     this.y = y;
+    return this;
   }
 
   public scale(scaleRatio: number) {
@@ -193,29 +217,6 @@ export class TextBoxLine extends TextBox {
     ctx.restore();
     return this;
   }
-
-  public box(boxLineWidth = 3, strokeStyle = 'red') {
-    const { ctx } = this;
-    const [x, y] = this.boxDrawCoords;
-    ctx.save();
-    ctx.lineWidth = boxLineWidth;
-    ctx.strokeStyle = strokeStyle;
-    ctx.strokeRect(x, y, this.width, this.height);
-    ctx.restore();
-  }
-
-  public drawBelow(tb: TextBoxLine) {
-    tb.y = this.bottom;
-    tb.x = this.left;
-    tb.draw();
-  }
-
-  public drawAbove(tb: TextBoxLine) {
-    tb.y = this.y - tb.height;
-    tb.x = this.left;
-    tb.draw();
-    return tb;
-  }
 }
 
 export class MultilineTextBox extends TextBox {
@@ -261,7 +262,11 @@ export class MultilineTextBox extends TextBox {
   }
 
   public get height() {
-    return this.fontHeight(this.poster.h) + this.strokeDelta * 2;
+    let h = 0;
+    this.lines.forEach(l => {
+      h += l.height;
+    });
+    return h;
   }
 
   public get bottom(): number {
@@ -281,7 +286,12 @@ export class MultilineTextBox extends TextBox {
   }
 
   public get width(): number {
-    return 0;
+    if (this.lines.length === 0) return 0;
+    let maxW = -Infinity;
+    this.lines.forEach(l => {
+      maxW = Math.max(l.width, maxW);
+    });
+    return maxW;
   }
 
   public draw() {

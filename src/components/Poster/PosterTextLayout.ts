@@ -2,7 +2,7 @@ import { Poster } from './Poster';
 import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
 import { useMemo } from 'react';
-import { TextBoxLine, MultilineTextBox } from './TextBox';
+import { TextBoxLine, MultilineTextBox, TextBox } from './TextBox';
 import { FontPackage } from './FontPackage';
 
 export abstract class PosterTextLayout {
@@ -163,43 +163,6 @@ export abstract class PosterTextLayout {
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 
-  public printCenter(str: string, top: number, fp: FontPackage) {
-    const ctx = this.ctx;
-    ctx.save();
-    ctx.textAlign = 'center';
-    // fp.draw(str, this.midX, top, this.maxPosterWidth, ctx, this.posterHeight);
-    ctx.restore();
-  }
-
-  public printLeft(str: string, top: number, fp: FontPackage) {
-    const ctx = this.ctx;
-    ctx.save();
-    ctx.textAlign = 'left';
-    // fp.draw(
-    //   str,
-    //   this.poster.maxLeft,
-    //   top,
-    //   this.maxPosterWidth,
-    //   ctx,
-    //   this.posterHeight,
-    // );
-    ctx.restore();
-  }
-
-  public printRight(str: string, top: number, fp: FontPackage) {
-    this.ctx.save();
-    this.ctx.textAlign = 'right';
-    // fp.draw(
-    //   str,
-    //   this.poster.maxRight,
-    //   top,
-    //   this.maxPosterWidth,
-    //   this.ctx,
-    //   this.posterHeight,
-    // );
-    this.ctx.restore();
-  }
-
   public drawFestivalName() {
     const { name: tbName, presentedBy } = this.text;
     tbName.textAlign = 'center';
@@ -259,10 +222,6 @@ export class CoachellaLayout extends PosterTextLayout {
     this.ctx.font = `${this.currentArtistFontSize}px ${afp.fontType}`;
   }
 
-  setHeadlinerFont() {
-    // this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight, 2);
-  }
-
   // protected artistLines() {
   //   const lines: string[] = [];
   //   const poster = this.poster;
@@ -311,69 +270,68 @@ export class CoachellaLayout extends PosterTextLayout {
 export class WeekendLayout extends PosterTextLayout {
   dateCount = 3;
   headlinerLineCount = 0;
-
-  artistFont() {
-    // this.ctx.font = this.theme.artistFontPkg.fontString(this.posterHeight);
-  }
+  private DAY_TEXT_SCALE = 2;
 
   drawArtistBlock() {
-    const dateBoxes = this.initDates();
-    const lines = this.artistLines();
-    const oneThird = Math.ceil(lines.length / 3);
-    const day1Lines = lines.slice(0, oneThird);
-    const day2Lines = lines.slice(oneThird, oneThird * 2);
-    const day3Lines = lines.slice(oneThird * 2);
-    const { ctx } = this;
-    const { artistFontPkg: afp } = this.theme;
-    ctx.save();
-    this.artistFont();
-    ctx.textBaseline = 'top';
+    const { artistNames, poster, ctx } = this;
+    const oneThird = Math.ceil(artistNames.length / 3);
+    const fontPkg = this.fontPkg('artist');
 
-    const lineHeight = 30; // afp.lineHeight(this.posterHeight);
-    const startTop = this.artistTop;
-    let movingTop = startTop;
-
-    dateBoxes.forEach(db => (db._scale = 2));
-    const dateLH = dateBoxes[0].height;
-
-    const drawDate = (i: number, right = false) => {
-      if (this.poster.showDates) {
-        // right
-        //   ? dateBoxes[i].drawRight(movingTop)
-        //   : dateBoxes[i].drawLeft(movingTop);
-        movingTop += dateLH;
-      } else {
-        movingTop += dateLH;
-      }
-    };
-
-    drawDate(0);
-
-    day1Lines.forEach((line, i) => {
-      this.printLeft(line, movingTop, afp);
-      movingTop += lineHeight;
+    const tbs: TextBox[] = [];
+    const days = ['FRIDAY', 'SATURDAY', 'SUNDAY'];
+    [0, 1, 2].forEach(i => {
+      tbs.push(
+        new TextBoxLine(days[i], poster, fontPkg)
+          .scale(this.DAY_TEXT_SCALE)
+          .setXY(0, this.artistTop),
+      );
+      const artistTb = new MultilineTextBox(
+        artistNames.slice(oneThird * i, oneThird * (i + 1)),
+        poster,
+        fontPkg,
+      );
+      artistTb.setXY(0, this.artistTop);
+      tbs.push(artistTb);
     });
 
-    drawDate(1, true);
-
-    day2Lines.forEach((line, i) => {
-      this.printRight(line, movingTop, afp);
-      movingTop += lineHeight;
+    let lastTb = tbs[0];
+    lastTb.draw();
+    tbs.slice(1).forEach(tb => {
+      lastTb.drawBelow(tb);
+      lastTb = tb;
     });
 
-    drawDate(2);
+    // const drawDate = (i: number, right = false) => {
+    //   if (this.poster.showDates) {
+    //     right
+    //       ? dateBoxes[i].drawRight(movingTop)
+    //       : dateBoxes[i].drawLeft(movingTop);
+    //     movingTop += dateLH;
+    //   } else {
+    //     movingTop += dateLH;
+    //   }
+    // };
 
-    day3Lines.forEach(line => {
-      this.printLeft(line, movingTop, afp);
-      movingTop += lineHeight;
-    });
+    // day1Lines.forEach((line, i) => {
+    //   this.printLeft(line, movingTop, afp);
+    //   movingTop += lineHeight;
+    // });
 
-    ctx.restore();
-    return {
-      top: startTop,
-      bottom: movingTop + lineHeight,
-      height: movingTop + lineHeight - startTop,
-    };
+    // drawDate(1, true);
+
+    // day2Lines.forEach((line, i) => {
+    //   this.printRight(line, movingTop, afp);
+    //   movingTop += lineHeight;
+    // });
+
+    // drawDate(2);
+
+    // day3Lines.forEach(line => {
+    //   this.printLeft(line, movingTop, afp);
+    //   movingTop += lineHeight;
+    // });
+
+    // ctx.restore();
   }
 
   public drawDates() {} // Dates are drawn in the artist block for this layout
