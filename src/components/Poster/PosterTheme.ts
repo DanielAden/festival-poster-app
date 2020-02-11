@@ -32,6 +32,10 @@ export class DesertTheme extends PosterTheme {
     fontType: 'WesternBangBang',
     fontColor: 'orange',
     fontSizeRatio: 0.032,
+    strokeInfo: {
+      strokeStyle: 'black',
+      widthRatio: 0.2,
+    },
   };
   dateFontPkg = {
     fontType: 'WesternBangBang',
