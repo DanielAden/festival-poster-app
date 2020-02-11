@@ -127,7 +127,7 @@ export abstract class Poster {
     await this._draw();
   }
 
-  public get maxLeft() {
+  public get minLeft() {
     return this.theme.sideMarginRatio * this.h;
   }
 
@@ -136,7 +136,7 @@ export abstract class Poster {
   }
 
   public get maxWidth() {
-    return this.maxRight - this.maxLeft;
+    return this.maxRight - this.minLeft;
   }
 
   public get showDates() {

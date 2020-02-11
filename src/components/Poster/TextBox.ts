@@ -2,8 +2,8 @@ import { Poster } from './Poster';
 import { FontPackage, PosterTextStrokeInfo } from './FontPackage';
 
 export abstract class TextBox {
-  public x: number = 0;
-  public y: number = 0;
+  public _x: number = 0;
+  public _y: number = 0;
   public _scale: number = 1;
   public textAlign: 'left' | 'center' | 'right' = 'left';
   public seperator: string = ' ';
@@ -20,6 +20,23 @@ export abstract class TextBox {
   public abstract get left(): number;
   public abstract get width(): number;
   public abstract get drawableText(): string;
+
+  public get x() {
+    return this._x;
+  }
+
+  public set x(newX: number) {
+    const { poster } = this;
+    this._x = Math.max(poster.minLeft, newX);
+  }
+
+  public get y() {
+    return this._y;
+  }
+
+  public set y(newY: number) {
+    this._y = Math.max(0, newY);
+  }
 
   public box(boxLineWidth = 3, strokeStyle = 'red') {
     const { ctx } = this;
@@ -295,11 +312,10 @@ export class MultilineTextBox extends TextBox {
   }
 
   public draw() {
-    const { lines, x, y, poster } = this;
-    const _x = Math.max(x, poster.maxLeft);
+    const { lines, x, y } = this;
     if (lines.length === 0) return;
     let lastLine = lines[0];
-    lastLine.setXY(_x, y);
+    lastLine.setXY(x, y);
     lastLine.draw();
     this.lines.slice(1).forEach(line => {
       lastLine.drawBelow(line);
