@@ -64,11 +64,11 @@ export abstract class PosterTextLayout {
   }
 
   protected get midX() {
-    return Math.floor(this.posterWidth / 2);
+    return this.poster.midX;
   }
 
   protected get midY() {
-    return Math.floor(this.posterHeight / 2);
+    return this.poster.midY;
   }
 
   protected get posterWidth() {
@@ -273,31 +273,32 @@ export class WeekendLayout extends PosterTextLayout {
   private DAY_TEXT_SCALE = 2;
 
   drawArtistBlock() {
-    const { artistNames, poster, ctx } = this;
+    const { artistNames, poster } = this;
     const oneThird = Math.ceil(artistNames.length / 3);
     const fontPkg = this.fontPkg('artist');
 
     const tbs: TextBox[] = [];
     const days = ['FRIDAY', 'SATURDAY', 'SUNDAY'];
     [0, 1, 2].forEach(i => {
+      const align = i === 1 ? 'right' : 'left';
       tbs.push(
         new TextBoxLine(days[i], poster, fontPkg)
           .scale(this.DAY_TEXT_SCALE)
-          .setXY(0, this.artistTop),
+          .setXY(0, this.artistTop)
+          .align(align),
       );
       const artistTb = new MultilineTextBox(
         artistNames.slice(oneThird * i, oneThird * (i + 1)),
         poster,
         fontPkg,
-      );
-      artistTb.setXY(0, this.artistTop);
+      ).align(align);
       tbs.push(artistTb);
     });
 
     let lastTb = tbs[0];
     lastTb.draw();
     tbs.slice(1).forEach(tb => {
-      lastTb.drawBelow(tb);
+      lastTb.drawBelow(tb, false);
       lastTb = tb;
     });
 

@@ -127,6 +127,14 @@ export abstract class Poster {
     await this._draw();
   }
 
+  public get midX() {
+    return Math.floor(this.w / 2);
+  }
+
+  public get midY() {
+    return Math.floor(this.h / 2);
+  }
+
   public get minLeft() {
     return this.theme.sideMarginRatio * this.h;
   }

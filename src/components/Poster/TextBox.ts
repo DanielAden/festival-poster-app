@@ -1,11 +1,12 @@
 import { Poster } from './Poster';
 import { FontPackage, PosterTextStrokeInfo } from './FontPackage';
 
+type AlignType = 'left' | 'center' | 'right';
 export abstract class TextBox {
   public _x: number = 0;
   public _y: number = 0;
   public _scale: number = 1;
-  public textAlign: 'left' | 'center' | 'right' = 'left';
+  public textAlign: AlignType = 'left';
   public seperator: string = ' ';
   constructor(
     public text: string | string[],
@@ -48,15 +49,15 @@ export abstract class TextBox {
     ctx.restore();
   }
 
-  public drawBelow(tb: TextBox) {
+  public drawBelow(tb: TextBox, alignX: boolean = true) {
     tb.y = this.bottom;
-    tb.x = this.left;
+    if (alignX && this.textAlign !== 'center') tb.x = this.left;
     tb.draw();
   }
 
-  public drawAbove(tb: TextBox) {
+  public drawAbove(tb: TextBox, alignX: boolean = true) {
     tb.y = this.y - tb.height;
-    tb.x = this.left;
+    if (alignX && this.textAlign !== 'center') tb.x = this.left;
     tb.draw();
     return tb;
   }
@@ -76,6 +77,18 @@ export abstract class TextBox {
   public setXY(x: number, y: number) {
     this.x = x;
     this.y = y;
+    return this;
+  }
+
+  public align(newAlign: AlignType) {
+    this.textAlign = newAlign;
+    if (newAlign === 'right') {
+      this.x = this.poster.maxRight;
+    } else if (newAlign === 'left') {
+      this.x = this.poster.minLeft;
+    } else {
+      this.x = this.poster.midX;
+    }
     return this;
   }
 
@@ -248,6 +261,14 @@ export class MultilineTextBox extends TextBox {
     this.setLines(text);
   }
 
+  private alignAll() {
+    const { textAlign } = this;
+    this.lines.forEach(l => {
+      l.align(textAlign);
+    });
+    return this;
+  }
+
   private initEmptyTextBoxLine(): TextBoxLine {
     return new TextBoxLine([], this.poster, this.fontPkg);
   }
@@ -313,6 +334,7 @@ export class MultilineTextBox extends TextBox {
 
   public draw() {
     const { lines, x, y } = this;
+    this.alignAll();
     if (lines.length === 0) return;
     let lastLine = lines[0];
     lastLine.setXY(x, y);
