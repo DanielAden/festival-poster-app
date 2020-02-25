@@ -31,7 +31,7 @@ export class DesertTheme extends PosterTheme {
   artistFontPkg = {
     fontType: 'WesternBangBang',
     fontColor: 'orange',
-    fontSizeRatio: 0.032,
+    fontSizeRatio: 0.025,
     strokeInfo: {
       strokeStyle: 'black',
       widthRatio: 0.2,
@@ -46,6 +46,7 @@ export class DesertTheme extends PosterTheme {
 
 export class PunkTheme extends PosterTheme {
   backgroundImage = images.punk;
+  artistTopRatio = 0.3;
   nameFontPkg = {
     fontType: 'TexasTango',
     fontColor: '#37C3E1',
@@ -54,7 +55,11 @@ export class PunkTheme extends PosterTheme {
   artistFontPkg = {
     fontType: 'WesternBangBang',
     fontColor: '#37C3E1',
-    fontSizeRatio: 0.033,
+    fontSizeRatio: 0.025,
+    strokeInfo: {
+      strokeStyle: 'black',
+      widthRatio: 0.2,
+    },
   };
   dateFontPkg = {
     fontType: 'WesternBangBang',
@@ -66,6 +71,7 @@ export class PunkTheme extends PosterTheme {
 export class RockTheme extends PosterTheme {
   backgroundImage = images.metal;
   sideMarginRatio = 0.035;
+  artistTopRatio = 0.3;
   nameFontPkg = {
     fontType: 'MadridGrunge',
     fontColor: '#7C7170',
@@ -74,7 +80,11 @@ export class RockTheme extends PosterTheme {
   artistFontPkg = {
     fontType: 'PunkrockerStamp',
     fontColor: '#7C7170',
-    fontSizeRatio: 0.033,
+    fontSizeRatio: 0.028,
+    strokeInfo: {
+      strokeStyle: 'black',
+      widthRatio: 0.2,
+    },
   };
   dateFontPkg = {
     fontType: 'PunkrockerStamp',

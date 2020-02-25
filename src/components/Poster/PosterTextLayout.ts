@@ -215,6 +215,7 @@ export class CoachellaLayout extends PosterTextLayout {
   headlinerLineCount = 1;
   private textScaleDelta: number = 0.9;
   private currentArtistFontSize = 0;
+  private DAY_TEXT_SCALE = 2;
 
   scaleDownArtistFont() {
     const { artistFontPkg: afp } = this.theme;
@@ -223,48 +224,47 @@ export class CoachellaLayout extends PosterTextLayout {
     this.ctx.font = `${this.currentArtistFontSize}px ${afp.fontType}`;
   }
 
-  // protected artistLines() {
-  //   const lines: string[] = [];
-  //   const poster = this.poster;
-  //   const afp = this.fontPkg('artist');
-
-  //   this.setArtistFont();
-  //   let currentLine = '';
-  //   for (let artist of this.artistNames) {
-  //     const lineWidth = this.calculateTextWidth(afp, currentLine, artist);
-  //     if (lineWidth > this.maxPosterWidth) {
-  //       lines.push(this.cutTrailingChar(currentLine));
-  //       currentLine = artist + poster.artistSeperator;
-  //       this.scaleDownArtistFont();
-  //       continue;
-  //     }
-  //     currentLine = currentLine + artist + poster.artistSeperator;
-  //   }
-  //   if (currentLine !== '') lines.push(this.cutTrailingChar(currentLine));
-  //   return lines;
-  // }
-
   drawArtistBlock() {
-    //   const { ctx } = this;
-    //   ctx.save();
-    //   ctx.textBaseline = 'bottom';
-    //   const { artistFontPkg: afp } = this.theme;
-    //   const lineHeight = 30; // afp.lineHeight(this.posterHeight);
-    //   const startTop = artistTopOverride || this.artistTop;
-    //   const artistLines = this.artistLines();
-    //   let movingTop = startTop;
-    //   const hlLine1 = this.headlinersLine1;
-    //   this.setHeadlinerFont();
-    //   this.printLeft(hlLine1, movingTop, afp);
-    //   this.setArtistFont();
-    //   this.printRight('FRIDAY', movingTop, this.theme.artistFontPkg);
-    //   artistLines.forEach((l, i) => {
-    //     movingTop = movingTop + lineHeight;
-    //     this.printLeft(l, movingTop, afp);
-    //     this.scaleDownArtistFont();
-    //   });
-    //   ctx.restore();
-    return { bottom: 0, top: 0, height: 0 };
+    const { artistNames, poster, DAY_TEXT_SCALE } = this;
+    const oneThird = Math.ceil(artistNames.length / 3);
+    const fontPkg = this.fontPkg('artist');
+    TextBox.seperator = poster.artistSeperator;
+
+    const drawDay = (
+      headlinerName: string,
+      date: string,
+      i: number,
+      top: number,
+    ) => {
+      const align = i === 1 ? 'right' : 'left';
+      const dateAlign = i === 1 ? 'left' : 'right';
+      const headliner = new TextBoxLine([headlinerName], poster, fontPkg);
+      headliner
+        .setXY(0, top)
+        .scale(DAY_TEXT_SCALE)
+        .align(align);
+      headliner.draw();
+
+      const dateLine = new TextBoxLine([date], poster, fontPkg);
+      dateLine
+        .setXY(0, top)
+        .scale(DAY_TEXT_SCALE)
+        .align(dateAlign);
+      dateLine.draw();
+
+      const artistTb = new MultilineTextBox(
+        artistNames.slice(oneThird * i, oneThird * (i + 1)),
+        poster,
+        fontPkg,
+      ).align(align);
+      dateLine.drawBelow(artistTb, false);
+      return dateLine.bottom + artistTb.height;
+    };
+
+    let top = this.artistTop;
+    top = drawDay(poster.getHeadlinersList(0)[0], 'FRIDAY', 0, top);
+    top = drawDay(poster.getHeadlinersList(1)[0], 'SATURDAY', 1, top);
+    drawDay(poster.getHeadlinersList(2)[0], 'SUNDAY', 2, top);
   }
 }
 
