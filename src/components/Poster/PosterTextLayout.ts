@@ -256,7 +256,8 @@ export class CoachellaLayout extends PosterTextLayout {
       dateLine
         .setXY(0, top + headlinerMid - dateLine.height / 2)
         .scale(DATE_TEXT_SCALE)
-        .align(dateAlign);
+        .align(dateAlign)
+        .overrideStroke(false);
       // this.drawDateShape();
       new CoachellaDateShape(dateLine).draw();
       dateLine.draw();

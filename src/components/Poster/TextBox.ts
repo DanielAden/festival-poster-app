@@ -7,6 +7,7 @@ export abstract class TextBox {
   public _y: number = 0;
   public _scale: number = 1;
   public textAlign: AlignType = 'left';
+  protected _strokeEnabled = true;
   static seperator: string = ' ';
   constructor(
     public text: string | string[],
@@ -24,6 +25,10 @@ export abstract class TextBox {
 
   public get x() {
     return this._x;
+  }
+
+  public overrideStroke(strokeEnabled: boolean) {
+    this._strokeEnabled = strokeEnabled;
   }
 
   public set x(newX: number) {
@@ -103,7 +108,7 @@ export abstract class TextBox {
   }
 
   protected get strokeDelta() {
-    if (!this.fontPkg.strokeInfo) return 0;
+    if (!this.fontPkg.strokeInfo || !this._strokeEnabled) return 0;
     const size = this.strokeLineSize(this.fontPkg.strokeInfo);
     return size / 2;
   }
@@ -173,6 +178,7 @@ export class TextBoxLine extends TextBox {
   }
 
   protected drawStroke() {
+    if (!this._strokeEnabled) return;
     const { ctx } = this;
     const { strokeInfo } = this.fontPkg;
     const [x, y] = this.strokeDrawCoords;
@@ -371,7 +377,7 @@ export class CoachellaDateShape extends TextBoxShape {
     const ctx = this.tb.poster.canvasCtx;
     const cx = this.x;
     const cy = tb.y + tb.height / 2;
-    const radius = tb.height / 2;
+    const radius = tb.height / 2 + 3;
     const rectLen = tb.width;
     ctx.fillStyle = 'lightblue';
 
