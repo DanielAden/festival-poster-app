@@ -346,3 +346,49 @@ export class MultilineTextBox extends TextBox {
     });
   }
 }
+
+abstract class TextBoxShape {
+  constructor(protected tb: TextBox) {}
+
+  abstract draw(): void;
+  get x() {
+    const { tb } = this;
+    switch (tb.textAlign) {
+      case 'right':
+        return tb.x - tb.width;
+      case 'center':
+        return tb.x - tb.width / 2;
+      case 'left':
+      default:
+        return tb.x;
+    }
+  }
+}
+
+export class CoachellaDateShape extends TextBoxShape {
+  draw() {
+    const { tb } = this;
+    const ctx = this.tb.poster.canvasCtx;
+    const cx = this.x;
+    const cy = tb.y + tb.height / 2;
+    const radius = tb.height / 2;
+    const rectLen = tb.width;
+    ctx.fillStyle = 'lightblue';
+
+    let startAngle = (1 * Math.PI) / 2;
+    let endAngle = startAngle + Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, radius, startAngle, endAngle);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillRect(cx - 1, cy - radius, rectLen, radius * 2);
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx + rectLen, cy, radius, startAngle, endAngle, true);
+    ctx.closePath();
+    ctx.fill();
+  }
+}

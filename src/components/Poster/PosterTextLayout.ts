@@ -2,7 +2,12 @@ import { Poster } from './Poster';
 import useTypedSelector from '../../store/rootReducer';
 import { AppError } from '../../error';
 import { useMemo } from 'react';
-import { TextBoxLine, MultilineTextBox, TextBox } from './TextBox';
+import {
+  TextBoxLine,
+  MultilineTextBox,
+  TextBox,
+  CoachellaDateShape,
+} from './TextBox';
 import { FontPackage } from './FontPackage';
 
 export abstract class PosterTextLayout {
@@ -216,7 +221,7 @@ export class CoachellaLayout extends PosterTextLayout {
   private textScaleDelta: number = 0.9;
   private currentArtistFontSize = 0;
   private HEADLINER_TEXT_SCALE = 2;
-  private DATE_TEXT_SCALE = 1;
+  private DATE_TEXT_SCALE = 0.8;
 
   scaleDownArtistFont() {
     const { artistFontPkg: afp } = this.theme;
@@ -246,11 +251,14 @@ export class CoachellaLayout extends PosterTextLayout {
         .align(align);
       headliner.draw();
 
+      const headlinerMid = headliner.height / 2;
       const dateLine = new TextBoxLine([date], poster, fontPkg);
       dateLine
-        .setXY(0, top)
+        .setXY(0, top + headlinerMid - dateLine.height / 2)
         .scale(DATE_TEXT_SCALE)
         .align(dateAlign);
+      // this.drawDateShape();
+      new CoachellaDateShape(dateLine).draw();
       dateLine.draw();
 
       const artistTb = new MultilineTextBox(
@@ -304,38 +312,6 @@ export class WeekendLayout extends PosterTextLayout {
       lastTb.drawBelow(tb, false);
       lastTb = tb;
     });
-
-    // const drawDate = (i: number, right = false) => {
-    //   if (this.poster.showDates) {
-    //     right
-    //       ? dateBoxes[i].drawRight(movingTop)
-    //       : dateBoxes[i].drawLeft(movingTop);
-    //     movingTop += dateLH;
-    //   } else {
-    //     movingTop += dateLH;
-    //   }
-    // };
-
-    // day1Lines.forEach((line, i) => {
-    //   this.printLeft(line, movingTop, afp);
-    //   movingTop += lineHeight;
-    // });
-
-    // drawDate(1, true);
-
-    // day2Lines.forEach((line, i) => {
-    //   this.printRight(line, movingTop, afp);
-    //   movingTop += lineHeight;
-    // });
-
-    // drawDate(2);
-
-    // day3Lines.forEach(line => {
-    //   this.printLeft(line, movingTop, afp);
-    //   movingTop += lineHeight;
-    // });
-
-    // ctx.restore();
   }
 
   public drawDates() {} // Dates are drawn in the artist block for this layout
