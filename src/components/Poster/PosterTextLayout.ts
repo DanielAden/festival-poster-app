@@ -215,7 +215,8 @@ export class CoachellaLayout extends PosterTextLayout {
   headlinerLineCount = 1;
   private textScaleDelta: number = 0.9;
   private currentArtistFontSize = 0;
-  private DAY_TEXT_SCALE = 2;
+  private HEADLINER_TEXT_SCALE = 2;
+  private DATE_TEXT_SCALE = 1;
 
   scaleDownArtistFont() {
     const { artistFontPkg: afp } = this.theme;
@@ -225,30 +226,30 @@ export class CoachellaLayout extends PosterTextLayout {
   }
 
   drawArtistBlock() {
-    const { artistNames, poster, DAY_TEXT_SCALE } = this;
+    const { artistNames, poster, HEADLINER_TEXT_SCALE, DATE_TEXT_SCALE } = this;
     const oneThird = Math.ceil(artistNames.length / 3);
     const fontPkg = this.fontPkg('artist');
     TextBox.seperator = poster.artistSeperator;
 
-    const drawDay = (
-      headlinerName: string,
-      date: string,
+    const _draw = (
+      headlinerName: string = 'ADD A HEADLINER',
       i: number,
       top: number,
     ) => {
+      const date = poster.dates[i].date;
       const align = i === 1 ? 'right' : 'left';
       const dateAlign = i === 1 ? 'left' : 'right';
       const headliner = new TextBoxLine([headlinerName], poster, fontPkg);
       headliner
         .setXY(0, top)
-        .scale(DAY_TEXT_SCALE)
+        .scale(HEADLINER_TEXT_SCALE)
         .align(align);
       headliner.draw();
 
       const dateLine = new TextBoxLine([date], poster, fontPkg);
       dateLine
         .setXY(0, top)
-        .scale(DAY_TEXT_SCALE)
+        .scale(DATE_TEXT_SCALE)
         .align(dateAlign);
       dateLine.draw();
 
@@ -257,14 +258,14 @@ export class CoachellaLayout extends PosterTextLayout {
         poster,
         fontPkg,
       ).align(align);
-      dateLine.drawBelow(artistTb, false);
-      return dateLine.bottom + artistTb.height;
+      headliner.drawBelow(artistTb, false);
+      return headliner.bottom + artistTb.height;
     };
 
     let top = this.artistTop;
-    top = drawDay(poster.getHeadlinersList(0)[0], 'FRIDAY', 0, top);
-    top = drawDay(poster.getHeadlinersList(1)[0], 'SATURDAY', 1, top);
-    drawDay(poster.getHeadlinersList(2)[0], 'SUNDAY', 2, top);
+    top = _draw(poster.getHeadlinersList(0)[0], 0, top);
+    top = _draw(poster.getHeadlinersList(1)[0], 1, top);
+    _draw(poster.getHeadlinersList(2)[0], 2, top);
   }
 }
 
